@@ -5,14 +5,13 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.fasterxml.jackson.databind.introspect.ConcreteBeanPropertyBase;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,10 +24,34 @@ public class DriveSubsystem extends SubsystemBase {
   private final PigeonIMU m_pigeon = new PigeonIMU(Constants.PIGEON_ID);
 
   //Swerve Modules
-  private final SwerveModule m_frontLeftModule = new SwerveModule(5, 6, 23, -Math.toRadians(127.0));
-  private final SwerveModule m_frontRightModule = new SwerveModule(3, 4, 22 , -Math.toRadians(77.0));
-  private final SwerveModule m_backLeftModule = new SwerveModule(7, 8, 24, -Math.toRadians(234.0));
-  private final SwerveModule m_backRightModule = new SwerveModule(5, 6, 23, -Math.toRadians(97.1));
+  private final SwerveModule m_frontLeftModule = new SwerveModule(
+                                                    Constants.FRONT_LEFT_DRIVE_MOTOR , 
+                                                    Constants.FRONT_LEFT_STEER_MOTOR, 
+                                                    Constants.FRONT_LEFT_STEER_ENCODER,
+                                                    Constants.FRONT_LEFT_STEER_OFFSET,
+                                                    Constants.DRIVE_MOTOR_CONFIG,
+                                                    Constants.TURN_MOTOR_CONFIG);
+  private final SwerveModule m_frontRightModule = new SwerveModule(
+                                                    Constants.FRONT_RIGHT_DRIVE_MOTOR, 
+                                                    Constants.FRONT_RIGHT_STEER_MOTOR, 
+                                                    Constants.FRONT_RIGHT_STEER_ENCODER, 
+                                                    Constants.FRONT_RIGHT_STEER_OFFSET,
+                                                    Constants.DRIVE_MOTOR_CONFIG,
+                                                    Constants.TURN_MOTOR_CONFIG);
+  private final SwerveModule m_backLeftModule = new SwerveModule(
+                                                    Constants.BACK_LEFT_DRIVE_MOTOR, 
+                                                    Constants.BACK_LEFT_STEER_MOTOR, 
+                                                    Constants.BACK_LEFT_STEER_ENCODER, 
+                                                    Constants.BACK_RIGHT_STEER_OFFSET,
+                                                    Constants.DRIVE_MOTOR_CONFIG,
+                                                    Constants.TURN_MOTOR_CONFIG);
+  private final SwerveModule m_backRightModule = new SwerveModule(
+                                                    Constants.BACK_RIGHT_DRIVE_MOTOR, 
+                                                    Constants.BACK_RIGHT_STEER_MOTOR, 
+                                                    Constants.BACK_RIGHT_STEER_ENCODER, 
+                                                    Constants.BACK_RIGHT_STEER_OFFSET,
+                                                    Constants.DRIVE_MOTOR_CONFIG,
+                                                    Constants.TURN_MOTOR_CONFIG);
   
 
   //Odometry
@@ -67,6 +90,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRightModule.setDesiredState(swerveModuleStates[3]);
   }
 
+  public Rotation2d geRotation2d() {
+    return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+  }
+
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     m_odometry.update(
@@ -79,6 +106,20 @@ public class DriveSubsystem extends SubsystemBase {
         });
   }
 
+  public Pose2d getPose() {
+    // return m_odometry.getPoseMeters();
+    return new Pose2d();
+  }
+
+  public void resetOdometry(Pose2d position) {
+    
+    // m_odometry.resetPosition(position, new Rotation2d());
+  }
+
+  public void stop() {
+    drive(0.0, 0.0, 0.0, false);
+  }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
