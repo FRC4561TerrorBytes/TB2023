@@ -61,7 +61,7 @@ public class SwerveModule {
     m_turnMotor.setSmartCurrentLimit(Constants.TURN_CURRENT_LIMIT);
 
     // Seed the relative encoders with absolute values after a couple seconds to ensure correct values
-    new WaitCommand(5).andThen(new InstantCommand(() -> m_turnEncoder.setPosition(m_absEncoder.getAbsolutePosition()))).schedule();;
+    new WaitCommand(5).andThen(new InstantCommand(() -> m_turnEncoder.setPosition(m_absEncoder.getAbsolutePosition() - steerOffset))).schedule();;
   }
 
   /**
