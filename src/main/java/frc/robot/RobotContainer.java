@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -30,9 +31,9 @@ public class RobotContainer {
    */
   public RobotContainer() {
     m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
-        -m_primaryController.getLeftX() * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        -m_primaryController.getLeftY() * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        -m_primaryController.getRightX()* Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(-m_primaryController.getRightX())* Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true),
         m_driveSubsystem));
     // Configure the trigger bindings
@@ -54,12 +55,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is
-    // pressed,
-    // cancelling on release.
-
   }
 
   /**
@@ -70,5 +65,15 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return null;
+  }
+
+  private static double modifyAxis(double value) {
+    // Deadband
+    value = MathUtil.applyDeadband(value, 0.05);
+
+    // Square the axis
+    value = Math.copySign(value * value, value);
+
+    return value;
   }
 }

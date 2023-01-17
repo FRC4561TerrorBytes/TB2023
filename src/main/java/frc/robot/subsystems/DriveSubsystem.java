@@ -12,8 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.SwerveModule;
@@ -29,43 +28,33 @@ public class DriveSubsystem extends SubsystemBase {
                                                     Constants.FRONT_LEFT_STEER_MOTOR, 
                                                     Constants.FRONT_LEFT_STEER_ENCODER,
                                                     Constants.FRONT_LEFT_STEER_OFFSET,
-                                                    Constants.DRIVE_MOTOR_CONFIG,
                                                     Constants.TURN_MOTOR_CONFIG);
   private final SwerveModule m_frontRightModule = new SwerveModule(
                                                     Constants.FRONT_RIGHT_DRIVE_MOTOR, 
                                                     Constants.FRONT_RIGHT_STEER_MOTOR, 
                                                     Constants.FRONT_RIGHT_STEER_ENCODER, 
                                                     Constants.FRONT_RIGHT_STEER_OFFSET,
-                                                    Constants.DRIVE_MOTOR_CONFIG,
                                                     Constants.TURN_MOTOR_CONFIG);
   private final SwerveModule m_backLeftModule = new SwerveModule(
                                                     Constants.BACK_LEFT_DRIVE_MOTOR, 
                                                     Constants.BACK_LEFT_STEER_MOTOR, 
                                                     Constants.BACK_LEFT_STEER_ENCODER, 
                                                     Constants.BACK_RIGHT_STEER_OFFSET,
-                                                    Constants.DRIVE_MOTOR_CONFIG,
                                                     Constants.TURN_MOTOR_CONFIG);
   private final SwerveModule m_backRightModule = new SwerveModule(
                                                     Constants.BACK_RIGHT_DRIVE_MOTOR, 
                                                     Constants.BACK_RIGHT_STEER_MOTOR, 
                                                     Constants.BACK_RIGHT_STEER_ENCODER, 
                                                     Constants.BACK_RIGHT_STEER_OFFSET,
-                                                    Constants.DRIVE_MOTOR_CONFIG,
                                                     Constants.TURN_MOTOR_CONFIG);
   
 
   //Odometry
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS, 
                                                                         Rotation2d.fromDegrees(m_pigeon.getYaw()), 
-                                                                        new SwerveModulePosition[]{
-                                                                          m_frontLeftModule.getPosition(),
-                                                                          m_frontRightModule.getPosition(),
-                                                                          m_backLeftModule.getPosition(),
-                                                                          m_backRightModule.getPosition()
-                                                                        });
+                                                                        getModulePositions());
 
   public DriveSubsystem() {
-    ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
   }
 
   /**
@@ -83,11 +72,16 @@ public class DriveSubsystem extends SubsystemBase {
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_pigeon.getYaw()))
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_VELOCITY_METERS_PER_SECOND);
-    // setModuleStates(states);
-    m_frontLeftModule.setDesiredState(swerveModuleStates[0]);
-    m_frontRightModule.setDesiredState(swerveModuleStates[1]);
-    m_backLeftModule.setDesiredState(swerveModuleStates[2]);
-    m_backRightModule.setDesiredState(swerveModuleStates[3]);
+    setModuleStates(swerveModuleStates);
+  }
+
+  public void setModuleStates(SwerveModuleState[] states) {
+    m_frontLeftModule.setDesiredState(states[0]);
+    m_frontRightModule.setDesiredState(states[1]);
+    m_backLeftModule.setDesiredState(states[2]);
+    m_backRightModule.setDesiredState(states[3]);
+
+    updateOdometry();
   }
 
   public Rotation2d geRotation2d() {
@@ -97,23 +91,24 @@ public class DriveSubsystem extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     m_odometry.update(
-        Rotation2d.fromDegrees(m_pigeon.getYaw()),
-        new SwerveModulePosition[] {
-          m_frontLeftModule.getPosition(),
-          m_frontRightModule.getPosition(),
-          m_backLeftModule.getPosition(),
-          m_backRightModule.getPosition()
-        });
+        Rotation2d.fromDegrees(m_pigeon.getYaw()), getModulePositions());
   }
 
   public Pose2d getPose() {
-    // return m_odometry.getPoseMeters();
-    return new Pose2d();
+    return m_odometry.getPoseMeters();
   }
 
   public void resetOdometry(Pose2d position) {
-    
-    // m_odometry.resetPosition(position, new Rotation2d());
+    m_odometry.resetPosition(geRotation2d(), getModulePositions(), new Pose2d());
+  }
+
+  public SwerveModulePosition[] getModulePositions() {
+    return new SwerveModulePosition[] {
+      m_frontLeftModule.getPosition(),
+      m_frontRightModule.getPosition(),
+      m_backLeftModule.getPosition(),
+      m_backRightModule.getPosition()
+    };
   }
 
   public void stop() {

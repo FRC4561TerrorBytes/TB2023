@@ -41,8 +41,8 @@ public class SparkPIDConfig {
   public SparkPIDConfig(boolean invertMotor, double maxRPM,
                         double kP, double kI, double kD, double mechanicalEfficiency, double tolerance, 
                         double lowerLimit, double upperLimit, boolean enableSoftLimits,
-                        double velocityRPM, double accelerationRPMPerSec, int motionSmoothing) {
-    this(invertMotor, maxRPM, kP, kI, kD, mechanicalEfficiency, tolerance, lowerLimit, upperLimit, enableSoftLimits, velocityRPM, accelerationRPMPerSec, motionSmoothing, 1);
+                        double velocityRPM, double accelerationRPMPerSec) {
+    this(invertMotor, maxRPM, kP, kI, kD, mechanicalEfficiency, tolerance, lowerLimit, upperLimit, enableSoftLimits, velocityRPM, accelerationRPMPerSec, 1);
   }
 
   /**
@@ -66,7 +66,7 @@ public class SparkPIDConfig {
   public SparkPIDConfig(boolean invertMotor, double maxRPM,
       double kP, double kI, double kD, double mechanicalEfficiency, double tolerance,
       double lowerLimit, double upperLimit, boolean enableSoftLimits,
-      double velocityRPM, double accelerationRPMPerSec, int motionSmoothing, double conversionFactor) {
+      double velocityRPM, double accelerationRPMPerSec, double conversionFactor) {
     this.m_invertMotor = invertMotor;
     this.m_maxRPM = maxRPM * MathUtil.clamp(mechanicalEfficiency, 0.0, 1.0);
     this.m_kP = kP;

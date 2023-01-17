@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -15,6 +14,8 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class SwerveModule {
 
@@ -39,8 +40,7 @@ public class SwerveModule {
    * @param absEncoderID   CAN ID for CANCoder Absolute Encoder per module
    * @param steerOffset    Encoder steer offset for each module (in radians)
    */
-  public SwerveModule(int driveMotorPort, int turnMotorPort, int absEncoderID, double steerOffset,
-      TalonPIDConfig driveMotorConfig, SparkPIDConfig turnMotorConfig) {
+  public SwerveModule(int driveMotorPort, int turnMotorPort, int absEncoderID, double steerOffset, SparkPIDConfig turnMotorConfig) {
 
     m_driveMotor = new TalonFX(driveMotorPort);
     m_turnMotor = new CANSparkMax(turnMotorPort, MotorType.kBrushless);
@@ -52,7 +52,6 @@ public class SwerveModule {
         Constants.DRIVE_CURRENT_THRESHOLD,
         Constants.DRIVE_CURRENT_TIME_THRESHOLD);
 
-    driveMotorConfig.initializeTalonPID(m_driveMotor, FeedbackDevice.IntegratedSensor);
     turnMotorConfig.initializeSparkPID(m_turnMotor);
 
     m_driveMotor.setNeutralMode(NeutralMode.Brake);
@@ -60,6 +59,11 @@ public class SwerveModule {
 
     m_driveMotor.configStatorCurrentLimit(m_driveMotorCurrentLimit);
     m_turnMotor.setSmartCurrentLimit(Constants.TURN_CURRENT_LIMIT);
+
+    m_absEncoder.
+
+    // Seed the relative encoders with absolute values after a couple seconds to ensure correct values
+    new WaitCommand(5).andThen(new InstantCommand(() -> m_turnEncoder.setPosition(m_absEncoder.getAbsolutePosition()))).schedule();;
   }
 
   /**
@@ -69,8 +73,7 @@ public class SwerveModule {
    */
   public SwerveModuleState getState() {
     return new SwerveModuleState(
-        m_driveMotor.getSelectedSensorVelocity(), new Rotation2d(m_turnEncoder.getPosition()));
-    // TODO: Convert to meters per sec, convert to radians
+        10 * m_driveMotor.getSelectedSensorVelocity() * Constants.DRIVE_MOTOR_CONVERSION_FACTOR, new Rotation2d(m_turnEncoder.getPosition()));
   }
 
   /**
@@ -85,12 +88,12 @@ public class SwerveModule {
     // final double turnFeedforward =
     // m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
-    m_driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond);
+    m_driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / Constants.MAX_VELOCITY_METERS_PER_SECOND);
     m_turnMotor.getPIDController().setReference(state.angle.getRadians(), ControlType.kPosition);
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition( // TODO: convert from sensor units to meters
-        m_driveMotor.getSelectedSensorPosition(), new Rotation2d(m_turnEncoder.getPosition()));
+    return new SwerveModulePosition(
+        m_driveMotor.getSelectedSensorPosition() * Constants.DRIVE_MOTOR_CONVERSION_FACTOR, new Rotation2d(m_turnEncoder.getPosition()));
   }
 }
