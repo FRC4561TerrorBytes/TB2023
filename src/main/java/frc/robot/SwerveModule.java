@@ -40,7 +40,7 @@ public class SwerveModule {
    * @param absEncoderID   CAN ID for CANCoder Absolute Encoder per module
    * @param steerOffset    Encoder steer offset for each module (in radians)
    */
-  public SwerveModule(int driveMotorPort, int turnMotorPort, int absEncoderID, double steerOffset, SparkPIDConfig turnMotorConfig) {
+  public SwerveModule(int driveMotorPort, int turnMotorPort, int absEncoderID, double steerOffset, SparkPIDConfig turnMotorConfig, boolean driveInverted, boolean turnInverted) {
 
     m_driveMotor = new TalonFX(driveMotorPort);
     m_turnMotor = new CANSparkMax(turnMotorPort, MotorType.kBrushless);
@@ -52,16 +52,23 @@ public class SwerveModule {
         Constants.DRIVE_CURRENT_THRESHOLD,
         Constants.DRIVE_CURRENT_TIME_THRESHOLD);
 
-    turnMotorConfig.initializeSparkPID(m_turnMotor);
+    var turnPidController = turnMotorConfig.initializeSparkPID(m_turnMotor);
+
+    turnPidController.setPositionPIDWrappingEnabled(true);
+    turnPidController.setPositionPIDWrappingMaxInput(+Math.PI);
+    turnPidController.setPositionPIDWrappingMinInput(-Math.PI);
 
     m_driveMotor.setNeutralMode(NeutralMode.Brake);
     m_turnMotor.setIdleMode(IdleMode.kBrake);
+
+    m_driveMotor.setInverted(driveInverted);
+    m_turnMotor.setInverted(turnInverted);
 
     m_driveMotor.configStatorCurrentLimit(m_driveMotorCurrentLimit);
     m_turnMotor.setSmartCurrentLimit(Constants.TURN_CURRENT_LIMIT);
 
     // Seed the relative encoders with absolute values after a couple seconds to ensure correct values
-    new WaitCommand(5).andThen(new InstantCommand(() -> m_turnEncoder.setPosition(m_absEncoder.getAbsolutePosition() - steerOffset))).schedule();;
+    new WaitCommand(5).andThen(new InstantCommand(() -> m_turnEncoder.setPosition(m_absEncoder.getAbsolutePosition() - steerOffset))).schedule();
   }
 
   /**
@@ -82,9 +89,6 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d((m_turnEncoder.getPosition())));
-
-    // final double turnFeedforward =
-    // m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
     m_driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / Constants.MAX_VELOCITY_METERS_PER_SECOND);
     m_turnMotor.getPIDController().setReference(state.angle.getRadians(), ControlType.kPosition);

@@ -28,25 +28,33 @@ public class DriveSubsystem extends SubsystemBase {
                                                     Constants.FRONT_LEFT_STEER_MOTOR, 
                                                     Constants.FRONT_LEFT_STEER_ENCODER,
                                                     Constants.FRONT_LEFT_STEER_OFFSET,
-                                                    Constants.TURN_MOTOR_CONFIG);
+                                                    Constants.TURN_MOTOR_CONFIG,
+                                                    Constants.FRONT_LEFT_DRIVE_MOTOR_INVERTED,
+                                                    Constants.FRONT_LEFT_TURN_MOTOR_INVERTED);
   private final SwerveModule m_frontRightModule = new SwerveModule(
                                                     Constants.FRONT_RIGHT_DRIVE_MOTOR, 
                                                     Constants.FRONT_RIGHT_STEER_MOTOR, 
                                                     Constants.FRONT_RIGHT_STEER_ENCODER, 
                                                     Constants.FRONT_RIGHT_STEER_OFFSET,
-                                                    Constants.TURN_MOTOR_CONFIG);
+                                                    Constants.TURN_MOTOR_CONFIG,
+                                                    Constants.FRONT_RIGHT_DRIVE_MOTOR_INVERTED,
+                                                    Constants.FRONT_RIGHT_TURN_MOTOR_INVERTED);
   private final SwerveModule m_backLeftModule = new SwerveModule(
                                                     Constants.BACK_LEFT_DRIVE_MOTOR, 
                                                     Constants.BACK_LEFT_STEER_MOTOR, 
                                                     Constants.BACK_LEFT_STEER_ENCODER, 
                                                     Constants.BACK_RIGHT_STEER_OFFSET,
-                                                    Constants.TURN_MOTOR_CONFIG);
+                                                    Constants.TURN_MOTOR_CONFIG,
+                                                    Constants.BACK_LEFT_DRIVE_MOTOR_INVERTED,
+                                                    Constants.BACK_LEFT_TURN_MOTOR_INVERTED);
   private final SwerveModule m_backRightModule = new SwerveModule(
                                                     Constants.BACK_RIGHT_DRIVE_MOTOR, 
                                                     Constants.BACK_RIGHT_STEER_MOTOR, 
                                                     Constants.BACK_RIGHT_STEER_ENCODER, 
                                                     Constants.BACK_RIGHT_STEER_OFFSET,
-                                                    Constants.TURN_MOTOR_CONFIG);
+                                                    Constants.TURN_MOTOR_CONFIG,
+                                                    Constants.BACK_RIGHT_DRIVE_MOTOR_INVERTED,
+                                                    Constants.BACK_RIGHT_TURN_MOTOR_INVERTED);
   
 
   //Odometry
