@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -27,7 +28,6 @@ public class RobotContainer {
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
 
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -38,7 +38,7 @@ public class RobotContainer {
         modifyAxis(-m_primaryController.getRightX())* Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true),
         m_driveSubsystem));
-    m_armSubsystem.setDefaultCommand
+    m_armSubsystem.setDefaultCommand(new RunCommand(() -> m_armSubsystem.setElbowSpeed(modifyAxis(m_secondaryController.getLeftY())), m_armSubsystem));
     // Configure the trigger bindings
     configureBindings();
   }
