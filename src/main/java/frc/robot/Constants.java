@@ -23,7 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
  */
 public final class Constants {
 
-    public static final int PIGEON_ID = 0;
+    public static final int PIGEON_ID = 20;
 
     public static final int FALCON_500_MAX_RPM = 6380;
     public static final int CTRE_TALONFX_ENCODER_TICKS_PER_ROTATION = 2048;
@@ -60,29 +60,29 @@ public final class Constants {
     public static final int FRONT_LEFT_STEER_MOTOR = 6;
     public static final int FRONT_LEFT_STEER_ENCODER = 23;
     public static final boolean FRONT_LEFT_DRIVE_MOTOR_INVERTED = false;
-    public static final boolean FRONT_LEFT_TURN_MOTOR_INVERTED = false;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(0); // FIXME Measure and set front left steer offset
+    public static final boolean FRONT_LEFT_TURN_MOTOR_INVERTED = true;
+    public static final double FRONT_LEFT_STEER_OFFSET = 13; // FIXME Measure and set front left steer offset
 
     public static final int FRONT_RIGHT_DRIVE_MOTOR = 3;
     public static final int FRONT_RIGHT_STEER_MOTOR = 4;
     public static final int FRONT_RIGHT_STEER_ENCODER = 22;
     public static final boolean FRONT_RIGHT_DRIVE_MOTOR_INVERTED = false;
-    public static final boolean FRONT_RIGHT_TURN_MOTOR_INVERTED = false;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(0); // FIXME Measure and set front right steer offset
+    public static final boolean FRONT_RIGHT_TURN_MOTOR_INVERTED = true;
+    public static final double FRONT_RIGHT_STEER_OFFSET = 278.7; // FIXME Measure and set front right steer offset
 
     public static final int BACK_LEFT_DRIVE_MOTOR = 7;
     public static final int BACK_LEFT_STEER_MOTOR = 8;
     public static final int BACK_LEFT_STEER_ENCODER = 24;
-    public static final boolean BACK_LEFT_DRIVE_MOTOR_INVERTED = false;
-    public static final boolean BACK_LEFT_TURN_MOTOR_INVERTED = false;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(0); // FIXME Measure and set back left steer offset
+    public static final boolean BACK_LEFT_DRIVE_MOTOR_INVERTED = true;
+    public static final boolean BACK_LEFT_TURN_MOTOR_INVERTED = true;
+    public static final double BACK_LEFT_STEER_OFFSET = 27.86; // FIXME Measure and set back left steer offset
 
     public static final int BACK_RIGHT_DRIVE_MOTOR = 1;
     public static final int BACK_RIGHT_STEER_MOTOR = 2;
     public static final int BACK_RIGHT_STEER_ENCODER = 21;
     public static final boolean BACK_RIGHT_DRIVE_MOTOR_INVERTED = false;
-    public static final boolean BACK_RIGHT_TURN_MOTOR_INVERTED = false;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(0); // FIXME Measure and set back right steer offset
+    public static final boolean BACK_RIGHT_TURN_MOTOR_INVERTED = true;
+    public static final double BACK_RIGHT_STEER_OFFSET = 60.73; // FIXME Measure and set back right steer offset
 
     public static final double DRIVE_CURRENT_LIMIT = 80.0;
     public static final int TURN_CURRENT_LIMIT = 80;
@@ -97,7 +97,7 @@ public final class Constants {
     public static final double TURN_MOTOR_KI = 0.0;
     public static final double TURN_MOTOR_KD = 0.1;
     public static final double TURN_MOTOR_MECHANICAL_EFFICIENCY = 1.0;
-    public static final double TURN_MOTOR_TOLERANCE = 10.0;
+    public static final double TURN_MOTOR_TOLERANCE = Math.PI / 180;
     public static final double TURN_MOTOR_LOWER_LIMIT = 0.0;
     public static final double TURN_MOTOR_UPPER_LIMIT = 0.0;
     public static final boolean TURN_ENABLE_SOFT_LIMITS = false;

@@ -14,15 +14,15 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class SwerveModule {
+public class SwerveModule extends SubsystemBase {
 
   private final TalonFX m_driveMotor;
   private final CANSparkMax m_turnMotor;
   private final CANCoder m_absEncoder;
   private final RelativeEncoder m_turnEncoder;
+  private final double m_steerOffset;
   private final StatorCurrentLimitConfiguration m_driveMotorCurrentLimit;
 
   // Gains are for example purposes only - must be determined for your own robot!
@@ -46,6 +46,7 @@ public class SwerveModule {
     m_turnMotor = new CANSparkMax(turnMotorPort, MotorType.kBrushless);
     m_absEncoder = new CANCoder(absEncoderID);
     m_turnEncoder = m_turnMotor.getEncoder();
+    m_steerOffset = steerOffset;
     m_driveMotorCurrentLimit = new StatorCurrentLimitConfiguration(
         true,
         Constants.DRIVE_CURRENT_LIMIT,
@@ -59,7 +60,7 @@ public class SwerveModule {
     turnPidController.setPositionPIDWrappingMinInput(-Math.PI);
 
     m_driveMotor.setNeutralMode(NeutralMode.Brake);
-    m_turnMotor.setIdleMode(IdleMode.kBrake);
+    m_turnMotor.setIdleMode(IdleMode.kCoast);
 
     m_driveMotor.setInverted(driveInverted);
     m_turnMotor.setInverted(turnInverted);
@@ -68,7 +69,8 @@ public class SwerveModule {
     m_turnMotor.setSmartCurrentLimit(Constants.TURN_CURRENT_LIMIT);
 
     // Seed the relative encoders with absolute values after a couple seconds to ensure correct values
-    new WaitCommand(5).andThen(new InstantCommand(() -> m_turnEncoder.setPosition(m_absEncoder.getAbsolutePosition() - steerOffset))).schedule();
+    // (new WaitCommand(5)).andThen(new PrintCommand("balls"), new InstantCommand(() -> m_turnEncoder.setPosition(m_absEncoder.getAbsolutePosition() - steerOffset))).schedule();
+    // m_turnEncoder.setPosition(m_absEncoder.getAbsolutePosition() - steerOffset);
   }
 
   /**
@@ -97,5 +99,22 @@ public class SwerveModule {
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
         m_driveMotor.getSelectedSensorPosition() * Constants.DRIVE_MOTOR_CONVERSION_FACTOR, new Rotation2d(m_turnEncoder.getPosition()));
+  }
+
+  public String toString() {
+    String res = "\n\tABS-POS: ";
+    res += m_absEncoder.getAbsolutePosition() % 180;
+    res += "\n\tREL-POS: ";
+    res += Math.toDegrees(m_turnEncoder.getPosition()) % 180;
+    return res;
+  }
+
+  int resetLoop = 0;
+  @Override
+  public void periodic() {
+    if (resetLoop++==300) {
+      System.out.println("got here uwu");
+      m_turnEncoder.setPosition(Math.toRadians(m_absEncoder.getAbsolutePosition() - m_steerOffset));
+    }
   }
 }

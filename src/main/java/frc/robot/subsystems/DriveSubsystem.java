@@ -43,7 +43,7 @@ public class DriveSubsystem extends SubsystemBase {
                                                     Constants.BACK_LEFT_DRIVE_MOTOR, 
                                                     Constants.BACK_LEFT_STEER_MOTOR, 
                                                     Constants.BACK_LEFT_STEER_ENCODER, 
-                                                    Constants.BACK_RIGHT_STEER_OFFSET,
+                                                    Constants.BACK_LEFT_STEER_OFFSET,
                                                     Constants.TURN_MOTOR_CONFIG,
                                                     Constants.BACK_LEFT_DRIVE_MOTOR_INVERTED,
                                                     Constants.BACK_LEFT_TURN_MOTOR_INVERTED);
@@ -122,7 +122,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void stop() {
     drive(0.0, 0.0, 0.0, false);
   }
-  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
