@@ -23,8 +23,10 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-
+  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
+  private final CommandXboxController m_secondaryController = new CommandXboxController(1);
+
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -36,6 +38,7 @@ public class RobotContainer {
         modifyAxis(-m_primaryController.getRightX())* Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true),
         m_driveSubsystem));
+    m_armSubsystem.setDefaultCommand
     // Configure the trigger bindings
     configureBindings();
   }
