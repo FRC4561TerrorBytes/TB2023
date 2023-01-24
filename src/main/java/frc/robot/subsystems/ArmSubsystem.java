@@ -1,20 +1,27 @@
 package frc.robot.subsystems;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class ArmSubsystem extends SubsystemBase{
-    private WPI_TalonFX m_shoulderMotor = new WPI_TalonFX(11);
-    private WPI_TalonFX m_elbowMotor = new WPI_TalonFX(12);
+  public CANSparkMax m_elbowMotor = new CANSparkMax(13, MotorType.kBrushless);
+  public WPI_TalonFX m_shoulderMotor = new WPI_TalonFX(12);
 
+  public ArmSubsystem() {
+    m_shoulderMotor.configFactoryDefault();
+    m_elbowMotor.setSmartCurrentLimit(2);
+  }
     public void stopMotor(){
       m_shoulderMotor.stopMotor();
-      m_elbowMotor.stopMotor();
 
     }
 
-    public void setElbowSpeed(double speed){
-      m_elbowMotor.set(ControlMode.PercentOutput, speed);
+    public void setArmSpeed(double shoulderSpeed, double elbowSpeed){
+      m_shoulderMotor.set(ControlMode.PercentOutput, shoulderSpeed);
+      m_elbowMotor.set(elbowSpeed);
     }
 }

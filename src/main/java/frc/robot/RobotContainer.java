@@ -35,10 +35,12 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
         modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
         modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getRightX())* Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        modifyAxis(-m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true),
         m_driveSubsystem));
-    m_armSubsystem.setDefaultCommand(new RunCommand(() -> m_armSubsystem.setElbowSpeed(modifyAxis(m_secondaryController.getLeftY())), m_armSubsystem));
+    m_armSubsystem.setDefaultCommand(
+        new RunCommand(() -> m_armSubsystem.setArmSpeed(Math.pow(-m_secondaryController.getLeftY(), 3),
+            Math.pow(m_secondaryController.getRightY(), 3)), m_armSubsystem));
     // Configure the trigger bindings
     configureBindings();
   }
@@ -58,6 +60,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
   }
 
   /**
