@@ -5,9 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -24,9 +28,9 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
+  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
 
-  private final CommandXboxController m_primaryController = new CommandXboxController(0);
+  private final XboxController m_primaryController = new XboxController(0);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -56,7 +60,11 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
+  @SuppressWarnings("unused")
   private void configureBindings() {
+    JoystickButton primaryButtonA = new JoystickButton(m_primaryController, XboxController.Button.kA.value);
+
+    primaryButtonA.whileHeld(new InstantCommand(() -> m_visionSubsystem.centerAprilTag()));
   }
 
   /**

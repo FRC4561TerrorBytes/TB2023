@@ -6,15 +6,21 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.subsystems.DriveSubsystem;
+
 public class VisionSubsystem extends SubsystemBase {
+
+    DriveSubsystem m_driveSubsystem;
+
     //change nickname later
     PhotonCamera reflectiveCamera = new PhotonCamera("Table");
     PhotonCamera aprilTagsCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
-    public VisionSubsystem(){
-
+    public VisionSubsystem(DriveSubsystem driveSubsystem){
+        m_driveSubsystem = driveSubsystem;
     }
 
     public PhotonPipelineResult getResult(PhotonCamera camera){
@@ -32,6 +38,19 @@ public class VisionSubsystem extends SubsystemBase {
 
     public double getYaw(PhotonTrackedTarget target){
         return target.getYaw();
+    }
+
+    public Transform3d getTransform(PhotonCamera camera){
+        PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
+        return target.getBestCameraToTarget();
+    }
+
+    public Transform3d getAprilTagTransform(){
+        return getTransform(aprilTagsCamera);
+    }
+
+    public void centerAprilTag(){
+        m_driveSubsystem.drive(1, 1, 0, false);
     }
 
     @Override
