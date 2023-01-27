@@ -50,13 +50,14 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void centerAprilTag(){
-        m_driveSubsystem.drive(1, 1, 0, false);
+        m_driveSubsystem.drive(-getAprilTagTransform().getY()*3, 0, 0, false);
+        System.out.println(getAprilTagTransform().getY());
     }
 
     @Override
     public void periodic(){
         //List<PhotonTrackedTarget> reflectiveTargetList = getTargets(getResult(reflectiveCamera));
         //getting yaw is not working work on later
-        System.out.println(hasTarget(getResult(aprilTagsCamera)));
+        //System.out.println(hasTarget(getResult(aprilTagsCamera)));
     }
 }

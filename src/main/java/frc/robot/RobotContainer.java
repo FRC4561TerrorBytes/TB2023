@@ -30,7 +30,7 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
 
-  private final XboxController m_primaryController = new XboxController(0);
+  private final CommandXboxController m_primaryController = new CommandXboxController(0);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -62,9 +62,10 @@ public class RobotContainer {
    */
   @SuppressWarnings("unused")
   private void configureBindings() {
-    JoystickButton primaryButtonA = new JoystickButton(m_primaryController, XboxController.Button.kA.value);
+    Trigger primaryButtonA = m_primaryController.a();
 
-    primaryButtonA.whileHeld(new InstantCommand(() -> m_visionSubsystem.centerAprilTag()));
+    primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(), m_driveSubsystem)); 
+
   }
 
   /**
