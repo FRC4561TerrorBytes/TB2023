@@ -20,6 +20,8 @@ public class VisionSubsystem extends SubsystemBase {
     PhotonCamera aprilTagsCamera = new PhotonCamera("Table");
     //PhotonCamera aprilTagsCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
+    boolean centered = false;
+
     public VisionSubsystem(DriveSubsystem driveSubsystem){
         m_driveSubsystem = driveSubsystem;
     }
@@ -61,11 +63,14 @@ public class VisionSubsystem extends SubsystemBase {
                 positiveAngle = 1;
             }
             double rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
-            if(Math.abs(rotation) < 3){
+            if(Math.abs(rotation) < 2){
                 rotation = 0;
             }
+            double ySpeed = getAprilTagTransform().getY()*3;
             m_driveSubsystem.drive(0, getAprilTagTransform().getY()*3, rotation*0.1, false);
-            //System.out.println(Units.radiansToDegrees(getAprilTagTransform().getRotation().getZ()));
+            if(Math.abs(ySpeed) < 3 && Math.abs(rotation*0.1) < 2){
+                //forward stuff
+            }
         }
     }
 
