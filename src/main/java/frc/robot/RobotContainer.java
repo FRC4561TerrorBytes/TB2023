@@ -5,12 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -30,7 +28,6 @@ public class RobotContainer {
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
-  private final Trigger primaryButtonA = m_secondaryController.a();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -64,7 +61,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    primaryButtonA.whileTrue(new RunCommand(() -> m_armSubsystem.resetPosition(), m_armSubsystem));
+    m_secondaryController.a().whileTrue(new RunCommand(() -> m_armSubsystem.resetPosition(), m_armSubsystem));
+    m_secondaryController.b().onTrue(new RunCommand(() -> m_armSubsystem.setElbowPosition(-180000), m_armSubsystem));
   }
 
   /**
