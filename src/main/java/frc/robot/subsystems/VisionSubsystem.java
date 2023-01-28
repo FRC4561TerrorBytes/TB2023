@@ -16,8 +16,8 @@ public class VisionSubsystem extends SubsystemBase {
     DriveSubsystem m_driveSubsystem;
 
     //change nickname later
-    PhotonCamera reflectiveCamera = new PhotonCamera("Table");
-    PhotonCamera aprilTagsCamera = new PhotonCamera("Logitech_Webcam_C930e");
+    PhotonCamera aprilTagsCamera = new PhotonCamera("Table");
+    //PhotonCamera aprilTagsCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
     public VisionSubsystem(DriveSubsystem driveSubsystem){
         m_driveSubsystem = driveSubsystem;
@@ -50,8 +50,10 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void centerAprilTag(){
-        m_driveSubsystem.drive(-getAprilTagTransform().getY()*3, 0, 0, false);
-        System.out.println(getAprilTagTransform().getY());
+        if(hasTarget(getResult(aprilTagsCamera))){
+            m_driveSubsystem.drive(0, getAprilTagTransform().getY()*3, 0, false);
+            //System.out.println(getAprilTagTransform().getY());
+        }
     }
 
     @Override

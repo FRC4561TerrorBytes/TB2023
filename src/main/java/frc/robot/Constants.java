@@ -75,7 +75,7 @@ public final class Constants {
     public static final int BACK_LEFT_DRIVE_MOTOR = 7;
     public static final int BACK_LEFT_STEER_MOTOR = 8;
     public static final int BACK_LEFT_STEER_ENCODER = 24;
-    public static final boolean BACK_LEFT_DRIVE_MOTOR_INVERTED = true;
+    public static final boolean BACK_LEFT_DRIVE_MOTOR_INVERTED = false;
     public static final boolean BACK_LEFT_TURN_MOTOR_INVERTED = true;
     //public static final double BACK_LEFT_STEER_OFFSET = 27.86; // FIXME Measure and set back left steer offset
     public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(234.0);
