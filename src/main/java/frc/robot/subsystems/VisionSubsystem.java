@@ -7,6 +7,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.subsystems.DriveSubsystem;
@@ -36,8 +37,8 @@ public class VisionSubsystem extends SubsystemBase {
         return targets;
     }
 
-    public double getYaw(PhotonTrackedTarget target){
-        return target.getYaw();
+    public double getYaw(PhotonCamera camera){
+        return camera.getLatestResult().getBestTarget().getYaw();
     }
 
     public Transform3d getTransform(PhotonCamera camera){
@@ -51,8 +52,20 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void centerAprilTag(){
         if(hasTarget(getResult(aprilTagsCamera))){
-            m_driveSubsystem.drive(0, getAprilTagTransform().getY()*3, 0, false);
-            //System.out.println(getAprilTagTransform().getY());
+            double targetAngle = Units.radiansToDegrees(getAprilTagTransform().getRotation().getZ());
+            int positiveAngle;
+            if(targetAngle < 0){
+                positiveAngle = -1;
+            }
+            else{
+                positiveAngle = 1;
+            }
+            double rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
+            if(Math.abs(rotation) < 3){
+                rotation = 0;
+            }
+            m_driveSubsystem.drive(0, getAprilTagTransform().getY()*3, rotation*0.1, false);
+            //System.out.println(Units.radiansToDegrees(getAprilTagTransform().getRotation().getZ()));
         }
     }
 
