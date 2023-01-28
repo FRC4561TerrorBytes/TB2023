@@ -107,6 +107,11 @@ public final class Constants {
     public static final boolean TURN_ENABLE_SOFT_LIMITS = false;
     public static final double TURN_MOTOR_CONVERSION_FACTOR = 2 * Math.PI * SdsModuleConfigurations.MK4I_L2.getSteerReduction();
 
+    public static final double CAMERA_OFFSET_RIGHT = 0.13;
+    public static final double CAMERA_OFFSET_BACK = 0.56;
+    public static final double VISION_ROTATION_SCALING = 0.04;
+    public static final double VISION_LATERAL_SCALING = 2;
+
     public static final SparkPIDConfig TURN_MOTOR_CONFIG = new SparkPIDConfig(
             false,
             NEO_MAX_RPM,

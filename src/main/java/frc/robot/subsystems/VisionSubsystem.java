@@ -9,7 +9,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -21,6 +21,10 @@ public class VisionSubsystem extends SubsystemBase {
     //PhotonCamera aprilTagsCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
     boolean centered = false;
+    double xSpeed;
+    double ySpeed;
+    double rotation;
+    double distance;
 
     public VisionSubsystem(DriveSubsystem driveSubsystem){
         m_driveSubsystem = driveSubsystem;
@@ -55,6 +59,7 @@ public class VisionSubsystem extends SubsystemBase {
     public void centerAprilTag(){
         if(hasTarget(getResult(aprilTagsCamera))){
             double targetAngle = Units.radiansToDegrees(getAprilTagTransform().getRotation().getZ());
+
             int positiveAngle;
             if(targetAngle < 0){
                 positiveAngle = -1;
@@ -62,15 +67,37 @@ public class VisionSubsystem extends SubsystemBase {
             else{
                 positiveAngle = 1;
             }
-            double rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
-            if(Math.abs(rotation) < 2){
+
+            rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
+
+            ySpeed = (getAprilTagTransform().getY() + Constants.CAMERA_OFFSET_RIGHT);
+            System.out.println("ySpeed: " + ySpeed);
+            xSpeed = 0;
+
+            distance = getAprilTagTransform().getX() - Constants.CAMERA_OFFSET_BACK;
+
+            if(Math.abs(rotation) < (7*distance-4)){
                 rotation = 0;
+                centered = true;
             }
-            double ySpeed = getAprilTagTransform().getY()*3;
-            m_driveSubsystem.drive(0, getAprilTagTransform().getY()*3, rotation*0.1, false);
-            if(Math.abs(ySpeed) < 3 && Math.abs(rotation*0.1) < 2){
-                //forward stuff
+            else{
+                centered = false;
             }
+
+            if(Math.abs(ySpeed) < 0.15){
+                ySpeed = 0;
+            }
+            
+            
+            if(getAprilTagTransform().getX() - Constants.CAMERA_OFFSET_BACK <= 0.6){
+                //m_driveSubsystem.drive(0, ySpeed, 0, false);
+                xSpeed = 0;
+            }
+            else{
+                xSpeed = 0.5;
+            }
+            m_driveSubsystem.drive(xSpeed, ySpeed*Constants.VISION_LATERAL_SCALING, rotation*Constants.VISION_ROTATION_SCALING, false);
+            //System.out.println("X: " + xSpeed + " " + "Y: " + ySpeed + " " + "R: " + rotation);
         }
     }
 
