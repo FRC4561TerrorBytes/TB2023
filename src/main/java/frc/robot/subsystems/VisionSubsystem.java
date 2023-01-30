@@ -21,6 +21,11 @@ public class VisionSubsystem extends SubsystemBase {
     //PhotonCamera aprilTagsCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
     boolean centered = false;
+    boolean inRotTolerance = false;
+    boolean inLatTolerance = false;
+
+
+
     double xSpeed;
     double ySpeed;
     double rotation;
@@ -68,24 +73,39 @@ public class VisionSubsystem extends SubsystemBase {
                 positiveAngle = 1;
             }
 
+            xSpeed = 0;
+            
             rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
 
-            ySpeed = (getAprilTagTransform().getY() + Constants.CAMERA_OFFSET_RIGHT);
-            System.out.println("ySpeed: " + ySpeed);
-            xSpeed = 0;
+            ySpeed = (getAprilTagTransform().getY() - Constants.CAMERA_OFFSET_RIGHT);
 
             distance = getAprilTagTransform().getX() - Constants.CAMERA_OFFSET_BACK;
 
-            if(Math.abs(rotation) < (7*distance-4)){
+
+            if(Math.abs(rotation) > 7*distance-4){
+                inRotTolerance = false;
+                rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
+                System.out.println("rotating");
+            }
+            if(Math.abs(rotation) < 3){
+                inRotTolerance = true;
                 rotation = 0;
+            }
+
+            if(Math.abs(ySpeed) > 0.03){
+                inLatTolerance = false;
+                ySpeed = (getAprilTagTransform().getY() - Constants.CAMERA_OFFSET_RIGHT);
+            }
+            if(Math.abs(ySpeed) < 0.01){
+                inLatTolerance = true;
+                ySpeed = 0;
+            }
+
+            if(inRotTolerance && inLatTolerance){
                 centered = true;
             }
             else{
                 centered = false;
-            }
-
-            if(Math.abs(ySpeed) < 0.15){
-                ySpeed = 0;
             }
             
             
@@ -96,6 +116,7 @@ public class VisionSubsystem extends SubsystemBase {
             else{
                 xSpeed = 0.5;
             }
+            System.out.println("X: " + xSpeed + " Y: " + ySpeed + " Rotation: " + rotation);
             m_driveSubsystem.drive(xSpeed, ySpeed*Constants.VISION_LATERAL_SCALING, rotation*Constants.VISION_ROTATION_SCALING, false);
             //System.out.println("X: " + xSpeed + " " + "Y: " + ySpeed + " " + "R: " + rotation);
         }
