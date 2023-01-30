@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.ManualArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -40,8 +42,7 @@ public class RobotContainer {
         true),
         m_driveSubsystem));
     m_armSubsystem.setDefaultCommand(
-        new RunCommand(() -> m_armSubsystem.setArmSpeed(Math.pow(m_secondaryController.getLeftY(), 3),
-            Math.pow(m_secondaryController.getRightY(), 3)), m_armSubsystem));
+        new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
     // Configure the trigger bindings
     configureBindings();
   }
@@ -62,7 +63,13 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_secondaryController.a().whileTrue(new RunCommand(() -> m_armSubsystem.resetPosition(), m_armSubsystem));
-    m_secondaryController.b().onTrue(new RunCommand(() -> m_armSubsystem.setElbowPosition(-180000), m_armSubsystem));
+    m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
+        m_armSubsystem,
+        () -> m_secondaryController.getLeftY(),
+        () -> m_secondaryController.getRightY()));
+    m_secondaryController.b().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HORT),
+            m_armSubsystem));
   }
 
   /**

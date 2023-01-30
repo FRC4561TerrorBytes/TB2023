@@ -2,39 +2,116 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ArmConstants;
 
-public class ArmSubsystem extends SubsystemBase{
+public class ArmSubsystem extends SubsystemBase {
   private WPI_TalonFX m_elbowMotor = new WPI_TalonFX(4);
   private WPI_TalonFX m_shoulderMotor = new WPI_TalonFX(12);
+  private double m_targetShoulderPosition = 0.0;
+  private double m_targetElbowPosition = 0.0;
+
+  /**
+   * An enumeration of known arm placements, e.g. stowed or score cone high). The
+   * angles are in degrees from horizontal when the controlled arm segment is
+   * pointing forward. We use horizontal as 0 for our degree measurements rather
+   * than vertical due to how cosine and standard trigonometry angle measurements
+   * work.
+   */
+  public enum KnownArmPlacement {
+    STOWED(90.0, -90.0),
+    TEMP_ELBOW_HALFWAY(90.0, -45.0),
+    TEMP_ELBOW_HORT(90.0, 0),
+    TEMP_ELBOW_PAST_HORT_BY_HALF(90.0, 45.0);
+
+    public final double m_shoulderAngle;
+    public final double m_elbowAngle;
+
+    private KnownArmPlacement(double shoulderAngle, double elbowAngle) {
+      m_shoulderAngle = shoulderAngle;
+      m_elbowAngle = elbowAngle;
+    }
+  }
 
   public ArmSubsystem() {
     m_shoulderMotor.configFactoryDefault();
+    m_shoulderMotor.setNeutralMode(NeutralMode.Brake);
     m_elbowMotor.configFactoryDefault();
-    m_shoulderMotor.config_kP(0, 0.005);
-    m_shoulderMotor.set(ControlMode.Position, 0);
+    m_elbowMotor.setNeutralMode(NeutralMode.Brake);
+    final TalonFXConfiguration elbowConfig = new TalonFXConfiguration();
+    elbowConfig.neutralDeadband = ArmConstants.ARM_MOTORS_NEUTRAL_DEADBAND;
+    elbowConfig.primaryPID.selectedFeedbackSensor = TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice();
+    elbowConfig.slot0.kP = ArmConstants.ELBOW_PROPORTIONAL_GAIN;
+    elbowConfig.slot0.integralZone = ArmConstants.ARM_MOTORS_INTERGRAL_ZONE;
+    elbowConfig.slot0.closedLoopPeakOutput = ArmConstants.ARM_MOTORS_CLOSED_LOOP_PEAK_OUTPUT;
+    elbowConfig.slot0.allowableClosedloopError = ArmConstants.ELBOW_TOLERANCE;
+    elbowConfig.motionAcceleration = ArmConstants.ELBOW_PEAK_ACCELERATION;
+    elbowConfig.motionCruiseVelocity = ArmConstants.ELBOW_CRUISE_VELOCITY;
+    m_elbowMotor.configAllSettings(elbowConfig);
   }
-    public void resetPosition(){
-      System.out.println("reset");
-      m_shoulderMotor.setSelectedSensorPosition(0.0);
-      m_elbowMotor.setSelectedSensorPosition(0.0);
-    }
 
-    public void setArmSpeed(double shoulderSpeed, double elbowSpeed){
-      m_shoulderMotor.set(ControlMode.PercentOutput, shoulderSpeed);
-      m_elbowMotor.set(ControlMode.PercentOutput, elbowSpeed);            
-    }
-  
-  public void setElbowPosition(double encoderTarget) {
-    // double forearmAngle = m_elbowMotor.getSelectedSensorPosition(); // TODO map encoder to angle
-    // double gravityFeedForward = forearmAngle; //TODO map angle to ff
-    double gravityFeedForward = m_elbowMotor.getSelectedSensorPosition() * 0.0000035;
-    m_elbowMotor.set(ControlMode.MotionMagic, encoderTarget, DemandType.ArbitraryFeedForward, gravityFeedForward);
+  public void resetPosition() {
+    System.out.println("reset");
+    m_shoulderMotor.setSelectedSensorPosition(0.0);
+    m_elbowMotor.setSelectedSensorPosition(0.0);
   }
-  
+
+  public void setArmSpeed(double shoulderSpeed, double elbowSpeed) {
+    m_shoulderMotor.set(ControlMode.PercentOutput, shoulderSpeed);
+    m_elbowMotor.set(ControlMode.PercentOutput, elbowSpeed);
+  }
+
+  /**
+   * @param placement the desired updated arm placement.
+   */
+  public void setKnownArmPlacement(KnownArmPlacement placement) {
+    // TODO convert shoulder angle to encoder clicks.
+    setShoulderPosition(0.0);
+    double desiredElbowAngle = placement.m_elbowAngle - (placement.m_shoulderAngle - 90.0);
+    double desiredElbowTicks = desiredElbowAngle * ArmConstants.ELBOW_TICKS_PER_DEGREE
+        + ArmConstants.ELBOW_ONLY_HORIZONTAL_TICKS;
+    setElbowPosition(desiredElbowTicks);
+  }
+
+  /**
+   * @param targetPosition the target position in encoder ticks.
+   */
+  void setShoulderPosition(double targetPosition) {
+    m_targetShoulderPosition = targetPosition;
+  }
+
+  /**
+   * @param targetPosition the target position in encoder ticks.
+   */
+  void setElbowPosition(double targetPosition) {
+    m_targetElbowPosition = targetPosition;
+  }
+
+  public void proceedToArmPosition() {
+    // TODO proceedToShoulderPostion();
+    proceedToElbowPosition();
+  }
+
+  /**
+   * Drives the elbow toward the last postion set via
+   * {@link} {@link #setElbowPosition(double)}}.
+   */
+  void proceedToElbowPosition() {
+    double currentPos = m_elbowMotor.getSelectedSensorPosition();
+    double degrees = (currentPos - ArmConstants.ELBOW_ONLY_HORIZONTAL_TICKS) / ArmConstants.ELBOW_TICKS_PER_DEGREE;
+    double radians = java.lang.Math.toRadians(degrees);
+    double cosineScalar = java.lang.Math.cos(radians);
+    m_elbowMotor.set(
+        ControlMode.MotionMagic, m_targetElbowPosition,
+        DemandType.ArbitraryFeedForward, ArmConstants.ELBOW_MAX_VOLTAGE_FF * cosineScalar);
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elbow encoder", m_elbowMotor.getSelectedSensorPosition());
