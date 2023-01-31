@@ -36,6 +36,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public PhotonPipelineResult getResult(PhotonCamera camera){
+        //System.out.println("Tables are the same thing as chairs");
         return camera.getLatestResult();
     }
 
@@ -77,29 +78,34 @@ public class VisionSubsystem extends SubsystemBase {
             
             rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
 
-            ySpeed = (getAprilTagTransform().getY() - Constants.CAMERA_OFFSET_RIGHT);
 
             distance = getAprilTagTransform().getX() - Constants.CAMERA_OFFSET_BACK;
+            
+            //ySpeed = (getAprilTagTransform().getY() - Constants.CAMERA_OFFSET_RIGHT);
 
 
-            if(Math.abs(rotation) > 7*distance-4){
+            if(Math.abs(rotation) > 8*distance-4){
                 inRotTolerance = false;
                 rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
-                System.out.println("rotating");
             }
             if(Math.abs(rotation) < 3){
                 inRotTolerance = true;
                 rotation = 0;
             }
 
-            if(Math.abs(ySpeed) > 0.03){
+            if(Math.abs(ySpeed) > 0.06){
                 inLatTolerance = false;
-                ySpeed = (getAprilTagTransform().getY() - Constants.CAMERA_OFFSET_RIGHT);
             }
-            if(Math.abs(ySpeed) < 0.01){
+            if(Math.abs(ySpeed) < 0.02){
                 inLatTolerance = true;
+            }
+            if(!inLatTolerance){
+                ySpeed = distance*Math.sin(Units.degreesToRadians(rotation));
+            }
+            else{
                 ySpeed = 0;
             }
+
 
             if(inRotTolerance && inLatTolerance){
                 centered = true;
@@ -118,7 +124,6 @@ public class VisionSubsystem extends SubsystemBase {
             }
             System.out.println("X: " + xSpeed + " Y: " + ySpeed + " Rotation: " + rotation);
             m_driveSubsystem.drive(xSpeed, ySpeed*Constants.VISION_LATERAL_SCALING, rotation*Constants.VISION_ROTATION_SCALING, false);
-            //System.out.println("X: " + xSpeed + " " + "Y: " + ySpeed + " " + "R: " + rotation);
         }
     }
 
