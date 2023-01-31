@@ -62,14 +62,15 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_secondaryController.a().whileTrue(new RunCommand(() -> m_armSubsystem.resetPosition(), m_armSubsystem));
+    m_secondaryController.a().whileTrue(new RunCommand(() -> m_armSubsystem.resetPosition()));
     m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
         m_armSubsystem,
         () -> m_secondaryController.getLeftY(),
         () -> m_secondaryController.getRightY()));
-    m_secondaryController.b().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HORT),
-            m_armSubsystem));
+    m_secondaryController.povRight().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HORT)));
+    m_secondaryController.povDown().onTrue(
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
   }
 
   /**
