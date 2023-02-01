@@ -40,8 +40,8 @@ public class ManualArmCommand extends CommandBase {
    */
   @Override
   public void execute() {
-    m_armSubsystem.setArmSpeed(0.0,
-        //Math.pow(m_shoulderSpeedSupplier.getAsDouble(), 3),
+    m_armSubsystem.setArmSpeed(
+        Math.pow(m_shoulderSpeedSupplier.getAsDouble(), 3),
         Math.pow(m_elbowSpeedSupplier.getAsDouble(), 3));
   }
 

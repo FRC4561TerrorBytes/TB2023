@@ -71,7 +71,13 @@ public class RobotContainer {
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HORT)));
     m_secondaryController.povDown().onTrue(
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-  }
+    m_secondaryController.povUpLeft().onTrue(
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_PAST_TOP_BY_HALF)));
+      m_secondaryController.povDownRight().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HALFWAY)));
+      m_secondaryController.povUpRight().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_PAST_HORT_BY_HALF)));
+    }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
