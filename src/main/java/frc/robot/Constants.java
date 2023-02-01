@@ -110,7 +110,7 @@ public final class Constants {
     public static final double CAMERA_OFFSET_RIGHT = 0.11;
     public static final double CAMERA_OFFSET_BACK = 0.56;
     public static final double VISION_ROTATION_SCALING = 0.04;
-    public static final double VISION_LATERAL_SCALING = 2;
+    public static final double VISION_LATERAL_SCALING = 1;
 
     public static final SparkPIDConfig TURN_MOTOR_CONFIG = new SparkPIDConfig(
             false,

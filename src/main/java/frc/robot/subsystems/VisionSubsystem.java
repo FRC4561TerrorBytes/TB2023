@@ -30,13 +30,15 @@ public class VisionSubsystem extends SubsystemBase {
     double ySpeed;
     double rotation;
     double distance;
+    double calculatedRotation;
+    Transform3d aprilTagTransform;
+    boolean targetValid;
 
     public VisionSubsystem(DriveSubsystem driveSubsystem){
         m_driveSubsystem = driveSubsystem;
     }
 
     public PhotonPipelineResult getResult(PhotonCamera camera){
-        //System.out.println("Tables are the same thing as chairs");
         return camera.getLatestResult();
     }
 
@@ -63,8 +65,8 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void centerAprilTag(){
-        if(hasTarget(getResult(aprilTagsCamera))){
-            double targetAngle = Units.radiansToDegrees(getAprilTagTransform().getRotation().getZ());
+        if(targetValid){
+            double targetAngle = Units.radiansToDegrees(aprilTagTransform.getRotation().getZ());
 
             int positiveAngle;
             if(targetAngle < 0){
@@ -79,32 +81,48 @@ public class VisionSubsystem extends SubsystemBase {
             rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
 
 
-            distance = getAprilTagTransform().getX() - Constants.CAMERA_OFFSET_BACK;
+            distance = aprilTagTransform.getX() - Constants.CAMERA_OFFSET_BACK;
+
             
-            //ySpeed = (getAprilTagTransform().getY() - Constants.CAMERA_OFFSET_RIGHT);
+            calculatedRotation = ((180 - Math.abs(targetAngle))*positiveAngle);
 
 
-            if(Math.abs(rotation) > 8*distance-4){
-                inRotTolerance = false;
-                rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
+            if(!inRotTolerance){
+                rotation = calculatedRotation;
             }
-            if(Math.abs(rotation) < 3){
-                inRotTolerance = true;
+            else{
                 rotation = 0;
             }
 
-            if(Math.abs(ySpeed) > 0.06){
-                inLatTolerance = false;
+            if(Math.abs(calculatedRotation) > 8*distance-4){
+                inRotTolerance = false;
             }
-            if(Math.abs(ySpeed) < 0.02){
-                inLatTolerance = true;
+            if(Math.abs(calculatedRotation) < 3){
+                inRotTolerance = true;
             }
+            
+
             if(!inLatTolerance){
-                ySpeed = distance*Math.sin(Units.degreesToRadians(rotation));
+                System.out.println("Set speed");
+                ySpeed = distance*Math.sin(Units.degreesToRadians(calculatedRotation));
             }
             else{
+                System.out.println("Set 0");
                 ySpeed = 0;
             }
+
+            if(Math.abs(distance*Math.sin(Units.degreesToRadians(calculatedRotation))) > 0.15){
+                System.out.println("Set false");
+                inLatTolerance = false;
+            }
+            System.out.println(ySpeed + " " + Math.abs(ySpeed));
+            if(Math.abs(distance*Math.sin(Units.degreesToRadians(calculatedRotation))) < 0.05){
+                System.out.println("Set true");
+                inLatTolerance = true;
+            }
+            //System.out.println("y: " + getAprilTagTransform().getRotation().getY() + " rotation " + calculatedRotation  + " distance: " + (distance) + " calcY: " + distance*Math.sin(Units.degreesToRadians(calculatedRotation)));
+            
+            System.out.println("Y Speed being used: "+ySpeed + " Lat tolerance met: "+inLatTolerance);
 
 
             if(inRotTolerance && inLatTolerance){
@@ -115,22 +133,24 @@ public class VisionSubsystem extends SubsystemBase {
             }
             
             
-            if(getAprilTagTransform().getX() - Constants.CAMERA_OFFSET_BACK <= 0.6){
-                //m_driveSubsystem.drive(0, ySpeed, 0, false);
+            if(aprilTagTransform.getX() - Constants.CAMERA_OFFSET_BACK <= 0.6){
                 xSpeed = 0;
             }
             else{
                 xSpeed = 0.5;
             }
-            System.out.println("X: " + xSpeed + " Y: " + ySpeed + " Rotation: " + rotation);
-            m_driveSubsystem.drive(xSpeed, ySpeed*Constants.VISION_LATERAL_SCALING, rotation*Constants.VISION_ROTATION_SCALING, false);
+            //System.out.println("X: " + xSpeed + " Y: " + ySpeed + " Rotation: " + rotation);
+            //System.out.println("photon vision x: " + getAprilTagTransform().getX() + " distance: " + (distance));
+            m_driveSubsystem.drive(xSpeed, (ySpeed)*Constants.VISION_LATERAL_SCALING, rotation*Constants.VISION_ROTATION_SCALING, false);
+        }
+        else{
+            m_driveSubsystem.drive(0, 0, 0, false);
         }
     }
 
     @Override
     public void periodic(){
-        //List<PhotonTrackedTarget> reflectiveTargetList = getTargets(getResult(reflectiveCamera));
-        //getting yaw is not working work on later
-        //System.out.println(hasTarget(getResult(aprilTagsCamera)));
+        targetValid = hasTarget(getResult(aprilTagsCamera));
+        aprilTagTransform = getAprilTagTransform();
     }
 }
