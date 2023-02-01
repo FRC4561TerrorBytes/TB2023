@@ -132,7 +132,7 @@ public final class Constants {
                 public static final double SHOULDER_TICKS_PER_DEGREE = SHOULDER_ONLY_HORIZONTAL_TICKS / 90.0;
                 // needs fixing; moves to fast and with to much force.
                 public static final double SHOULDER_MAX_VOLTAGE_FF = 0.2;
-                public static final double SHOULDER_PROPORTIONAL_GAIN = 0.01;
+                public static final double SHOULDER_PROPORTIONAL_GAIN = 0.001;
                 public static final double SHOULDER_PEAK_ACCELERATION = SHOULDER_TICKS_PER_DEGREE * 2; // (ticks per 100 ms) per 100ms
                 public static final double SHOULDER_CRUISE_VELOCITY = SHOULDER_TICKS_PER_DEGREE * 2; // ticks per 100 ms
                 public static final double SHOULDER_TOLERANCE = SHOULDER_TICKS_PER_DEGREE / 2;
