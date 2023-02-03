@@ -60,6 +60,10 @@ public class RobotContainer {
    * PS4} controllers or
    * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
+   * a-set encoder to 0
+   * back-toggle manual arm
+   * x- stowed arm
+   * y-home arm
    */
   private void configureBindings() {
     m_secondaryController.a().whileTrue(new RunCommand(() -> m_armSubsystem.resetPosition()));
@@ -69,14 +73,16 @@ public class RobotContainer {
         () -> m_secondaryController.getRightY()));
     m_secondaryController.povRight().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HORT)));
-    m_secondaryController.povDown().onTrue(
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_secondaryController.povUpLeft().onTrue(
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_PAST_TOP_BY_HALF)));
-      m_secondaryController.povDownRight().onTrue(
+    m_secondaryController.x().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+    m_secondaryController.povDownRight().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HALFWAY)));
-      m_secondaryController.povUpRight().onTrue(
+    m_secondaryController.povUpRight().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_PAST_HORT_BY_HALF)));
+    m_secondaryController.povLeft().onTrue(
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_REACHED_OUT)));
+    m_secondaryController.y().onTrue(
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.HOME)));
     }
 
   /**

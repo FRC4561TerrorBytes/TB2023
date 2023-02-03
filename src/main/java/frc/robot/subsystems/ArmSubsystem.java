@@ -26,10 +26,13 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public enum KnownArmPlacement {
     STOWED(90.0, -90.0),
+    HOME(75.0, -75.0),
     TEMP_ELBOW_HALFWAY(90.0, -45.0),
     TEMP_ELBOW_HORT(90.0, 0),
     TEMP_ELBOW_PAST_HORT_BY_HALF(90.0, 45.0),
-    TEMP_ELBOW_PAST_TOP_BY_HALF(90.0, 135.0);
+    TEMP_STRETCHED_PAST_HORT_BY_HALF(45.0, 45.0),
+    TEMP_REACHED_OUT(45.0, 0.0);
+    //TEMP_ELBOW_PAST_TOP_BY_HALF(90.0, 135.0);
 
     public final double m_shoulderAngle;
     public final double m_elbowAngle;
@@ -115,7 +118,6 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void proceedToArmPosition() {
-    // TODO proceedToShoulderPostion();
     proceedToShoulderPosition();
     proceedToElbowPosition();
   }
