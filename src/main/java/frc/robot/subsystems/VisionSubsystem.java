@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.math.MathUtil;
 
 public class VisionSubsystem extends SubsystemBase {
 
@@ -68,13 +69,14 @@ public class VisionSubsystem extends SubsystemBase {
         if(targetValid){
             double targetAngle = Units.radiansToDegrees(aprilTagTransform.getRotation().getZ());
 
-            int positiveAngle;
-            if(targetAngle < 0){
-                positiveAngle = -1;
-            }
-            else{
-                positiveAngle = 1;
-            }
+            double positiveAngle;
+            // if(targetAngle < 0){
+            //     positiveAngle = -1;
+            // }
+            // else{
+            //     positiveAngle = 1;
+            // }
+            positiveAngle = Math.signum(targetAngle);
 
             xSpeed = 0;
             
@@ -88,13 +90,14 @@ public class VisionSubsystem extends SubsystemBase {
 
 
             if(!inRotTolerance){
-                rotation = calculatedRotation;
+                rotation = MathUtil.clamp(Math.abs(calculatedRotation), 2, 50)*positiveAngle;
+                System.out.println("rotation speed: " + rotation);
             }
             else{
                 rotation = 0;
             }
 
-            if(Math.abs(calculatedRotation) > 8*distance-4){
+            if(Math.abs(calculatedRotation) > 6){
                 inRotTolerance = false;
             }
             if(Math.abs(calculatedRotation) < 3){
@@ -102,27 +105,29 @@ public class VisionSubsystem extends SubsystemBase {
             }
             
 
-            if(!inLatTolerance){
-                System.out.println("Set speed");
-                ySpeed = distance*Math.sin(Units.degreesToRadians(calculatedRotation));
+            if(!inLatTolerance && inRotTolerance){
+                //System.out.println("Set speed");
+                //ySpeed = distance*Math.sin(Units.degreesToRadians(calculatedRotation)) - Constants.CAMERA_OFFSET_RIGHT;
+                ySpeed = Math.signum(aprilTagTransform.getY())*MathUtil.clamp(Math.abs(aprilTagTransform.getY()), 0.2, 1);
             }
             else{
-                System.out.println("Set 0");
+                //System.out.println("Set 0");
                 ySpeed = 0;
             }
 
-            if(Math.abs(distance*Math.sin(Units.degreesToRadians(calculatedRotation))) > 0.15){
-                System.out.println("Set false");
+            if(Math.abs(aprilTagTransform.getY()) > 0.3){
+                //System.out.println("Set false");
                 inLatTolerance = false;
             }
-            System.out.println(ySpeed + " " + Math.abs(ySpeed));
-            if(Math.abs(distance*Math.sin(Units.degreesToRadians(calculatedRotation))) < 0.05){
-                System.out.println("Set true");
+            // System.out.println(ySpeed + " " + Math.abs(ySpeed));
+            if(Math.abs(aprilTagTransform.getY()) < 0.1){
+                //System.out.println("Set true");
                 inLatTolerance = true;
             }
             //System.out.println("y: " + getAprilTagTransform().getRotation().getY() + " rotation " + calculatedRotation  + " distance: " + (distance) + " calcY: " + distance*Math.sin(Units.degreesToRadians(calculatedRotation)));
             
-            System.out.println("Y Speed being used: "+ySpeed + " Lat tolerance met: "+inLatTolerance);
+            //System.out.println("Y Speed: " + (distance*Math.sin(Units.degreesToRadians(calculatedRotation)) - Constants.CAMERA_OFFSET_RIGHT) + " Actual: " + ySpeed);
+            //System.out.println("Y Speed being used: "+ySpeed + " Lat tolerance met: "+inLatTolerance);
 
 
             if(inRotTolerance && inLatTolerance){
@@ -137,20 +142,25 @@ public class VisionSubsystem extends SubsystemBase {
                 xSpeed = 0;
             }
             else{
-                xSpeed = 0.5;
+                xSpeed = Math.signum(distance)*MathUtil.clamp(Math.abs(distance), 0.2, 1);
             }
             //System.out.println("X: " + xSpeed + " Y: " + ySpeed + " Rotation: " + rotation);
             //System.out.println("photon vision x: " + getAprilTagTransform().getX() + " distance: " + (distance));
-            m_driveSubsystem.drive(xSpeed, (ySpeed)*Constants.VISION_LATERAL_SCALING, rotation*Constants.VISION_ROTATION_SCALING, false);
+            
+            //xSpeed = 0;
+            m_driveSubsystem.drive(xSpeed, (ySpeed)*2*Constants.VISION_LATERAL_SCALING, rotation*0.1*Constants.VISION_ROTATION_SCALING, false);
         }
         else{
-            m_driveSubsystem.drive(0, 0, 0, false);
+            m_driveSubsystem.drive(0, 0, 0.5, false);
+            System.out.println("No target seen");
         }
     }
 
     @Override
     public void periodic(){
         targetValid = hasTarget(getResult(aprilTagsCamera));
-        aprilTagTransform = getAprilTagTransform();
+        if(targetValid){
+            aprilTagTransform = getAprilTagTransform(); 
+        }
     }
 }
