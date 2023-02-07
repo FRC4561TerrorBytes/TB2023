@@ -123,7 +123,7 @@ public final class Constants {
                 public static final int ELBOW_ONLY_HORIZONTAL_TICKS = -180000;
                 public static final double ELBOW_TICKS_PER_DEGREE = ELBOW_ONLY_HORIZONTAL_TICKS / 90.0;
                 public static final double ELBOW_MAX_VOLTAGE_FF = 0.1;
-                public static final double ELBOW_PROPORTIONAL_GAIN = 0.01;
+                public static final double ELBOW_PROPORTIONAL_GAIN = 0.001;
                 public static final double ELBOW_PEAK_ACCELERATION = -ELBOW_TICKS_PER_DEGREE * 2; // (ticks per 100 ms) per 100ms
                 public static final double ELBOW_CRUISE_VELOCITY = -ELBOW_TICKS_PER_DEGREE * 2; // ticks per 100 ms
                 public static final double ELBOW_TOLERANCE = -ELBOW_TICKS_PER_DEGREE / 2;

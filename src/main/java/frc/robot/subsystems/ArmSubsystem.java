@@ -1,14 +1,11 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
@@ -16,14 +13,18 @@ import frc.robot.Constants.ArmConstants;
 public class ArmSubsystem extends SubsystemBase {
 // private WPI_TalonFX m_elbowMotor = new WPI_TalonFX(4);
 // private WPI_TalonFX m_shoulderMotor = new WPI_TalonFX(12);
-  private CANSparkMax m_shoulderMotor = new CANSparkMax(0, MotorType.kBrushless);
-  private CANSparkMax m_elbowMotor = new CANSparkMax(11, MotorType.kBrushless);
- private SparkMaxPIDController m_shoulderController;
- private SparkMaxPIDController m_elbowController;
+  private CANSparkMax m_shoulderMotor = new CANSparkMax(12, MotorType.kBrushless);  
+  private RelativeEncoder m_shoulderEncoder; 
+  private SparkMaxPIDController m_shoulderController;
+  private CANSparkMax m_elbowMotor = new CANSparkMax(4, MotorType.kBrushless);
+  private RelativeEncoder m_elbowEncoder;
+  private SparkMaxPIDController m_elbowController;
 
 
   private double m_targetShoulderPosition = 0.0;
   private double m_targetElbowPosition = 0.0;
+
+  private boolean m_prototypeArm = true;
 
   /**
    * An enumeration of known arm placements, e.g. stowed or score cone high). The
@@ -51,48 +52,37 @@ public class ArmSubsystem extends SubsystemBase {
     }
   }
 
-  public ArmSubsystem() {
-    m_shoulderController = m_shoulderMotor.getPIDController();
-    m_elbowController = m_elbowMotor.getPIDController();
-    m_shoulderMotor.restoreFactoryDefaults();
-    m_shoulderMotor.setIdleMode(IdleMode.kBrake);
+  public ArmSubsystem() {    
     m_elbowMotor.restoreFactoryDefaults();
-    m_elbowMotor.setIdleMode(IdleMode.kBrake);
-    m_elbowController.setReference(0, ControlType.kSmartMotion);
-    /*final NeoSteerConfiguration elbowConfig = new NeoSteerConfiguration<EncoderConfiguration>(11, null)
-    elbowConfig.neutralDeadband = ArmConstants.ARM_MOTORS_NEUTRAL_DEADBAND;
-    elbowConfig.primaryPID.selectedFeedbackSensor = TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice();
-    elbowConfig.slot0.kP = ArmConstants.ELBOW_PROPORTIONAL_GAIN;
-    elbowConfig.slot0.integralZone = ArmConstants.ARM_MOTORS_INTERGRAL_ZONE;
-    elbowConfig.slot0.closedLoopPeakOutput = ArmConstants.ARM_MOTORS_CLOSED_LOOP_PEAK_OUTPUT;
-    elbowConfig.slot0.allowableClosedloopError = ArmConstants.ELBOW_TOLERANCE;
-    elbowConfig.motionAcceleration = ArmConstants.ELBOW_PEAK_ACCELERATION;
-    elbowConfig.motionCruiseVelocity = ArmConstants.ELBOW_CRUISE_VELOCITY;
-    elbowConfig.forwardSoftLimitEnable = true;
-    elbowConfig.forwardSoftLimitThreshold = 0;
-    elbowConfig.reverseSoftLimitEnable = true;
-    elbowConfig.reverseSoftLimitThreshold = ArmConstants.ELBOW_ONLY_HORIZONTAL_TICKS * 2.0;
-    m_elbowMotor.configAllSettings(elbowConfig);
-    final TalonFXConfiguration shoulderConfig = new TalonFXConfiguration();
-    shoulderConfig.neutralDeadband = ArmConstants.ARM_MOTORS_NEUTRAL_DEADBAND;
-    shoulderConfig.primaryPID.selectedFeedbackSensor = TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice();
-    shoulderConfig.slot0.kP = ArmConstants.SHOULDER_PROPORTIONAL_GAIN;
-    shoulderConfig.slot0.integralZone = ArmConstants.ARM_MOTORS_INTERGRAL_ZONE;
-    shoulderConfig.slot0.closedLoopPeakOutput = ArmConstants.ARM_MOTORS_CLOSED_LOOP_PEAK_OUTPUT;
-    shoulderConfig.slot0.allowableClosedloopError = ArmConstants.SHOULDER_TOLERANCE;
-    shoulderConfig.motionAcceleration = ArmConstants.SHOULDER_PEAK_ACCELERATION;
-    shoulderConfig.motionCruiseVelocity = ArmConstants.SHOULDER_CRUISE_VELOCITY;
-    shoulderConfig.forwardSoftLimitEnable = true;
+    m_elbowController = m_elbowMotor.getPIDController();
+    m_elbowEncoder = m_elbowMotor.getEncoder();    
+    m_elbowMotor.setIdleMode(IdleMode.kBrake);  
+    m_elbowController.setP(ArmConstants.ELBOW_PROPORTIONAL_GAIN);
+    m_elbowController.setSmartMotionMaxVelocity(600.0, 0);
+    m_elbowController.setSmartMotionMaxAccel(450.0, 0);
+    m_elbowController.setSmartMotionMinOutputVelocity(0.0, 0);
+    m_elbowController.setSmartMotionAllowedClosedLoopError(1.0, 0);
+
+    m_shoulderMotor.restoreFactoryDefaults();
+    m_shoulderController = m_shoulderMotor.getPIDController();
+    m_shoulderEncoder = m_elbowMotor.getEncoder();    
+    m_shoulderMotor.setIdleMode(IdleMode.kBrake);  
+    m_shoulderController.setP(ArmConstants.SHOULDER_PROPORTIONAL_GAIN);
+    m_shoulderController.setSmartMotionMaxVelocity(600.0, 0);
+    m_shoulderController.setSmartMotionMaxAccel(450.0, 0);
+    m_shoulderController.setSmartMotionMinOutputVelocity(0.0, 0);
+    m_shoulderController.setSmartMotionAllowedClosedLoopError(1.0, 0);
+
+    /*shoulderConfig.forwardSoftLimitEnable = true;
     shoulderConfig.forwardSoftLimitThreshold = 0;
     shoulderConfig.reverseSoftLimitEnable = true;
-    shoulderConfig.reverseSoftLimitThreshold = ArmConstants.SHOULDER_ONLY_HORIZONTAL_TICKS * 2.0;
-    m_shoulderMotor.configAllSettings(shoulderConfig);*/
+    shoulderConfig.reverseSoftLimitThreshold = ArmConstants.SHOULDER_ONLY_HORIZONTAL_TICKS * 2.0;*/
   }
 
   public void resetPosition() {
     System.out.println("reset");
-    m_shoulderMotor.set(m_targetShoulderPosition);
-    m_elbowMotor.set(m_targetElbowPosition);
+    m_shoulderMotor.getEncoder().setPosition(0.0);
+    m_elbowMotor.getEncoder().setPosition(0.0);
   }
 
   public void setArmSpeed(double shoulderSpeed, double elbowSpeed) {
@@ -104,10 +94,12 @@ public class ArmSubsystem extends SubsystemBase {
    * @param placement the desired updated arm placement.
    */
   public void setKnownArmPlacement(KnownArmPlacement placement) {
-    // TODO convert shoulder angle to encoder clicks.
     double desiredShoulderAngle = placement.m_shoulderAngle;
     double desiredShoulderTicks = desiredShoulderAngle * ArmConstants.SHOULDER_TICKS_PER_DEGREE + ArmConstants.SHOULDER_ONLY_HORIZONTAL_TICKS;
-    double desiredElbowAngle = placement.m_elbowAngle - (placement.m_shoulderAngle - 90.0);
+    double desiredElbowAngle = placement.m_elbowAngle;
+    if (!m_prototypeArm){
+      desiredElbowAngle = desiredElbowAngle - (placement.m_shoulderAngle - 90.0);
+    }
     double desiredElbowTicks = desiredElbowAngle * ArmConstants.ELBOW_TICKS_PER_DEGREE
         + ArmConstants.ELBOW_ONLY_HORIZONTAL_TICKS;
     setShoulderPosition(desiredShoulderTicks);    
@@ -118,14 +110,14 @@ public class ArmSubsystem extends SubsystemBase {
    * @param targetPosition the target position in encoder ticks.
    */
   void setShoulderPosition(double targetPosition) {
-    m_targetShoulderPosition = targetPosition;
+    m_targetShoulderPosition = targetPosition / 42.0;
   }
 
   /**
    * @param targetPosition the target position in encoder ticks.
    */
   void setElbowPosition(double targetPosition) {
-    m_targetElbowPosition = targetPosition;
+    m_targetElbowPosition = targetPosition / 42.0;
   }
 
   public void proceedToArmPosition() {
@@ -159,11 +151,11 @@ public class ArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    /*SmartDashboard.putNumber("Elbow encoder", m_elbowMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Elbow voltage", m_elbowMotor.getMotorOutputVoltage());
-    SmartDashboard.putNumber("Elbow current", m_elbowMotor.getStatorCurrent());
-    SmartDashboard.putNumber("Shoulder encoder", m_shoulderMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Shoulder voltage", m_shoulderMotor.getMotorOutputVoltage());
-    SmartDashboard.putNumber("Shoulder current", m_shoulderMotor.getStatorCurrent());*/
+    SmartDashboard.putNumber("Elbow rotations", m_elbowEncoder.getPosition());
+    SmartDashboard.putNumber("Elbow voltage", m_elbowMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Elbow current", m_elbowMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Shoulder rotations", m_shoulderEncoder.getPosition());
+    SmartDashboard.putNumber("Shoulder voltage", m_shoulderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Shoulder current", m_shoulderMotor.getOutputCurrent());
   }
 }
