@@ -107,8 +107,11 @@ public final class Constants {
     public static final boolean TURN_ENABLE_SOFT_LIMITS = false;
     public static final double TURN_MOTOR_CONVERSION_FACTOR = 2 * Math.PI * SdsModuleConfigurations.MK4I_L2.getSteerReduction();
 
-    public static final double CAMERA_OFFSET_RIGHT = 0.11;
-    public static final double CAMERA_OFFSET_BACK = 0.56;
+    // fyi: offset right means lateral offset from center
+    public static final double LEFT_CAMERA_OFFSET_RIGHT =  0.127;
+    public static final double RIGHT_CAMERA_OFFSET_RIGHT = -0.0889;
+    public static final double LEFT_CAMERA_OFFSET_BACK = 0.69;
+    public static final double RIGHT_CAMERA_OFFSET_BACK = 0.56;
     public static final double VISION_ROTATION_SCALING = 1;
     public static final double VISION_LATERAL_SCALING = 1;
 

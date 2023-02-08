@@ -45,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
     boolean leftTargetValid;
     boolean leftTargetIDValid;
     boolean anyTargetValid;
-    double cameraOffsetRight;
+    double cameraOffset;
 
     public VisionSubsystem(DriveSubsystem driveSubsystem){
         m_driveSubsystem = driveSubsystem;
@@ -91,12 +91,6 @@ public class VisionSubsystem extends SubsystemBase {
             double targetAngle = Units.radiansToDegrees(targetTransform.getRotation().getZ());
 
             double positiveAngle;
-            // if(targetAngle < 0){
-            //     positiveAngle = -1;
-            // }
-            // else{
-            //     positiveAngle = 1;
-            // }
             positiveAngle = Math.signum(targetAngle);
 
             xSpeed = 0;
@@ -127,31 +121,37 @@ public class VisionSubsystem extends SubsystemBase {
             
 
             if(!inLatTolerance && inRotTolerance){
-                
-                ySpeed = Math.signum(targetTransform.getY()+cameraOffsetRight/*-.7239*/)*MathUtil.clamp(Math.abs(targetTransform.getY()+cameraOffsetRight/*-.7239*/), 0.2, 1);
+                System.out.println("in rotation tol, changing ySpeed");
+                // ySpeed = Math.signum(targetTransform.getY()+cameraOffset/*-.7239*/)*MathUtil.clamp(Math.abs(targetTransform.getY()+cameraOffset/*-.7239*/), 0.2, 1);
+                 ySpeed = Math.signum(targetTransform.getY()+cameraOffset/*-.7239*/)*MathUtil.clamp((Math.abs(targetTransform.getY()+cameraOffset)/*-.7239*/), 0.2, 1);
+                //  System.out.println("signum: " + Math.signum(targetTransform.getY()));
+                //  System.out.println("abs + offset: " +  (Math.abs(targetTransform.getY())+cameraOffset));
+                //  System.out.println("clamp: " + MathUtil.clamp((Math.abs(targetTransform.getY())+cameraOffset/*-.7239*/), 0.2, 1));
+                //  System.out.println("yspeed: " + ySpeed);
+            }
+            else if(inLatTolerance && !inRotTolerance){
+                ySpeed = 0;
+                System.out.println("in lat tolerance");
             }
             else{
-                //System.out.println("Set 0");
                 ySpeed = 0;
+                System.out.println("in no tolerance, or all tolerances");
             }
-
-            if(Math.abs(targetTransform.getY()) > 0.3){
-                //System.out.println("Set false");
+            System.out.println("target and camera offset: " + (targetTransform.getY() + cameraOffset));
+            if(targetTransform.getY() + cameraOffset < -0.1 || targetTransform.getY() + cameraOffset > 0.1){
                 inLatTolerance = false;
+                System.out.println("not in tolerance: " + (targetTransform.getY() + cameraOffset));
             }
-            // System.out.println(ySpeed + " " + Math.abs(ySpeed));
-            if(Math.abs(targetTransform.getY()) < 0.1){
-                //System.out.println("Set true");
+            if(targetTransform.getY() + cameraOffset > -0.05 && targetTransform.getY() + cameraOffset < 0.05){
                 inLatTolerance = true;
+                System.out.println("in tolerance: " + (targetTransform.getY() + cameraOffset));
             }
-            //System.out.println("y: " + getrightAprilTransform3d().getRotation().getY() + " rotation " + calculatedRotation  + " distance: " + (distance) + " calcY: " + distance*Math.sin(Units.degreesToRadians(calculatedRotation)));
-            
-            //System.out.println("Y Speed: " + (distance*Math.sin(Units.degreesToRadians(calculatedRotation)) - Constants.CAMERA_OFFSET_RIGHT) + " Actual: " + ySpeed);
-            //System.out.println("Y Speed being used: "+ySpeed + " Lat tolerance met: "+inLatTolerance);
 
+            
 
             if(inRotTolerance && inLatTolerance){
                 centered = true;
+                
             }
             else{
                 centered = false;
@@ -165,9 +165,11 @@ public class VisionSubsystem extends SubsystemBase {
                 xSpeed = Math.signum(distance)*MathUtil.clamp(Math.abs(distance), 0.2, 1);
             }
 
-            //xSpeed = 0;
+            System.out.println("Raw data Y: " + targetTransform.getY());
+            System.out.println("y speed: " + ySpeed);
             m_driveSubsystem.drive(xSpeed, (ySpeed)*2*Constants.VISION_LATERAL_SCALING, rotation*0.1*Constants.VISION_ROTATION_SCALING, false);
         }
+
         else{
             m_driveSubsystem.drive(0, 0, 0.5, false);
         }
@@ -175,16 +177,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        // rightTargetValid = hasTarget(getResult(rightCamera));
-        // leftTargetValid = hasTarget(getResult(leftCamera));
-        // if(rightTargetValid){
-        //     rightAprilTransform3d = getTransform(rightCamera); 
-        // }
-        // if(leftTargetValid){
-        //     lefttAprilTransform3d = getTransform(leftCamera);
-        // }
-        
-        // getAprilTagByID(null, 0)
 
         var rightResult = rightCamera.getLatestResult();
         if(rightResult.hasTargets()){
@@ -226,33 +218,30 @@ public class VisionSubsystem extends SubsystemBase {
             if (leftPoseAmbiguity>=rightPoseAmbiguity)
                 {
                     targetTransform = rightAprilTransform3d;
-                    cameraOffsetRight = Constants.RIGHT_CAMERA_OFFSET_RIGHT;
+                    cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT;
                 }
             else if (leftPoseAmbiguity<rightPoseAmbiguity)
                 {
                     targetTransform = leftAprilTransform3d;
-                    cameraOffsetRight = Constants.LEFT_CAMERA_OFFSET_RIGHT;
+                    cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT;
                 }
             
             System.out.println("seeing: both");
         }
         else if(rightTargetIDValid){
             targetTransform = rightAprilTransform3d;
-            cameraOffsetRight = Constants.RIGHT_CAMERA_OFFSET_RIGHT;
-            System.out.println("seeing: right");
+            cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT;
+            // System.out.println("seeing: right");
         }
         else if(leftTargetIDValid){
             targetTransform = leftAprilTransform3d;
-            System.out.println("seeing: left");
-            cameraOffsetRight = Constants.LEFT_CAMERA_OFFSET_RIGHT;
+            // System.out.println("seeing: left");
+            cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT;
         }
         else{
             targetTransform = null;
-            System.out.println("seeing: none");
+            // System.out.println("seeing: none");
         }
-
-       
-        // prevTarget = rightTargetValid;
         
     }
 }
