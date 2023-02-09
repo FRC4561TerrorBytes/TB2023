@@ -17,17 +17,14 @@ public class VisionSubsystem extends SubsystemBase {
 
     DriveSubsystem m_driveSubsystem;
 
-    //change nickname later
+    // change nickname later
     PhotonCamera rightCamera = new PhotonCamera("Table");
     PhotonCamera leftCamera = new PhotonCamera("Chair");
-    //PhotonCamera rightCamera = new PhotonCamera("Logitech_Webcam_C930e");
+    // PhotonCamera rightCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
-    boolean centered = false;
     boolean inRotTolerance = false;
     boolean inLatTolerance = false;
     boolean prevTarget = false;
-
-
 
     double xSpeed;
     double leftYSpeed;
@@ -49,201 +46,193 @@ public class VisionSubsystem extends SubsystemBase {
 
     double aprilTagOffset = -Units.inchesToMeters(28);
 
-    public VisionSubsystem(DriveSubsystem driveSubsystem){
+    public VisionSubsystem(DriveSubsystem driveSubsystem) {
         m_driveSubsystem = driveSubsystem;
     }
 
-    public PhotonPipelineResult getResult(PhotonCamera camera){
+    public PhotonPipelineResult getResult(PhotonCamera camera) {
         return camera.getLatestResult();
     }
 
-    public boolean hasTarget(PhotonPipelineResult result){
+    public boolean hasTarget(PhotonPipelineResult result) {
         return result.hasTargets();
     }
 
-    public List<PhotonTrackedTarget> getTargets(PhotonPipelineResult result){
+    public List<PhotonTrackedTarget> getTargets(PhotonPipelineResult result) {
         List<PhotonTrackedTarget> targets = result.getTargets();
         return targets;
     }
 
-    public double getYaw(PhotonCamera camera){
-        return camera.getLatestResult().getBestTarget().getYaw();
-    }
-
-    public Transform3d getTransform(PhotonCamera camera){
+    public Transform3d getTransform(PhotonCamera camera) {
         PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
         return target.getBestCameraToTarget();
     }
 
-    public PhotonTrackedTarget getAprilTagByID(List<PhotonTrackedTarget> targets, int ID){
-        for(PhotonTrackedTarget t: targets){
-            if(t.getFiducialId() == ID){
+    public PhotonTrackedTarget getAprilTagByID(List<PhotonTrackedTarget> targets, int ID) {
+        for (PhotonTrackedTarget t : targets) {
+            if (t.getFiducialId() == ID) {
                 return t;
             }
         }
         return null;
     }
 
-    public Transform3d getrightAprilTransform3d(){
-        return getTransform(rightCamera);
-    }
+    public void centerAprilTag(double aprilTagOffset) {
 
-    public void centerAprilTag(){
-        if(targetTransform != null){
-            System.out.println("april tag offset: " + aprilTagOffset);
+        // right camera stuff
+        var rightResult = rightCamera.getLatestResult();
+        // checking for targets in view
+        if (rightResult.hasTargets()) {
+            // checks if a certain target id is seen
+            rightTarget = getAprilTagByID(rightResult.getTargets(), 13);
+
+            // setting boolean if we see a target and the transform of the target
+            if (rightTarget != null) {
+                rightTargetIDValid = true;
+                rightAprilTransform3d = rightTarget.getBestCameraToTarget();
+            } else {
+                rightTargetIDValid = false;
+                rightAprilTransform3d = null;
+            }
+        } else {
+            rightTargetIDValid = false;
+        }
+
+        // left camera stuff
+        var leftResult = leftCamera.getLatestResult();
+        // checking for targets in view
+        if (leftResult.hasTargets()) {
+            // checks if a certain target id is seen
+            leftTarget = getAprilTagByID(leftResult.getTargets(), 13);
+
+            // setting boolean if we see a target and the transform of the target
+            if (leftTarget != null) {
+                leftTargetIDValid = true;
+                leftAprilTransform3d = leftTarget.getBestCameraToTarget();
+            } else {
+                leftTargetIDValid = false;
+                leftAprilTransform3d = null;
+            }
+        } else {
+            leftTargetIDValid = false;
+        }
+
+        // if both cameras have a target then it checks pose ambiguity
+        if (rightTargetIDValid && leftTargetIDValid) {
+            // check pose ambiguity
+            double leftPoseAmbiguity = leftTarget.getPoseAmbiguity();
+            double rightPoseAmbiguity = rightTarget.getPoseAmbiguity();
+
+            // lower pose ambiguity means more certain
+            if (leftPoseAmbiguity >= rightPoseAmbiguity) {
+                targetTransform = rightAprilTransform3d;
+                cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset;
+            } else if (leftPoseAmbiguity < rightPoseAmbiguity) {
+                targetTransform = leftAprilTransform3d;
+                cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset;
+            }
+
+        }
+
+        // setting variables n stuff
+        // if we see a target with the right camera then assign offsets and transform
+        // using right camera
+        else if (rightTargetIDValid) {
+            targetTransform = rightAprilTransform3d;
+            cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset;
+        }
+
+        // if we see a target with the left camera then assign offsets and transform
+        // using left camera
+        else if (leftTargetIDValid) {
+            targetTransform = leftAprilTransform3d;
+            cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset;
+        }
+
+        // settting stuff to null
+        else {
+            targetTransform = null;
+        }
+
+
+
+
+
+
+
+        // checking if a camera sees a target
+        if (targetTransform != null) {
             double targetAngle = Units.radiansToDegrees(targetTransform.getRotation().getZ());
-
             double positiveAngle;
+            // determining the sign of the angle of the target
             positiveAngle = Math.signum(targetAngle);
 
+            // variables that will be applied to the drive substystem
             xSpeed = 0;
-            
-            rotation = ((180 - Math.abs(targetAngle))*positiveAngle);
-
-
+            rotation = ((180 - Math.abs(targetAngle)) * positiveAngle);
             distance = targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK;
+            calculatedRotation = ((180 - Math.abs(targetAngle)) * positiveAngle);
 
-            
-            calculatedRotation = ((180 - Math.abs(targetAngle))*positiveAngle);
-
-
-            if(!inRotTolerance){
-                rotation = MathUtil.clamp(Math.abs(calculatedRotation), 2, 50)*positiveAngle;
+            // calculation rotation
+            if (!inRotTolerance) {
+                rotation = MathUtil.clamp(Math.abs(calculatedRotation), 2, 50) * positiveAngle;
                 System.out.println("rotation speed: " + rotation);
-            }
-            else{
+            } else {
                 rotation = 0;
             }
 
-            if(Math.abs(calculatedRotation) > 6){
+            // rotation deadband
+            if (Math.abs(calculatedRotation) > 6) {
                 inRotTolerance = false;
             }
-            if(Math.abs(calculatedRotation) < 3){
+            // rotation tolerance
+            if (Math.abs(calculatedRotation) < 3) {
                 inRotTolerance = true;
             }
-            
 
-            if(!inLatTolerance && inRotTolerance){
-                System.out.println("in rotation tol, changing ySpeed");
-                // ySpeed = Math.signum(targetTransform.getY()+cameraOffset/*-.7239*/)*MathUtil.clamp(Math.abs(targetTransform.getY()+cameraOffset/*-.7239*/), 0.2, 1);
-                 ySpeed = Math.signum(targetTransform.getY()+cameraOffset/*-.7239*/)*MathUtil.clamp((Math.abs(targetTransform.getY()+cameraOffset)/*-.7239*/), 0.2, 1);
-                //  System.out.println("signum: " + Math.signum(targetTransform.getY()));
-                //  System.out.println("abs + offset: " +  (Math.abs(targetTransform.getY())+cameraOffset));
-                //  System.out.println("clamp: " + MathUtil.clamp((Math.abs(targetTransform.getY())+cameraOffset/*-.7239*/), 0.2, 1));
-                //  System.out.println("yspeed: " + ySpeed);
-            }
-            else if(inLatTolerance && !inRotTolerance){
+            // if rotation is right then correct for lateral
+            if (!inLatTolerance && inRotTolerance) {
+                double ceiling = 0.5;
+                if(aprilTagOffset != 0){
+                    ceiling = 0.4;
+                }
+                ySpeed = Math.signum(targetTransform.getY() + cameraOffset/*-.7239*/)
+                        * MathUtil.clamp((Math.abs(targetTransform.getY() + cameraOffset)/*-.7239*/), 0.2, ceiling);
+            } else if (inLatTolerance && !inRotTolerance) {
                 ySpeed = 0;
-                System.out.println("in lat tolerance");
-            }
-            else{
+            } else {
                 ySpeed = 0;
-                System.out.println("in no tolerance, or all tolerances");
             }
-            System.out.println("target and camera offset: " + (targetTransform.getY() + cameraOffset));
-            if(targetTransform.getY() + cameraOffset < -0.1 || targetTransform.getY() + cameraOffset > 0.1){
+
+            // lateral deadband
+            if (targetTransform.getY() + cameraOffset < -0.1 || targetTransform.getY() + cameraOffset > 0.1) {
                 inLatTolerance = false;
-                System.out.println("not in tolerance: " + (targetTransform.getY() + cameraOffset));
             }
-            if(targetTransform.getY() + cameraOffset > -0.05 && targetTransform.getY() + cameraOffset < 0.05){
+            // lateral tolerance
+            if (targetTransform.getY() + cameraOffset > -0.05 && targetTransform.getY() + cameraOffset < 0.05) {
                 inLatTolerance = true;
-                System.out.println("in tolerance: " + (targetTransform.getY() + cameraOffset));
             }
 
-            
-
-            if(inRotTolerance && inLatTolerance){
-                centered = true;
-                
-            }
-            else{
-                centered = false;
-            }
-            
-            
-            if(targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= 0.6){
+            // forward movement
+            if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= 0.6) {
                 xSpeed = 0;
-            }
-            else{
-                xSpeed = Math.signum(distance)*MathUtil.clamp(Math.abs(distance), 0.2, 1);
+            } else {
+                xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), 0.2, 1);
             }
 
-            System.out.println("Raw data Y: " + targetTransform.getY());
-            System.out.println("y speed: " + ySpeed);
-            m_driveSubsystem.drive(xSpeed, (ySpeed)*2*Constants.VISION_LATERAL_SCALING, rotation*0.1*Constants.VISION_ROTATION_SCALING, false);
+            // applying things to the drive assigned above
+            m_driveSubsystem.drive(xSpeed, (ySpeed) * 2 * Constants.VISION_LATERAL_SCALING,
+                    rotation * 0.1 * Constants.VISION_ROTATION_SCALING, false);
         }
 
-        else{
+        else {
+            // if we have not target rotate in place
             m_driveSubsystem.drive(0, 0, 0.5, false);
         }
     }
 
     @Override
-    public void periodic(){
-
-        var rightResult = rightCamera.getLatestResult();
-        if(rightResult.hasTargets()){
-            rightTarget = getAprilTagByID(rightResult.getTargets(), 13);
-            
-            if(rightTarget != null){
-                rightTargetIDValid = true;
-                rightAprilTransform3d = rightTarget.getBestCameraToTarget();
-            }
-            else{
-                rightTargetIDValid = false;
-                rightAprilTransform3d = null;
-            }
-        }
-        else{
-            rightTargetIDValid = false;
-        }
-        var leftResult = leftCamera.getLatestResult();
-        if(leftResult.hasTargets()){
-            leftTarget = getAprilTagByID(leftResult.getTargets(), 13);
-            
-            if(leftTarget != null){
-                leftTargetIDValid = true;
-                leftAprilTransform3d = leftTarget.getBestCameraToTarget();
-            }
-            else{
-                leftTargetIDValid = false;
-                leftAprilTransform3d = null;
-            }
-        }
-        else{
-            leftTargetIDValid = false;
-        }
-
-        if(rightTargetIDValid && leftTargetIDValid){
-            //check pose ambiguity
-            double leftPoseAmbiguity = leftTarget.getPoseAmbiguity();
-            double rightPoseAmbiguity = rightTarget.getPoseAmbiguity();
-            if (leftPoseAmbiguity>=rightPoseAmbiguity)
-                {
-                    targetTransform = rightAprilTransform3d;
-                    cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT + aprilTagOffset;
-                }
-            else if (leftPoseAmbiguity<rightPoseAmbiguity)
-                {
-                    targetTransform = leftAprilTransform3d;
-                    cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT + aprilTagOffset;
-                }
-            
-            System.out.println("seeing: both");
-        }
-        else if(rightTargetIDValid){
-            targetTransform = rightAprilTransform3d;
-            cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT + aprilTagOffset;
-            // System.out.println("seeing: right");
-        }
-        else if(leftTargetIDValid){
-            targetTransform = leftAprilTransform3d;
-            // System.out.println("seeing: left");
-            cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT + aprilTagOffset;
-        }
-        else{
-            targetTransform = null;
-            // System.out.println("seeing: none");
-        }
+    public void periodic() {
+        
     }
 }

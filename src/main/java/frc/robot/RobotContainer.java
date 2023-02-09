@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -63,8 +64,12 @@ public class RobotContainer {
   @SuppressWarnings("unused")
   private void configureBindings() {
     Trigger primaryButtonA = m_primaryController.a();
+    Trigger primaryButtonX = m_primaryController.x();
+    Trigger primaryButtonB = m_primaryController.b();
 
-    primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(), m_driveSubsystem)); 
+    primaryButtonX.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)), m_driveSubsystem)); 
+    primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem)); 
+    primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
 
   }
 
