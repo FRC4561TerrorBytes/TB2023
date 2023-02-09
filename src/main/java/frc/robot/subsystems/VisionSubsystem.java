@@ -47,6 +47,8 @@ public class VisionSubsystem extends SubsystemBase {
     boolean anyTargetValid;
     double cameraOffset;
 
+    double aprilTagOffset = -Units.inchesToMeters(28);
+
     public VisionSubsystem(DriveSubsystem driveSubsystem){
         m_driveSubsystem = driveSubsystem;
     }
@@ -88,6 +90,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void centerAprilTag(){
         if(targetTransform != null){
+            System.out.println("april tag offset: " + aprilTagOffset);
             double targetAngle = Units.radiansToDegrees(targetTransform.getRotation().getZ());
 
             double positiveAngle;
@@ -218,30 +221,29 @@ public class VisionSubsystem extends SubsystemBase {
             if (leftPoseAmbiguity>=rightPoseAmbiguity)
                 {
                     targetTransform = rightAprilTransform3d;
-                    cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT;
+                    cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT + aprilTagOffset;
                 }
             else if (leftPoseAmbiguity<rightPoseAmbiguity)
                 {
                     targetTransform = leftAprilTransform3d;
-                    cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT;
+                    cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT + aprilTagOffset;
                 }
             
             System.out.println("seeing: both");
         }
         else if(rightTargetIDValid){
             targetTransform = rightAprilTransform3d;
-            cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT;
+            cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT + aprilTagOffset;
             // System.out.println("seeing: right");
         }
         else if(leftTargetIDValid){
             targetTransform = leftAprilTransform3d;
             // System.out.println("seeing: left");
-            cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT;
+            cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT + aprilTagOffset;
         }
         else{
             targetTransform = null;
             // System.out.println("seeing: none");
         }
-        
     }
 }
