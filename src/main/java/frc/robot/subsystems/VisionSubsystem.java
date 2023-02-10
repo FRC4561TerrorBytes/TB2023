@@ -80,7 +80,8 @@ public class VisionSubsystem extends SubsystemBase {
     public PhotonTrackedTarget getClosestTarget(PhotonCamera camera){
         double closest = 100;
         PhotonTrackedTarget target = null;
-        for(PhotonTrackedTarget i:getTargets(getResult(camera))){
+        List<PhotonTrackedTarget> targetList = getTargets(getResult(camera));
+        for(PhotonTrackedTarget i : targetList){
             double value = i.getBestCameraToTarget().getX();
             if(value < closest){
                 closest = value;
