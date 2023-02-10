@@ -116,6 +116,7 @@ public final class Constants {
     public static final double VISION_LATERAL_SCALING = 1;
 
     public static final String tylerIsAwesome = "Tables and Chairs are the same";
+    public static final boolean tableIsChair = true;
 
     public static final SparkPIDConfig TURN_MOTOR_CONFIG = new SparkPIDConfig(
             false,

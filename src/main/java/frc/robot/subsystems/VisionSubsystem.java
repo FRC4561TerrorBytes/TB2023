@@ -77,6 +77,19 @@ public class VisionSubsystem extends SubsystemBase {
         return null;
     }
 
+    public PhotonTrackedTarget getClosestTarget(PhotonCamera camera){
+        double closest = 100;
+        PhotonTrackedTarget target = null;
+        for(PhotonTrackedTarget i:getTargets(getResult(camera))){
+            double value = i.getBestCameraToTarget().getX();
+            if(value < closest){
+                closest = value;
+                target = i;
+            }
+        }
+        return target;
+    }
+
     public void centerAprilTag(double aprilTagOffset) {
 
         // right camera stuff
@@ -84,7 +97,7 @@ public class VisionSubsystem extends SubsystemBase {
         // checking for targets in view
         if (rightResult.hasTargets()) {
             // checks if a certain target id is seen
-            rightTarget = getAprilTagByID(rightResult.getTargets(), 13);
+            rightTarget = getAprilTagByID(rightResult.getTargets(), getClosestTarget(rightCamera).getFiducialId());
 
             // setting boolean if we see a target and the transform of the target
             if (rightTarget != null) {
@@ -103,7 +116,7 @@ public class VisionSubsystem extends SubsystemBase {
         // checking for targets in view
         if (leftResult.hasTargets()) {
             // checks if a certain target id is seen
-            leftTarget = getAprilTagByID(leftResult.getTargets(), 13);
+            leftTarget = getAprilTagByID(leftResult.getTargets(), getClosestTarget(leftCamera).getFiducialId());
 
             // setting boolean if we see a target and the transform of the target
             if (leftTarget != null) {
@@ -153,7 +166,6 @@ public class VisionSubsystem extends SubsystemBase {
         else {
             targetTransform = null;
         }
-
 
 
 
