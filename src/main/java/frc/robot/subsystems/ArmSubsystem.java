@@ -1,8 +1,13 @@
 package frc.robot.subsystems;
 
+import javax.sound.sampled.Control;
+
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
@@ -16,7 +21,7 @@ public class ArmSubsystem extends SubsystemBase {
   private CANSparkMax m_shoulderMotor = new CANSparkMax(12, MotorType.kBrushless);  
   private RelativeEncoder m_shoulderEncoder; 
   private SparkMaxPIDController m_shoulderController;
-  private CANSparkMax m_elbowMotor = new CANSparkMax(4, MotorType.kBrushless);
+  private CANSparkMax m_elbowMotor = new CANSparkMax(11, MotorType.kBrushless);
   private RelativeEncoder m_elbowEncoder;
   private SparkMaxPIDController m_elbowController;
 
@@ -62,16 +67,20 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowController.setSmartMotionMaxAccel(450.0, 0);
     m_elbowController.setSmartMotionMinOutputVelocity(0.0, 0);
     m_elbowController.setSmartMotionAllowedClosedLoopError(1.0, 0);
+    m_elbowMotor.getForwardLimitSwitch(Type.kNormallyOpen).enableLimitSwitch(false);
+    m_elbowMotor.getReverseLimitSwitch(Type.kNormallyOpen).enableLimitSwitch(false);
 
     m_shoulderMotor.restoreFactoryDefaults();
     m_shoulderController = m_shoulderMotor.getPIDController();
-    m_shoulderEncoder = m_elbowMotor.getEncoder();    
+    m_shoulderEncoder = m_shoulderMotor.getEncoder();    
     m_shoulderMotor.setIdleMode(IdleMode.kBrake);  
     m_shoulderController.setP(ArmConstants.SHOULDER_PROPORTIONAL_GAIN);
     m_shoulderController.setSmartMotionMaxVelocity(600.0, 0);
     m_shoulderController.setSmartMotionMaxAccel(450.0, 0);
     m_shoulderController.setSmartMotionMinOutputVelocity(0.0, 0);
     m_shoulderController.setSmartMotionAllowedClosedLoopError(1.0, 0);
+    m_shoulderMotor.getForwardLimitSwitch(Type.kNormallyOpen).enableLimitSwitch(false);
+    m_shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen).enableLimitSwitch(false);
 
     /*shoulderConfig.forwardSoftLimitEnable = true;
     shoulderConfig.forwardSoftLimitThreshold = 0;
@@ -95,13 +104,13 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void setKnownArmPlacement(KnownArmPlacement placement) {
     double desiredShoulderAngle = placement.m_shoulderAngle;
-    double desiredShoulderTicks = desiredShoulderAngle * ArmConstants.SHOULDER_TICKS_PER_DEGREE + ArmConstants.SHOULDER_ONLY_HORIZONTAL_TICKS;
+    double desiredShoulderTicks = desiredShoulderAngle * ArmConstants.SHOULDER_ROTATIONS_PER_DEGREE + ArmConstants.SHOULDER_HORIZONTAL_ROTATIONS;
     double desiredElbowAngle = placement.m_elbowAngle;
     if (!m_prototypeArm){
       desiredElbowAngle = desiredElbowAngle - (placement.m_shoulderAngle - 90.0);
     }
-    double desiredElbowTicks = desiredElbowAngle * ArmConstants.ELBOW_TICKS_PER_DEGREE
-        + ArmConstants.ELBOW_ONLY_HORIZONTAL_TICKS;
+    double desiredElbowTicks = desiredElbowAngle * ArmConstants.ELBOW_ROTATIONS_PER_DEGREE
+        + ArmConstants.ELBOW_HORIZONTAL_ROTATIONS;
     setShoulderPosition(desiredShoulderTicks);    
     setElbowPosition(desiredElbowTicks);
   }
@@ -130,23 +139,23 @@ public class ArmSubsystem extends SubsystemBase {
    * {@link} {@link #setElbowPosition(double)}}.
    */
   void proceedToElbowPosition() {
-    /*double currentPos = m_elbowMotor.getSelectedSensorPosition();
-    double degrees = (currentPos - ArmConstants.ELBOW_ONLY_HORIZONTAL_TICKS) / ArmConstants.ELBOW_TICKS_PER_DEGREE;
+    double currentPos = m_elbowEncoder.getPosition();
+    double degrees = (currentPos - ArmConstants.ELBOW_HORIZONTAL_ROTATIONS) / ArmConstants.ELBOW_ROTATIONS_PER_DEGREE;
     double radians = java.lang.Math.toRadians(degrees);
     double cosineScalar = java.lang.Math.cos(radians);
-    m_elbowMotor.set(
-        ControlMode.MotionMagic, m_targetElbowPosition,
-        DemandType.ArbitraryFeedForward, ArmConstants.ELBOW_MAX_VOLTAGE_FF * cosineScalar);*/
+    m_elbowController.setReference(
+      m_targetElbowPosition, ControlType.kSmartMotion, 0, 
+      ArmConstants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
   }
 
   void proceedToShoulderPosition() {
-    /*double currentPos = m_shoulderMotor.getSelectedSensorPosition();
-    double degrees = (currentPos - ArmConstants.SHOULDER_ONLY_HORIZONTAL_TICKS) / ArmConstants.SHOULDER_TICKS_PER_DEGREE;
+    double currentPos = m_shoulderEncoder.getPosition();
+    double degrees = (currentPos - ArmConstants.SHOULDER_HORIZONTAL_ROTATIONS) / ArmConstants.SHOULDER_ROTATIONS_PER_DEGREE;
     double radians = java.lang.Math.toRadians(degrees);
     double cosineScalar = java.lang.Math.cos(radians);
-    m_shoulderMotor.set(
-        ControlMode.MotionMagic, m_targetShoulderPosition,
-        DemandType.ArbitraryFeedForward, ArmConstants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar);*/
+    m_elbowController.setReference(
+      m_targetShoulderPosition, ControlType.kSmartMotion, 0, 
+      ArmConstants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
   }
 
   @Override
