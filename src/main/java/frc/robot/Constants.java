@@ -119,23 +119,34 @@ public final class Constants {
                         TURN_MOTOR_CONVERSION_FACTOR);
 
         public static final class ArmConstants {
-                /** When the shoulder is at -90, this gets the forearm to 0 degrees */
-                public static final double ELBOW_HORIZONTAL_ROTATIONS = -30.35;
-                public static final double ELBOW_ROTATIONS_PER_DEGREE = ELBOW_HORIZONTAL_ROTATIONS / 90.0;
-                public static final double ELBOW_MAX_VOLTAGE_FF = -0.06;
+                public static final double ELBOW_ROTATIONS_PER_DEGREE = 0.3;
+                public static final double ELBOW_HORIZONTAL_ROTATIONS = -(ELBOW_ROTATIONS_PER_DEGREE * 85.0);
+                public static final double ELBOW_MAX_VOLTAGE_FF = -0.0;
                 public static final double ELBOW_PROPORTIONAL_GAIN = 0.001;
-                public static final double ELBOW_PEAK_ACCELERATION = -ELBOW_ROTATIONS_PER_DEGREE * 2; // (ticks per 100 ms) per 100ms
-                public static final double ELBOW_CRUISE_VELOCITY_RPM = -ELBOW_ROTATIONS_PER_DEGREE * 2; // ticks per 100 ms
-                public static final double ELBOW_TOLERANCE = -ELBOW_ROTATIONS_PER_DEGREE / 2;
+                public static final double ELBOW_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
+                /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
+                public static final double ELBOW_CRUISE_VELOCITY_RPM = ELBOW_CRUISE_VELOCITY_DEG_PER_SEC * 60.0
+                                * ELBOW_ROTATIONS_PER_DEGREE;
+                public static final double ELBOW_SECONDS_TO_CRUISE_RPM = 1.25;
+                /** RPM/sec */
+                public static final double ELBOW_PEAK_ACCELERATION = ELBOW_CRUISE_VELOCITY_RPM
+                                / ELBOW_SECONDS_TO_CRUISE_RPM;
+                public static final double ELBOW_TOLERANCE = ELBOW_ROTATIONS_PER_DEGREE / 2.0;
 
-                public static final double SHOULDER_HORIZONTAL_ROTATIONS = -100000;
-                public static final double SHOULDER_ROTATIONS_PER_DEGREE = SHOULDER_HORIZONTAL_ROTATIONS / 90.0;
+                public static final double SHOULDER_ROTATIONS_PER_DEGREE = 7.0 / 15.0;
+                public static final double SHOULDER_HORIZONTAL_ROTATIONS = -(SHOULDER_ROTATIONS_PER_DEGREE * 90.0);
                 // needs fixing; moves to fast and with to much force.
-                public static final double SHOULDER_MAX_VOLTAGE_FF = 0.1;
-                public static final double SHOULDER_PROPORTIONAL_GAIN = 0.0001;
-                public static final double SHOULDER_PEAK_ACCELERATION = -SHOULDER_ROTATIONS_PER_DEGREE * 2; // (ticks per 100 ms) per 100ms
-                public static final double SHOULDER_CRUISE_VELOCITY_RPM = -SHOULDER_ROTATIONS_PER_DEGREE * 2; // ticks per 100 ms
-                public static final double SHOULDER_TOLERANCE = -SHOULDER_ROTATIONS_PER_DEGREE / 2;
+                public static final double SHOULDER_MAX_VOLTAGE_FF = -0.0;
+                public static final double SHOULDER_PROPORTIONAL_GAIN = 0.001;
+                public static final double SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
+                /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
+                public static final double SHOULDER_CRUISE_VELOCITY_RPM = SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC * 60.0
+                                * SHOULDER_ROTATIONS_PER_DEGREE;
+                public static final double SHOULDER_SECONDS_TO_CRUISE_RPM = 1.25;
+                /** RPM/sec */
+                public static final double SHOULDER_PEAK_ACCELERATION = SHOULDER_CRUISE_VELOCITY_RPM
+                                / SHOULDER_SECONDS_TO_CRUISE_RPM;
+                public static final double SHOULDER_TOLERANCE = SHOULDER_ROTATIONS_PER_DEGREE / 2.0;
 
                 public static final double ARM_MOTORS_NEUTRAL_DEADBAND = 0.0001;
                 public static final double ARM_MOTORS_INTERGRAL_ZONE = 10000.0;

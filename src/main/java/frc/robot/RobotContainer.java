@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualArmCommand;
@@ -26,7 +27,7 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  //private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
@@ -35,12 +36,12 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
-        modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-        true),
-        m_driveSubsystem));
+    //m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
+    //    modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+    //    modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+    //    modifyAxis(-m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+    //    true),
+    //    m_driveSubsystem));
     m_armSubsystem.setDefaultCommand(
         new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
     // Configure the trigger bindings
@@ -51,39 +52,37 @@ public class RobotContainer {
    * Use this method to define your trigger->command mappings. Triggers can be
    * created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary
-   * predicate, or via the named factories in {@link
+   * an arbitrary predicate, or via the named factories in {@link
    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link
-   * CommandXboxController
+   * {@link CommandXboxController
    * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
    * PS4} controllers or
    * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
-   * a-set encoder to 0
-   * back-toggle manual arm
-   * x- stowed arm
-   * y-home arm
    */
   private void configureBindings() {
-    m_secondaryController.a().whileTrue(new RunCommand(() -> m_armSubsystem.resetPosition()));
+    m_secondaryController.start().onTrue(new InstantCommand(() -> m_armSubsystem.resetPosition()));
     m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
         m_armSubsystem,
         () -> m_secondaryController.getLeftY(),
         () -> m_secondaryController.getRightY()));
-    m_secondaryController.povRight().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HORT)));
-    m_secondaryController.x().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_secondaryController.povDownRight().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_HALFWAY)));
-    m_secondaryController.povUpRight().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_ELBOW_PAST_HORT_BY_HALF)));
-    m_secondaryController.povLeft().onTrue(
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.TEMP_REACHED_OUT)));
+    m_secondaryController.povUp().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_secondaryController.povDown().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STARTING)));
+    m_secondaryController.leftBumper().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
+    m_secondaryController.leftTrigger().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
+    m_secondaryController.a().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
+    m_secondaryController.b().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
     m_secondaryController.y().onTrue(
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.HOME)));
-    }
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
+            .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
+            .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

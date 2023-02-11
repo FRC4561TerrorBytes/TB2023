@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
 
@@ -40,9 +41,11 @@ public class ManualArmCommand extends CommandBase {
    */
   @Override
   public void execute() {
-    m_armSubsystem.setArmSpeed(
-        Math.pow(m_shoulderSpeedSupplier.getAsDouble(), 3),
-        Math.pow(m_elbowSpeedSupplier.getAsDouble(), 3));
+    double shoulderSpeed = Math.pow(m_shoulderSpeedSupplier.getAsDouble(), 3.0);
+    shoulderSpeed = MathUtil.clamp(shoulderSpeed, -0.25, 0.25);
+    double elbowSpeed = Math.pow(m_elbowSpeedSupplier.getAsDouble(), 3.0);
+    elbowSpeed = MathUtil.clamp(elbowSpeed, -0.25, 0.25);
+    m_armSubsystem.setArmSpeed(shoulderSpeed, elbowSpeed);
   }
 
   /**
@@ -51,5 +54,6 @@ public class ManualArmCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_armSubsystem.setArmSpeed(0.0, 0.0);
+    m_armSubsystem.setTargetsToCurrents();
   }
 }
