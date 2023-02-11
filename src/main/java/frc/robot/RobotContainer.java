@@ -78,9 +78,9 @@ public class RobotContainer {
     primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
 
     //driver nudges
-    primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, -0.4, 0, false), m_driveSubsystem))
+    primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
                      .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
-    primaryRightBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
+    primaryRightBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, -0.4, 0, false), m_driveSubsystem))
                       .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     primaryLeftTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, -1, false), m_driveSubsystem))
