@@ -19,7 +19,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // change nickname later
     PhotonCamera rightCamera = new PhotonCamera("Table");
-    PhotonCamera leftCamera = new PhotonCamera("Chair");
+    PhotonCamera leftCamera = new PhotonCamera("panav");
     // PhotonCamera rightCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
     boolean inRotTolerance = false;
@@ -231,7 +231,7 @@ public class VisionSubsystem extends SubsystemBase {
 
             // applying things to the drive assigned above
             m_driveSubsystem.drive(xSpeed, (ySpeed) * Constants.VISION_LATERAL_SCALING,
-                    rotation * Constants.VISION_ROTATION_SCALING, false);
+                    -rotation * Constants.VISION_ROTATION_SCALING, false);
         }
 
         else {

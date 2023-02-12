@@ -8,6 +8,7 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -106,10 +107,10 @@ public final class Constants {
                         / CTRE_TALONFX_ENCODER_TICKS_PER_ROTATION;
 
     // fyi: offset right means lateral offset from center
-    public static final double LEFT_CAMERA_OFFSET_RIGHT =  0.127;
-    public static final double RIGHT_CAMERA_OFFSET_RIGHT = -0.0889;
-    public static final double LEFT_CAMERA_OFFSET_BACK = 0.69;
-    public static final double RIGHT_CAMERA_OFFSET_BACK = 0.56;
+    public static final double LEFT_CAMERA_OFFSET_RIGHT =  Units.inchesToMeters(12.5);
+    public static final double RIGHT_CAMERA_OFFSET_RIGHT = -Units.inchesToMeters(12.5);
+    public static final double LEFT_CAMERA_OFFSET_BACK = Units.inchesToMeters(22.0);
+    public static final double RIGHT_CAMERA_OFFSET_BACK = Units.inchesToMeters(22.0);
     public static final double VISION_ROTATION_SCALING = 0.1;
     public static final double VISION_LATERAL_SCALING = 2;
 
@@ -123,12 +124,9 @@ public final class Constants {
     public static final double VISION_LATERAL_DEADBAND = 0.1;
     public static final double VISION_LATERAL_TOLERANCE = 0.05;
 
-    public static final double VISION_END_DISTANCE = 0.6;
+    public static final double VISION_END_DISTANCE = 0.45;
     public static final double VISION_FORWARD_FLOOR_CLAMP = 0.2;
     public static final double VISION_FORWARD_CEILING_CLAMP = 1;
-
-    public static final String tylerIsAwesome = "Tables and Chairs are the same";
-    public static final boolean tableIsChair = true;
 
     public static final SparkPIDConfig TURN_MOTOR_CONFIG = new SparkPIDConfig(
             false,
