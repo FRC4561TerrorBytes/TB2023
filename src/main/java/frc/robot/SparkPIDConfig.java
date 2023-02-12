@@ -50,9 +50,7 @@ public class SparkPIDConfig {
    * <p>
    * USE FOR POSITION PID ONLY!
    * 
-   * @param sensorPhase           set sensor phase of encoder
    * @param invertMotor           invert motor or not
-   * @param ticksPerRotation      number of ticks in one encoder revolution
    * @param maxRPM                max RPM for this motor
    * @param kP                    proportional gain
    * @param kI                    integral gain
