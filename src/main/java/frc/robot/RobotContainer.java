@@ -4,17 +4,24 @@
 
 package frc.robot;
 
+import java.time.Instant;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -29,6 +36,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
+
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
 
@@ -39,7 +48,7 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
         modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
         modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getRightX())* Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        modifyAxis(m_primaryController.getRightX())* Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         false),
         m_driveSubsystem));
  
@@ -61,6 +70,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
+  @SuppressWarnings("unused")
   private void configureBindings() {
     m_secondaryController.start().onTrue(new InstantCommand(() -> m_armSubsystem.resetPosition()));
     m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
@@ -83,6 +93,29 @@ public class RobotContainer {
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
             .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
             .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
+    Trigger primaryButtonA = m_primaryController.a();
+    Trigger primaryButtonX = m_primaryController.x();
+    Trigger primaryButtonB = m_primaryController.b();
+    Trigger primaryLeftBumper = m_primaryController.leftBumper();
+    Trigger primaryLeftTrigger = m_primaryController.leftTrigger();
+    Trigger primaryRightBumper = m_primaryController.rightBumper();
+    Trigger primaryRightTrigger = m_primaryController.rightTrigger();
+
+    primaryButtonX.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)), m_driveSubsystem)); 
+    primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem)); 
+    primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
+
+    //driver nudges
+    primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
+                     .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+    primaryRightBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, -0.4, 0, false), m_driveSubsystem))
+                      .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+
+    primaryLeftTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, -1, false), m_driveSubsystem))
+                      .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+    primaryRightTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, 1, false), m_driveSubsystem))
+                       .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+
   }
 
   /**
