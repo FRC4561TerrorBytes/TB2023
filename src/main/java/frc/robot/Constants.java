@@ -144,10 +144,9 @@ public final class Constants {
             TURN_MOTOR_CONVERSION_FACTOR);
 
                 public static final int ELBOW_MOTOR = 11;
-                public static final int SHOULDER_MOTOR = 12;
+                public static final int SHOULDER_MOTOR = 10;
 
-                public static final double ELBOW_ROTATIONS_PER_DEGREE = 0.3;
-                public static final double ELBOW_HORIZONTAL_ROTATIONS = -(ELBOW_ROTATIONS_PER_DEGREE * 85.0);
+                public static final double ELBOW_ROTATIONS_PER_DEGREE = 5.0 / 36.0;
                 public static final double ELBOW_MAX_VOLTAGE_FF = -0.0;
                 public static final double ELBOW_PROPORTIONAL_GAIN = 0.001;
                 public static final double ELBOW_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
@@ -160,8 +159,7 @@ public final class Constants {
                                 / ELBOW_SECONDS_TO_CRUISE_RPM;
                 public static final double ELBOW_TOLERANCE = ELBOW_ROTATIONS_PER_DEGREE / 2.0;
 
-                public static final double SHOULDER_ROTATIONS_PER_DEGREE = 7.0 / 15.0;
-                public static final double SHOULDER_HORIZONTAL_ROTATIONS = -(SHOULDER_ROTATIONS_PER_DEGREE * 90.0);
+                public static final double SHOULDER_ROTATIONS_PER_DEGREE = 25.0 / 27.0;
                 // needs fixing; moves to fast and with to much force.
                 public static final double SHOULDER_MAX_VOLTAGE_FF = -0.0;
                 public static final double SHOULDER_PROPORTIONAL_GAIN = 0.001;
@@ -178,4 +176,7 @@ public final class Constants {
                 public static final double ARM_MOTORS_NEUTRAL_DEADBAND = 0.0001;
                 public static final double ARM_MOTORS_INTERGRAL_ZONE = 10000.0;
                 public static final double ARM_MOTORS_CLOSED_LOOP_PEAK_OUTPUT = 0.5;
+
+                public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 130.0;
+                public static final double ELBOW_ZERO_OFFSET = /* measure this */ -80.0;
 }

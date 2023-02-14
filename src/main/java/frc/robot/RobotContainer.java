@@ -4,20 +4,16 @@
 
 package frc.robot;
 
-import java.time.Instant;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualArmCommand;
+import frc.robot.commands.ResetArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -37,9 +33,9 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
-
+  
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
-  // private final CommandXboxController m_secondaryController = new CommandXboxController(1);
+  private final CommandXboxController m_secondaryController = new CommandXboxController(1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -54,6 +50,7 @@ public class RobotContainer {
  
     // m_armSubsystem.setDefaultCommand(
     //     new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
+    m_armSubsystem.setDefaultCommand(new RunCommand(() -> m_armSubsystem.setArmSpeed(m_secondaryController.getLeftY(), m_secondaryController.getRightY()), m_armSubsystem));
     // Configure the trigger bindings
     configureBindings();
   }
@@ -75,6 +72,7 @@ public class RobotContainer {
     //Primary Controller Vision Bindings
     Trigger primaryButtonA = m_primaryController.a();
     Trigger primaryButtonX = m_primaryController.x();
+    Trigger primaryButtonY = m_primaryController.y();
     Trigger primaryButtonB = m_primaryController.b();
     Trigger primaryLeftBumper = m_primaryController.leftBumper();
     Trigger primaryLeftTrigger = m_primaryController.leftTrigger();
@@ -97,27 +95,28 @@ public class RobotContainer {
                        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     //Secondary Controller Arm Bindings
-    // m_secondaryController.start().onTrue(new InstantCommand(() -> m_armSubsystem.resetPosition()));
-    // m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
-    //     m_armSubsystem,
-    //     () -> m_secondaryController.getLeftY(),
-    //     () -> m_secondaryController.getRightY()));
-    // m_secondaryController.povUp().onTrue(
-    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    // m_secondaryController.povDown().onTrue(
-    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STARTING)));
-    // m_secondaryController.leftBumper().onTrue(
-    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
-    // m_secondaryController.leftTrigger().onTrue(
-    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
-    // m_secondaryController.a().onTrue(
-    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    // m_secondaryController.b().onTrue(
-    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
-    // m_secondaryController.y().onTrue(
-    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
-    //         .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
-    //         .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
+    m_secondaryController.start().onTrue(new ResetArmCommand(m_armSubsystem));
+    m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
+        m_armSubsystem,
+        () -> m_secondaryController.getLeftY(),
+        () -> m_secondaryController.getRightY()));
+
+    m_secondaryController.povUp().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_secondaryController.povDown().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STARTING)));
+    m_secondaryController.leftBumper().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
+    m_secondaryController.leftTrigger().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
+    m_secondaryController.a().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
+    m_secondaryController.b().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
+    m_secondaryController.y().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
+            .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
+            .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
   }
 
   /**

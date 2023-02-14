@@ -4,7 +4,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
@@ -18,15 +20,16 @@ public class ArmSubsystem extends SubsystemBase {
   private CANSparkMax m_shoulderMotor = new CANSparkMax(Constants.SHOULDER_MOTOR, MotorType.kBrushless);  
   private RelativeEncoder m_shoulderEncoder; 
   private SparkMaxPIDController m_shoulderController;
+  private SparkMaxLimitSwitch m_shoulderForwardLimitSwitch;
+  private SparkMaxLimitSwitch m_shoulderReverseLimitSwitch;
   private CANSparkMax m_elbowMotor = new CANSparkMax(Constants.ELBOW_MOTOR, MotorType.kBrushless);
   private RelativeEncoder m_elbowEncoder;
   private SparkMaxPIDController m_elbowController;
+  private SparkMaxLimitSwitch m_elbowReverseLimitSwitch;
 
   private KnownArmPlacement m_lastPlacement = null;
   private double m_targetShoulderPosition = 0.0;
   private double m_targetElbowPosition = 0.0;
-
-  private boolean m_prototypeArm = true;
 
   /**
    * An enumeration of known arm placements, e.g. stowed or score cone high). The
@@ -64,7 +67,10 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowController.setSmartMotionMaxAccel(Constants.ELBOW_PEAK_ACCELERATION, 0);
     m_elbowController.setSmartMotionMinOutputVelocity(0.0, 0);
     m_elbowController.setSmartMotionAllowedClosedLoopError(Constants.ELBOW_TOLERANCE, 0);
-
+    m_elbowReverseLimitSwitch = m_elbowMotor.getReverseLimitSwitch(Type.kNormallyOpen);
+    m_elbowReverseLimitSwitch.enableLimitSwitch(true);
+    m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
+    
     m_shoulderMotor.restoreFactoryDefaults();
     m_shoulderController = m_shoulderMotor.getPIDController();
     m_shoulderEncoder = m_shoulderMotor.getEncoder();    
@@ -74,6 +80,11 @@ public class ArmSubsystem extends SubsystemBase {
     m_shoulderController.setSmartMotionMaxAccel(Constants.SHOULDER_PEAK_ACCELERATION, 0);
     m_shoulderController.setSmartMotionMinOutputVelocity(0.0, 0);
     m_shoulderController.setSmartMotionAllowedClosedLoopError(Constants.SHOULDER_TOLERANCE, 0);
+    m_shoulderForwardLimitSwitch = m_shoulderMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+    m_shoulderReverseLimitSwitch = m_shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen);
+    m_shoulderForwardLimitSwitch.enableLimitSwitch(true);
+    m_shoulderReverseLimitSwitch.enableLimitSwitch(true);
+    m_shoulderEncoder.setPositionConversionFactor(1.0 / Constants.SHOULDER_ROTATIONS_PER_DEGREE);
 
     /*shoulderConfig.forwardSoftLimitEnable = true;
     shoulderConfig.forwardSoftLimitThreshold = 0;
@@ -83,8 +94,12 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void resetPosition() {
     System.out.println("reset");
-    m_shoulderMotor.getEncoder().setPosition(0.0);
-    m_elbowMotor.getEncoder().setPosition(0.0);
+    m_shoulderMotor.getEncoder().setPosition(Constants.SHOULDER_ZERO_OFFSET);
+    m_elbowMotor.getEncoder().setPosition(Constants.ELBOW_ZERO_OFFSET);
+  }
+
+  public boolean armLimitsReached() {
+    return m_elbowReverseLimitSwitch.isPressed() && m_shoulderForwardLimitSwitch.isPressed();
   }
 
   public void setArmSpeed(double shoulderSpeed, double elbowSpeed) {
@@ -97,16 +112,9 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void setKnownArmPlacement(final KnownArmPlacement placement) {
     double desiredShoulderAngle = placement.m_shoulderAngle;
-    double desiredShoulderRotation = desiredShoulderAngle * Constants.SHOULDER_ROTATIONS_PER_DEGREE
-        + Constants.SHOULDER_HORIZONTAL_ROTATIONS;
-    double desiredElbowAngle = placement.m_elbowAngle;
-    if (!m_prototypeArm){
-      desiredElbowAngle = desiredElbowAngle - (placement.m_shoulderAngle - 90.0);
-    }
-    double desiredElbowRotation = desiredElbowAngle * -Constants.ELBOW_ROTATIONS_PER_DEGREE
-        + Constants.ELBOW_HORIZONTAL_ROTATIONS;
-    setShoulderPosition(desiredShoulderRotation);    
-    setElbowPosition(desiredElbowRotation);
+    double desiredElbowAngle = placement.m_elbowAngle - placement.m_shoulderAngle + 90;
+    setShoulderPosition(desiredShoulderAngle);    
+    setElbowPosition(desiredElbowAngle);
     m_lastPlacement = placement;
   }
 
@@ -135,9 +143,7 @@ public class ArmSubsystem extends SubsystemBase {
    */
   void proceedToElbowPosition() {
     double currentRotation = m_elbowEncoder.getPosition();
-    double degrees = (currentRotation - Constants.ELBOW_HORIZONTAL_ROTATIONS) / -Constants.ELBOW_ROTATIONS_PER_DEGREE;
-    double radians = Math.toRadians(degrees);
-    double cosineScalar = Math.cos(radians);
+    double cosineScalar = Math.cos(Math.toRadians(currentRotation));
     m_elbowController.setReference(
       m_targetElbowPosition, ControlType.kSmartMotion, 0, 
       Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
@@ -145,9 +151,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   void proceedToShoulderPosition() {
     double currentRotation = m_shoulderEncoder.getPosition();
-    double degrees = (currentRotation - Constants.SHOULDER_HORIZONTAL_ROTATIONS) / Constants.SHOULDER_ROTATIONS_PER_DEGREE;
-    double radians = Math.toRadians(degrees);
-    double cosineScalar = Math.cos(radians);
+    double cosineScalar = Math.cos(Math.toRadians(currentRotation));
     m_elbowController.setReference(
       m_targetShoulderPosition, ControlType.kSmartMotion, 0, 
       Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
