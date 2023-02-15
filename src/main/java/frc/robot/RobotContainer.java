@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import org.apache.commons.math3.analysis.function.Constant;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,6 +17,7 @@ import frc.robot.commands.ResetArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /**
@@ -34,6 +33,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
   
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
@@ -53,7 +53,7 @@ public class RobotContainer {
     // m_armSubsystem.setDefaultCommand(
     //     new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
     m_armSubsystem.setDefaultCommand(new RunCommand(() -> {
-      m_armSubsystem.setArmSpeed(m_secondaryController.getLeftY() * Constants.SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC, m_secondaryController.getRightY() * Constants.ELBOW_CRUISE_VELOCITY_DEG_PER_SEC);
+      m_armSubsystem.setArmDifferential(m_secondaryController.getLeftY() * Constants.SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC, m_secondaryController.getRightY() * Constants.ELBOW_CRUISE_VELOCITY_DEG_PER_SEC);
       m_armSubsystem.proceedToArmPosition();
     }, m_armSubsystem));
     // Configure the trigger bindings
@@ -122,7 +122,7 @@ public class RobotContainer {
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
             .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
             .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
-    m_secondaryController.x().whileTrue(new RunCommand(() -> m_armSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_armSubsystem.setIntakeSpeed(0.0)));
+    m_secondaryController.x().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
   }
 
   /**

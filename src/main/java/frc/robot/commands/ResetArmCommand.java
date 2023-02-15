@@ -27,7 +27,7 @@ public class ResetArmCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_armSubsystem.setArmSpeed(0.1, 0);
+    m_armSubsystem.setArmDifferential(0.1, 0);
     m_armSubsystem.proceedToArmPosition();
   }
 
