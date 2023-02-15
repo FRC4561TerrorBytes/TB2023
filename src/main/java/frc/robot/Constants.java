@@ -179,4 +179,9 @@ public final class Constants {
 
                 public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 130.0;
                 public static final double ELBOW_ZERO_OFFSET = /* measure this */ -80.0;
+
+                public static final int LEFT_INTAKE_MOTOR = 12;
+                public static final int RIGHT_INTAKE_MOTOR = 13;
+
+                public static final double INTAKE_SPEED = 0.1;
 }

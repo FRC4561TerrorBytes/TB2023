@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.apache.commons.math3.analysis.function.Constant;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,7 +52,10 @@ public class RobotContainer {
  
     // m_armSubsystem.setDefaultCommand(
     //     new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
-    m_armSubsystem.setDefaultCommand(new RunCommand(() -> m_armSubsystem.setArmSpeed(m_secondaryController.getLeftY(), m_secondaryController.getRightY()), m_armSubsystem));
+    m_armSubsystem.setDefaultCommand(new RunCommand(() -> {
+      m_armSubsystem.setArmSpeed(m_secondaryController.getLeftY() * Constants.SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC, m_secondaryController.getRightY() * Constants.ELBOW_CRUISE_VELOCITY_DEG_PER_SEC);
+      m_armSubsystem.proceedToArmPosition();
+    }, m_armSubsystem));
     // Configure the trigger bindings
     configureBindings();
   }
@@ -117,6 +122,7 @@ public class RobotContainer {
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
             .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
             .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
+    m_secondaryController.x().whileTrue(new RunCommand(() -> m_armSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_armSubsystem.setIntakeSpeed(0.0)));
   }
 
   /**
