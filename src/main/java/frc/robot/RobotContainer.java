@@ -122,7 +122,8 @@ public class RobotContainer {
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
             .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
             .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
-    m_secondaryController.x().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
+    m_secondaryController.leftBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
+    m_secondaryController.rightBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
   }
 
   /**
