@@ -53,7 +53,7 @@ public class RobotContainer {
     // m_armSubsystem.setDefaultCommand(
     //     new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
     m_armSubsystem.setDefaultCommand(new RunCommand(() -> {
-      m_armSubsystem.setArmDifferential(m_secondaryController.getLeftY() * Constants.SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC, m_secondaryController.getRightY() * Constants.ELBOW_CRUISE_VELOCITY_DEG_PER_SEC);
+      m_armSubsystem.setArmDifferential(-m_secondaryController.getLeftY() * Constants.SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC, -m_secondaryController.getRightY() * Constants.ELBOW_CRUISE_VELOCITY_DEG_PER_SEC);
       m_armSubsystem.proceedToArmPosition();
     }, m_armSubsystem));
     // Configure the trigger bindings
@@ -103,8 +103,8 @@ public class RobotContainer {
     m_secondaryController.start().onTrue(new ResetArmCommand(m_armSubsystem));
     m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
         m_armSubsystem,
-        () -> m_secondaryController.getLeftY(),
-        () -> m_secondaryController.getRightY()));
+        () -> -m_secondaryController.getLeftY(),
+        () -> -m_secondaryController.getRightY()));
 
     m_secondaryController.povUp().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
