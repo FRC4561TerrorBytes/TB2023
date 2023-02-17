@@ -100,7 +100,7 @@ public class RobotContainer {
                        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     //Secondary Controller Arm Bindings
-    m_secondaryController.start().onTrue(new ResetArmCommand(m_armSubsystem));
+    m_secondaryController.x().onTrue(new ResetArmCommand(m_armSubsystem));
     m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
         m_armSubsystem,
         () -> -m_secondaryController.getLeftY(),
@@ -110,9 +110,9 @@ public class RobotContainer {
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
     m_secondaryController.povDown().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STARTING)));
-    m_secondaryController.leftBumper().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
     m_secondaryController.leftTrigger().onTrue(
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
+    m_secondaryController.rightTrigger().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
     m_secondaryController.a().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));

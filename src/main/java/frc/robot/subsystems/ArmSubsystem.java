@@ -72,7 +72,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowReverseLimitSwitch.enableLimitSwitch(true);
     m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
     m_elbowMotor.setSmartCurrentLimit(60);
-    
+
     m_shoulderMotor.restoreFactoryDefaults();
     m_shoulderController = m_shoulderMotor.getPIDController();
     m_shoulderEncoder = m_shoulderMotor.getEncoder();    
@@ -90,7 +90,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_shoulderEncoder.setPositionConversionFactor(1.0 / Constants.SHOULDER_ROTATIONS_PER_DEGREE);
     m_shoulderMotor.setSmartCurrentLimit(30);
     
-    resetPosition();
+    //resetPosition();
   }
 
   public void resetPosition() {
@@ -186,5 +186,9 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shoulder current", m_shoulderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Shoulder rotation target", m_targetShoulderPosition);
     SmartDashboard.putNumber("Shoulder placement", m_lastPlacement == null ? 999 : m_lastPlacement.m_shoulderAngle);
+    /*double elbowKP = SmartDashboard.getNumber("Elbow KP", 0);
+    double shoulderKP = SmartDashboard.getNumber("Elbow KP", 0);
+    m_elbowController.setP(elbowKP);
+    m_shoulderController.setP(shoulderKP);*/
   }
 }

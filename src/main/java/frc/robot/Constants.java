@@ -148,7 +148,7 @@ public final class Constants {
 
                 public static final double ELBOW_ROTATIONS_PER_DEGREE = 5.0 / 36.0;
                 public static final double ELBOW_MAX_VOLTAGE_FF = -1.25;
-                public static final double ELBOW_PROPORTIONAL_GAIN = 0.001;
+                public static final double ELBOW_PROPORTIONAL_GAIN = 0.0015;
                 public static final double ELBOW_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
                 /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
                 public static final double ELBOW_CRUISE_VELOCITY_RPM = ELBOW_CRUISE_VELOCITY_DEG_PER_SEC * 60.0
