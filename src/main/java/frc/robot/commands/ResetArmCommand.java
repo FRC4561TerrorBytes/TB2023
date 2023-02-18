@@ -24,7 +24,7 @@ public class ResetArmCommand extends CommandBase {
   @Override
   public void initialize() {
     shoulderSpeed = -0.1;
-    elbowSpeed = -0.05;
+    elbowSpeed = 0.05;
     shoulderLimitContacts = 0;
     elbowLimitContacts = 0;
   }
