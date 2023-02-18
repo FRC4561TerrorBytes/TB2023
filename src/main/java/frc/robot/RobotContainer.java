@@ -32,11 +32,11 @@ import frc.robot.subsystems.LEDSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
-  private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
   
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
@@ -54,10 +54,10 @@ public class RobotContainer {
  
     // m_armSubsystem.setDefaultCommand(
     //     new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
-    m_armSubsystem.setDefaultCommand(new RunCommand(() -> {
-      m_armSubsystem.setArmDifferential(-m_secondaryController.getLeftY() * Constants.SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC, -m_secondaryController.getRightY() * Constants.ELBOW_CRUISE_VELOCITY_DEG_PER_SEC);
-      m_armSubsystem.proceedToArmPosition();
-    }, m_armSubsystem));
+    // m_armSubsystem.setDefaultCommand(new RunCommand(() -> {
+    //   m_armSubsystem.setArmDifferential(-m_secondaryController.getLeftY() * Constants.SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC, -m_secondaryController.getRightY() * Constants.ELBOW_CRUISE_VELOCITY_DEG_PER_SEC);
+    //   m_armSubsystem.proceedToArmPosition();
+    // }, m_armSubsystem));
     // Configure the trigger bindings
     configureBindings();
   }
@@ -81,19 +81,25 @@ public class RobotContainer {
     Trigger primaryButtonX = m_primaryController.x();
     Trigger primaryButtonY = m_primaryController.y();
     Trigger primaryButtonB = m_primaryController.b();
+    Trigger secondaryButtonA = m_secondaryController.a();
+    Trigger secondaryButtonX = m_secondaryController.x();
+    Trigger secondaryButtonY = m_secondaryController.y();
+    Trigger secondaryButtonB = m_secondaryController.b();
     Trigger primaryLeftBumper = m_primaryController.leftBumper();
     Trigger primaryLeftTrigger = m_primaryController.leftTrigger();
     Trigger primaryRightBumper = m_primaryController.rightBumper();
     Trigger primaryRightTrigger = m_primaryController.rightTrigger();
     Trigger secondaryButtonBack = m_secondaryController.back();
     Trigger secondaryButtonStart = m_secondaryController.start();
+    Trigger primaryButtonBack = m_primaryController.back();
+    Trigger primaryButtonStart = m_primaryController.start();
 
     primaryButtonX.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)), m_driveSubsystem)); 
     primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem)); 
     primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
 
-    secondaryButtonBack.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(0, 0, 255)));
-    secondaryButtonStart.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(150, 40, 0)));
+    secondaryButtonBack.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(62,13,115)));
+    secondaryButtonStart.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(140, 40, 0)));
 
     //driver nudges
     primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
