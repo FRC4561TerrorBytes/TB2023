@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.GameState.CenteredState;
 import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.ResetArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -113,30 +114,31 @@ public class RobotContainer {
                        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     //Secondary Controller Arm Bindings 
-    m_secondaryController.x().onTrue(new ResetArmCommand(m_armSubsystem));
-    m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
-        m_armSubsystem,
-        () -> -m_secondaryController.getLeftY(),
-        () -> -m_secondaryController.getRightY()));
+    
+    // m_secondaryController.x().onTrue(new ResetArmCommand(m_armSubsystem));
+    // m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
+    //     m_armSubsystem,
+    //     () -> -m_secondaryController.getLeftY(),
+    //     () -> -m_secondaryController.getRightY()));
 
-    m_secondaryController.povUp().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    m_secondaryController.povDown().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STARTING)));
-    m_secondaryController.leftTrigger().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
-    m_secondaryController.rightTrigger().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
-    m_secondaryController.a().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    m_secondaryController.b().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
-    m_secondaryController.y().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
-            .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
-            .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
-    m_secondaryController.leftBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
-    m_secondaryController.rightBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
+    // m_secondaryController.povUp().onTrue(
+    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    // m_secondaryController.povDown().onTrue(
+    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STARTING)));
+    // m_secondaryController.leftTrigger().onTrue(
+    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
+    // m_secondaryController.rightTrigger().onTrue(
+    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
+    // m_secondaryController.a().onTrue(
+    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
+    // m_secondaryController.b().onTrue(
+    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
+    // m_secondaryController.y().onTrue(
+    //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_PREP_INITIAL))
+    //         .andThen(new WaitCommand(1.0)) // Cannot find way to call "isOnTarget".
+    //         .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
+    // m_secondaryController.leftBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
+    // m_secondaryController.rightBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
   
   
   }

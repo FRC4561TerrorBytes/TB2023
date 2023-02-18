@@ -15,6 +15,7 @@ public class GameState {
     public enum CenteredState{
         CENTERED,
         PARTIAL,
+        NOTCENTERED,
         NONE;
     }
 

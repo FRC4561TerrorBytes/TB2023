@@ -3,6 +3,9 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.GameState;
+import frc.robot.GameState.CenteredState;
+import frc.robot.GameState.GamePiece;
 
 public class LEDSubsystem extends SubsystemBase {
 
@@ -62,6 +65,19 @@ public class LEDSubsystem extends SubsystemBase {
     // m_led.setData(m_ledBuffer);
     @Override
     public void periodic() {
-        
+        if(GameState.getInstance().getCenteredState() != GameState.CenteredState.NONE){
+            if(GameState.getInstance().getCenteredState() == GameState.CenteredState.NOTCENTERED){
+                aprilTagLed(255, 0, 0);
+            }
+            else if(GameState.getInstance().getCenteredState() == GameState.CenteredState.PARTIAL){
+                aprilTagLed(251, 156, 0);
+            }
+            else if(GameState.getInstance().getCenteredState() == GameState.CenteredState.CENTERED){
+                aprilTagLed(0, 255, 0);
+            }
+        }
+        else{
+            aprilTagLed(0, 0, 0);
+        }
     }
 }
