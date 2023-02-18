@@ -11,6 +11,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.GameState;
+import frc.robot.GameState.CenteredState;
 
 public class VisionSubsystem extends SubsystemBase {
 
@@ -231,6 +233,15 @@ public class VisionSubsystem extends SubsystemBase {
             // applying things to the drive assigned above
             m_driveSubsystem.drive(xSpeed, (ySpeed) * Constants.VISION_LATERAL_SCALING,
                     -rotation * Constants.VISION_ROTATION_SCALING, false);
+
+            if (inLatTolerance && inRotTolerance) {
+                GameState.getInstance().setCenteredState(CenteredState.CENTERED);
+            } else if (inRotTolerance && !(inLatTolerance)) {
+                GameState.getInstance().setCenteredState(CenteredState.PARTIAL);
+            } else {
+                // System.out.println("red led here");
+                GameState.getInstance().setCenteredState(CenteredState.NONE);
+            }
         }
 
         else {
