@@ -93,16 +93,22 @@ public class ArmSubsystem extends SubsystemBase {
     //resetPosition();
   }
 
-  public void resetPosition() {
-    System.out.println("reset");
+  public void resetShoulderPosition() {
     setShoulderPosition(Constants.SHOULDER_ZERO_OFFSET);
-    setElbowPosition(Constants.ELBOW_ZERO_OFFSET);
     m_shoulderEncoder.setPosition(Constants.SHOULDER_ZERO_OFFSET);
+  }
+
+  public void resetElbowPosition(){
+    setElbowPosition(Constants.ELBOW_ZERO_OFFSET);
     m_elbowEncoder.setPosition(Constants.ELBOW_ZERO_OFFSET);
   }
 
-  public boolean armLimitsReached() {
-    return m_elbowReverseLimitSwitch.isPressed() && m_shoulderForwardLimitSwitch.isPressed();
+  public boolean shoulderLimitReached() {
+    return m_shoulderForwardLimitSwitch.isPressed();
+  }
+
+  public boolean elbowLimitReached(){
+    return m_shoulderForwardLimitSwitch.isPressed();
   }
 
   public void setArmSpeed(double shoulderSpeed, double elbowSpeed) {
