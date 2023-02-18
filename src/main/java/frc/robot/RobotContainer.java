@@ -99,8 +99,8 @@ public class RobotContainer {
     primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem)); 
     primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
 
-    secondaryButtonBack.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(62,13,115)));
-    secondaryButtonStart.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(140, 40, 0)));
+    secondaryButtonBack.whileTrue(new RunCommand(() -> m_LEDSubsystem.setBackHalfLED(62,13,115)));
+    secondaryButtonStart.whileTrue(new RunCommand(() -> m_LEDSubsystem.setBackHalfLED(140, 40, 0)));
 
     //driver nudges
     primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
