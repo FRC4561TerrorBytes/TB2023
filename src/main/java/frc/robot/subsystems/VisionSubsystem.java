@@ -288,7 +288,7 @@ public class VisionSubsystem extends SubsystemBase {
                 GameState.getInstance().setCenteredState(CenteredState.PARTIAL);
             } else {
                 // System.out.println("red led here");
-                GameState.getInstance().setCenteredState(CenteredState.NONE);
+                GameState.getInstance().setCenteredState(CenteredState.NOTCENTERED);
             }
         }
 
