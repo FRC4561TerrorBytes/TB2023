@@ -6,31 +6,38 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDSubsystem extends SubsystemBase {
 
-    AddressableLED m_led8 = new AddressableLED(8);
-    AddressableLED m_led9 = new AddressableLED(9);// ADD PORT
+    AddressableLED m_led8 = new AddressableLED(9);
+    // AddressableLED m_led9 = new AddressableLED(8);// ADD PORT
     AddressableLEDBuffer m_ledBuffer8 = new AddressableLEDBuffer(144);
-    AddressableLEDBuffer m_ledBuffer9 = new AddressableLEDBuffer(144);
+    // AddressableLEDBuffer m_ledBuffer9 = new AddressableLEDBuffer(144);
 
     public LEDSubsystem(){
+        System.out.println("im in constructor");
         m_led8.setLength(m_ledBuffer8.getLength());
-        m_led9.setLength(m_ledBuffer9.getLength());
+        // m_led9.setLength(m_ledBuffer9.getLength());
         m_led8.setData(m_ledBuffer8);
-        m_led9.setData(m_ledBuffer9);
+        // m_led9.setData(m_ledBuffer9);
         m_led8.start();
-        m_led9.start();
+        // m_led9.start();
 
 
     }
 
     public void cargoLed(int r, int g, int b)
     {
-        for (var i = 65; i < m_ledBuffer9.getLength(); i++) {
+        System.out.println("im trying to set cargo led");
+
+        for (var i = 65; i < m_ledBuffer8.getLength(); i++) {
+            System.out.println("im inside the loop!");
+
       // Sets the specified LED to the RGB values for red
             m_ledBuffer8.setRGB(i, r, g, b);
-            m_ledBuffer9.setRGB(i, r, g, b);
+            // m_ledBuffer9.setRGB(i, r, g, b);
         }
         m_led8.setData(m_ledBuffer8);
-        m_led9.setData(m_ledBuffer9);
+        System.out.println("im setting cargo led data");
+
+        // m_led9.setData(m_ledBuffer9);
 
     }
     
@@ -38,10 +45,10 @@ public class LEDSubsystem extends SubsystemBase {
         for (var i = 0; i < 65; i++) {
       // Sets the specified LED to the RGB values for red
             m_ledBuffer8.setRGB(i, r, g, b);
-            m_ledBuffer9.setRGB(i, r, g, b);
+            // m_ledBuffer9.setRGB(i, r, g, b);
         }
         m_led8.setData(m_ledBuffer8);
-        m_led9.setData(m_ledBuffer9);
+        // m_led9.setData(m_ledBuffer9);
     }
 
     
