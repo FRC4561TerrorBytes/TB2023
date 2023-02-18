@@ -91,7 +91,7 @@ public class RobotContainer {
     primaryButtonX.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)), m_driveSubsystem)); 
     primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem)); 
     primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
-    
+
     secondaryButtonBack.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(0, 0, 255)));
     secondaryButtonStart.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(150, 40, 0)));
 
@@ -106,7 +106,8 @@ public class RobotContainer {
     primaryRightTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, 1, false), m_driveSubsystem))
                        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
-    //Secondary Controller Arm Bindings
+    //Secondary Controller Arm Bindings 
+    /* 
     m_secondaryController.x().onTrue(new ResetArmCommand(m_armSubsystem));
     m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
         m_armSubsystem,
@@ -131,8 +132,9 @@ public class RobotContainer {
             .andThen(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
     m_secondaryController.leftBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
     m_secondaryController.rightBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
+  
+  */
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
