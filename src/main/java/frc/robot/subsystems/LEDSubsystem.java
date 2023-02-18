@@ -14,8 +14,10 @@ public class LEDSubsystem extends SubsystemBase {
     AddressableLEDBuffer m_ledBuffer8 = new AddressableLEDBuffer(144);
     // AddressableLEDBuffer m_ledBuffer9 = new AddressableLEDBuffer(144);
 
+    public GameState m_gameState;
+
     public LEDSubsystem(){
-        System.out.println("im in constructor");
+        m_gameState = GameState.getInstance();
         m_led8.setLength(m_ledBuffer8.getLength());
         // m_led9.setLength(m_ledBuffer9.getLength());
         m_led8.setData(m_ledBuffer8);
@@ -28,17 +30,13 @@ public class LEDSubsystem extends SubsystemBase {
 
     public void setBackHalfLED(int r, int g, int b)
     {
-        System.out.println("im trying to set cargo led");
-
         for (var i = 65; i < m_ledBuffer8.getLength(); i++) {
-            System.out.println("im inside the loop!");
 
-      // Sets the specified LED to the RGB values for red
+            // Sets the specified LED to the RGB values for red
             m_ledBuffer8.setRGB(i, r, g, b);
             // m_ledBuffer9.setRGB(i, r, g, b);
         }
         m_led8.setData(m_ledBuffer8);
-        System.out.println("im setting cargo led data");
 
         // m_led9.setData(m_ledBuffer9);
 
@@ -65,14 +63,18 @@ public class LEDSubsystem extends SubsystemBase {
     // m_led.setData(m_ledBuffer);
     @Override
     public void periodic() {
-        if(GameState.getInstance().getCenteredState() != GameState.CenteredState.NONE){
-            if(GameState.getInstance().getCenteredState() == GameState.CenteredState.NOTCENTERED){
+        if(m_gameState.getCenteredState() != GameState.CenteredState.NONE){
+            if(m_gameState.getCenteredState() == GameState.CenteredState.NOTCENTERED){
+                if(m_gameState.getGamePieceHeld() == GameState.GamePiece.CONE || m_gameState.getGamePieceHeld() == GameState.GamePiece.CUBE){
+                    setBackHalfLED(255, 0, 0);
+                }
                 setFrontHalfLED(255, 0, 0);
             }
-            else if(GameState.getInstance().getCenteredState() == GameState.CenteredState.PARTIAL){
+            else if(m_gameState.getCenteredState() == GameState.CenteredState.PARTIAL){
+                //TO DO CHECK IF WE HAVE ONE AND APPLY IT TO THE BACK
                 setFrontHalfLED(251, 156, 0);
             }
-            else if(GameState.getInstance().getCenteredState() == GameState.CenteredState.CENTERED){
+            else if(m_gameState.getCenteredState() == GameState.CenteredState.CENTERED){
                 setFrontHalfLED(0, 255, 0);
             }
         }
