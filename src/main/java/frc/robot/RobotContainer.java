@@ -19,6 +19,7 @@ import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -35,6 +36,7 @@ public class RobotContainer {
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
+  private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
   
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
@@ -83,10 +85,15 @@ public class RobotContainer {
     Trigger primaryLeftTrigger = m_primaryController.leftTrigger();
     Trigger primaryRightBumper = m_primaryController.rightBumper();
     Trigger primaryRightTrigger = m_primaryController.rightTrigger();
+    Trigger secondaryButtonBack = m_secondaryController.back();
+    Trigger secondaryButtonStart = m_secondaryController.start();
 
     primaryButtonX.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)), m_driveSubsystem)); 
     primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem)); 
     primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
+    
+    secondaryButtonBack.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(0, 0, 255)));
+    secondaryButtonStart.whileTrue(new RunCommand(() -> m_LEDSubsystem.cargoLed(150, 40, 0)));
 
     //driver nudges
     primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
