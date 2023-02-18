@@ -26,7 +26,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     }
 
-    public void cargoLed(int r, int g, int b)
+    public void setBackHalfLED(int r, int g, int b)
     {
         System.out.println("im trying to set cargo led");
 
@@ -44,7 +44,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     }
     
-    public void aprilTagLed(int r, int g, int b){
+    public void setFrontHalfLED(int r, int g, int b){
         for (var i = 0; i < 65; i++) {
       // Sets the specified LED to the RGB values for red
             m_ledBuffer8.setRGB(i, r, g, b);
@@ -67,17 +67,17 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         if(GameState.getInstance().getCenteredState() != GameState.CenteredState.NONE){
             if(GameState.getInstance().getCenteredState() == GameState.CenteredState.NOTCENTERED){
-                aprilTagLed(255, 0, 0);
+                setFrontHalfLED(255, 0, 0);
             }
             else if(GameState.getInstance().getCenteredState() == GameState.CenteredState.PARTIAL){
-                aprilTagLed(251, 156, 0);
+                setFrontHalfLED(251, 156, 0);
             }
             else if(GameState.getInstance().getCenteredState() == GameState.CenteredState.CENTERED){
-                aprilTagLed(0, 255, 0);
+                setFrontHalfLED(0, 255, 0);
             }
         }
         else{
-            aprilTagLed(0, 0, 0);
+            setFrontHalfLED(0, 0, 0);
         }
     }
 }
