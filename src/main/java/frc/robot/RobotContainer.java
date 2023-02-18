@@ -107,7 +107,6 @@ public class RobotContainer {
                        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     //Secondary Controller Arm Bindings 
-    /* 
     m_secondaryController.x().onTrue(new ResetArmCommand(m_armSubsystem));
     m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
         m_armSubsystem,
@@ -133,7 +132,7 @@ public class RobotContainer {
     m_secondaryController.leftBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
     m_secondaryController.rightBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
   
-  */
+  
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
