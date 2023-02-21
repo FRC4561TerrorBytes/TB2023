@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.time.Instant;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
@@ -66,10 +68,25 @@ public class RobotContainer {
     Trigger primaryButtonA = m_primaryController.a();
     Trigger primaryButtonX = m_primaryController.x();
     Trigger primaryButtonB = m_primaryController.b();
+    Trigger primaryLeftBumper = m_primaryController.leftBumper();
+    Trigger primaryLeftTrigger = m_primaryController.leftTrigger();
+    Trigger primaryRightBumper = m_primaryController.rightBumper();
+    Trigger primaryRightTrigger = m_primaryController.rightTrigger();
 
     primaryButtonX.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)), m_driveSubsystem)); 
     primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem)); 
     primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
+
+    //driver nudges
+    primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
+                     .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+    primaryRightBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, -0.4, 0, false), m_driveSubsystem))
+                      .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+
+    primaryLeftTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, -1, false), m_driveSubsystem))
+                      .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+    primaryRightTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, 1, false), m_driveSubsystem))
+                       .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
   }
 

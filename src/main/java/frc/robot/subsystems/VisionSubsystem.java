@@ -187,29 +187,25 @@ public class VisionSubsystem extends SubsystemBase {
 
             // calculation rotation
             if (!inRotTolerance) {
-                rotation = MathUtil.clamp(Math.abs(calculatedRotation), 2, 50) * positiveAngle;
+                rotation = MathUtil.clamp(Math.abs(calculatedRotation), Constants.VISION_ROTATION_FLOOR_CLAMP, Constants.VISION_ROTATION_CEILING_CLAMP) * positiveAngle;
                 System.out.println("rotation speed: " + rotation);
             } else {
                 rotation = 0;
             }
 
             // rotation deadband
-            if (Math.abs(calculatedRotation) > 6) {
+            if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
                 inRotTolerance = false;
             }
             // rotation tolerance
-            if (Math.abs(calculatedRotation) < 3) {
+            if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
                 inRotTolerance = true;
             }
 
             // if rotation is right then correct for lateral
             if (!inLatTolerance && inRotTolerance) {
-                double ceiling = 0.5;
-                if(aprilTagOffset != 0){
-                    ceiling = 0.4;
-                }
-                ySpeed = Math.signum(targetTransform.getY() + cameraOffset/*-.7239*/)
-                        * MathUtil.clamp((Math.abs(targetTransform.getY() + cameraOffset)/*-.7239*/), 0.2, ceiling);
+                ySpeed = Math.signum(targetTransform.getY() + cameraOffset)
+                        * MathUtil.clamp((Math.abs(targetTransform.getY() + cameraOffset)), Constants.VISION_LATERAL_FLOOR_CLAMP, Constants.VISION_LATERAL_CEILING_CLAMP);
             } else if (inLatTolerance && !inRotTolerance) {
                 ySpeed = 0;
             } else {
@@ -217,24 +213,24 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // lateral deadband
-            if (targetTransform.getY() + cameraOffset < -0.1 || targetTransform.getY() + cameraOffset > 0.1) {
+            if (targetTransform.getY() + cameraOffset < -Constants.VISION_LATERAL_DEADBAND || targetTransform.getY() + cameraOffset > Constants.VISION_LATERAL_DEADBAND) {
                 inLatTolerance = false;
             }
             // lateral tolerance
-            if (targetTransform.getY() + cameraOffset > -0.05 && targetTransform.getY() + cameraOffset < 0.05) {
+            if (targetTransform.getY() + cameraOffset > -Constants.VISION_LATERAL_TOLERANCE && targetTransform.getY() + cameraOffset < Constants.VISION_LATERAL_TOLERANCE) {
                 inLatTolerance = true;
             }
 
             // forward movement
-            if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= 0.6) {
-                xSpeed = distance/2;
+            if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= Constants.VISION_END_DISTANCE) {
+                xSpeed = 0;
             } else {
-                xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), 0.2, 1);
+                xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
             }
 
             // applying things to the drive assigned above
-            m_driveSubsystem.drive(xSpeed, (ySpeed) * 2 * Constants.VISION_LATERAL_SCALING,
-                    rotation * 0.1 * Constants.VISION_ROTATION_SCALING, false);
+            m_driveSubsystem.drive(xSpeed, (ySpeed) * Constants.VISION_LATERAL_SCALING,
+                    rotation * Constants.VISION_ROTATION_SCALING, false);
         }
 
         else {

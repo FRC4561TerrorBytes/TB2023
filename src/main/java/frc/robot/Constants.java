@@ -112,9 +112,23 @@ public final class Constants {
     public static final double LEFT_CAMERA_OFFSET_RIGHT =  0.127;
     public static final double RIGHT_CAMERA_OFFSET_RIGHT = Units.inchesToMeters(-4);
     public static final double LEFT_CAMERA_OFFSET_BACK = 0.69;
-    public static final double RIGHT_CAMERA_OFFSET_BACK = Units.inchesToMeters(13.5);
-    public static final double VISION_ROTATION_SCALING = 1;
-    public static final double VISION_LATERAL_SCALING = 1;
+    public static final double RIGHT_CAMERA_OFFSET_BACK = 0.56;
+    public static final double VISION_ROTATION_SCALING = 0.1;
+    public static final double VISION_LATERAL_SCALING = 2;
+
+    public static final double VISION_ROTATION_FLOOR_CLAMP = 2;
+    public static final double VISION_ROTATION_CEILING_CLAMP = 50;
+    public static final double VISION_ROTATION_DEADBAND = 6;
+    public static final double VISION_ROTATION_TOLERANCE = 3;
+
+    public static final double VISION_LATERAL_FLOOR_CLAMP = 0.2;
+    public static final double VISION_LATERAL_CEILING_CLAMP = 0.5;
+    public static final double VISION_LATERAL_DEADBAND = 0.1;
+    public static final double VISION_LATERAL_TOLERANCE = 0.05;
+
+    public static final double VISION_END_DISTANCE = 0.6;
+    public static final double VISION_FORWARD_FLOOR_CLAMP = 0.2;
+    public static final double VISION_FORWARD_CEILING_CLAMP = 1;
 
     public static final String tylerIsAwesome = "Tables and Chairs are the same";
     public static final boolean tableIsChair = true;
