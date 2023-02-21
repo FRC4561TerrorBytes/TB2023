@@ -18,7 +18,7 @@ public class VisionSubsystem extends SubsystemBase {
     DriveSubsystem m_driveSubsystem;
 
     // change nickname later
-    PhotonCamera rightCamera = new PhotonCamera("Table");
+    PhotonCamera rightCamera = new PhotonCamera("panav");
     PhotonCamera leftCamera = new PhotonCamera("Chair");
 
     boolean inRotTolerance = false;
@@ -223,7 +223,7 @@ public class VisionSubsystem extends SubsystemBase {
 
             // forward movement
             if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= Constants.VISION_END_DISTANCE) {
-                xSpeed = 0;
+                xSpeed = distance/2;
             } else {
                 xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
             }

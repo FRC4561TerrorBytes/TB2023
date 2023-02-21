@@ -112,7 +112,7 @@ public final class Constants {
     public static final double LEFT_CAMERA_OFFSET_RIGHT =  0.127;
     public static final double RIGHT_CAMERA_OFFSET_RIGHT = Units.inchesToMeters(-4);
     public static final double LEFT_CAMERA_OFFSET_BACK = 0.69;
-    public static final double RIGHT_CAMERA_OFFSET_BACK = 0.56;
+    public static final double RIGHT_CAMERA_OFFSET_BACK = Units.inchesToMeters(13.5);
     public static final double VISION_ROTATION_SCALING = 0.1;
     public static final double VISION_LATERAL_SCALING = 2;
 
