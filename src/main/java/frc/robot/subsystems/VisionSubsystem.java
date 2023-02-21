@@ -20,7 +20,6 @@ public class VisionSubsystem extends SubsystemBase {
     // change nickname later
     PhotonCamera rightCamera = new PhotonCamera("Table");
     PhotonCamera leftCamera = new PhotonCamera("Chair");
-    // PhotonCamera rightCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
     boolean inRotTolerance = false;
     boolean inLatTolerance = false;
@@ -228,7 +227,7 @@ public class VisionSubsystem extends SubsystemBase {
 
             // forward movement
             if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= 0.6) {
-                xSpeed = 0;
+                xSpeed = distance/2;
             } else {
                 xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), 0.2, 1);
             }

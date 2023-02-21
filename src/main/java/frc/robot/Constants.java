@@ -8,6 +8,7 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -109,9 +110,9 @@ public final class Constants {
 
     // fyi: offset right means lateral offset from center
     public static final double LEFT_CAMERA_OFFSET_RIGHT =  0.127;
-    public static final double RIGHT_CAMERA_OFFSET_RIGHT = -0.0889;
+    public static final double RIGHT_CAMERA_OFFSET_RIGHT = Units.inchesToMeters(-4);
     public static final double LEFT_CAMERA_OFFSET_BACK = 0.69;
-    public static final double RIGHT_CAMERA_OFFSET_BACK = 0.56;
+    public static final double RIGHT_CAMERA_OFFSET_BACK = Units.inchesToMeters(13.5);
     public static final double VISION_ROTATION_SCALING = 1;
     public static final double VISION_LATERAL_SCALING = 1;
 
