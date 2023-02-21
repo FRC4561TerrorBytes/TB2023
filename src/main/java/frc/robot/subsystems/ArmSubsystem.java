@@ -108,17 +108,20 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public boolean elbowLimitReached(){
-    return m_shoulderForwardLimitSwitch.isPressed();
+    return m_elbowReverseLimitSwitch.isPressed();
   }
 
   public void setArmSpeed(double shoulderSpeed, double elbowSpeed) {
-    m_shoulderMotor.set(shoulderSpeed);
-    m_elbowMotor.set(elbowSpeed);
+    setShoulderSpeed(shoulderSpeed);
+    setElbowSpeed(elbowSpeed);
   }
 
-  public void setArmDifferential(double shoulderSpeed, double elbowSpeed) {
-    m_targetShoulderPosition += shoulderSpeed / 60;
-    m_targetElbowPosition += (elbowSpeed - shoulderSpeed) / 60;
+  public void setShoulderSpeed(double shoulderSpeed) {
+    m_shoulderMotor.set(shoulderSpeed);
+  }
+
+  public void setElbowSpeed(double elbowSpeed) {
+    m_elbowMotor.set(elbowSpeed);
   }
 
   /**
@@ -159,7 +162,7 @@ public class ArmSubsystem extends SubsystemBase {
     double currentRotation = m_elbowEncoder.getPosition();
     double cosineScalar = Math.cos(Math.toRadians(currentRotation));
     m_elbowController.setReference(
-      m_targetElbowPosition, ControlType.kSmartMotion, 0, 
+      m_targetElbowPosition, ControlType.kPosition, 0, 
       Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
   }
 
@@ -167,7 +170,7 @@ public class ArmSubsystem extends SubsystemBase {
     double currentRotation = m_shoulderEncoder.getPosition();
     double cosineScalar = Math.cos(Math.toRadians(currentRotation));
     m_shoulderController.setReference(
-      m_targetShoulderPosition, ControlType.kSmartMotion, 0, 
+      m_targetShoulderPosition, ControlType.kPosition, 0, 
       Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
   }
 
@@ -183,7 +186,7 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elbow voltage", m_elbowMotor.getBusVoltage() * m_elbowMotor.getAppliedOutput());
     SmartDashboard.putNumber("Elbow current", m_elbowMotor.getOutputCurrent());
     SmartDashboard.putNumber("Elbow rotation target", m_targetElbowPosition);
-    SmartDashboard.putNumber("Elbow placement", m_lastPlacement == null ? 999 : m_lastPlacement.m_elbowAngle);
+    //SmartDashboard.putNumber("Elbow placement", m_lastPlacement == null ? 999 : m_lastPlacement.m_elbowAngle);
     SmartDashboard.putBoolean("Elbow LimitR", m_elbowReverseLimitSwitch.isPressed());
     SmartDashboard.putBoolean("Shoudler LimitR", m_shoulderReverseLimitSwitch.isPressed());
     SmartDashboard.putBoolean("Shoulder LimitF", m_shoulderForwardLimitSwitch.isPressed());
@@ -191,7 +194,7 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shoulder voltage", m_shoulderMotor.getBusVoltage() * m_shoulderMotor.getAppliedOutput());
     SmartDashboard.putNumber("Shoulder current", m_shoulderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Shoulder rotation target", m_targetShoulderPosition);
-    SmartDashboard.putNumber("Shoulder placement", m_lastPlacement == null ? 999 : m_lastPlacement.m_shoulderAngle);
+    //SmartDashboard.putNumber("Shoulder placement", m_lastPlacement == null ? 999 : m_lastPlacement.m_shoulderAngle);
     /*double elbowKP = SmartDashboard.getNumber("Elbow KP", 0);
     double shoulderKP = SmartDashboard.getNumber("Elbow KP", 0);
     m_elbowController.setP(elbowKP);
