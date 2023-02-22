@@ -233,9 +233,17 @@ public class VisionSubsystem extends SubsystemBase {
                 rotation = 0;
             }
 
+            // forward movement
+            if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= Constants.VISION_END_DISTANCE) {
+                xSpeed = 0;
+            } else {
+                xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
+            }
+
             // rotation deadband
             if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
                 inRotTolerance = false;
+                xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
             }
             // rotation tolerance
             if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
