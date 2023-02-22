@@ -18,8 +18,8 @@ public class VisionSubsystem extends SubsystemBase {
     DriveSubsystem m_driveSubsystem;
 
     // change nickname later
-    PhotonCamera rightCamera = new PhotonCamera("panav");
-    PhotonCamera leftCamera = new PhotonCamera("Chair");
+    PhotonCamera rightCamera = new PhotonCamera("Chair");
+    PhotonCamera leftCamera = new PhotonCamera("panav");
 
     boolean inRotTolerance = false;
     boolean inLatTolerance = false;
@@ -193,9 +193,17 @@ public class VisionSubsystem extends SubsystemBase {
                 rotation = 0;
             }
 
+            // forward movement
+            if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= Constants.VISION_END_DISTANCE) {
+                xSpeed = 0;
+            } else {
+                xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
+            }
+
             // rotation deadband
             if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
                 inRotTolerance = false;
+                xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
             }
             // rotation tolerance
             if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
@@ -219,13 +227,6 @@ public class VisionSubsystem extends SubsystemBase {
             // lateral tolerance
             if (targetTransform.getY() + cameraOffset > -Constants.VISION_LATERAL_TOLERANCE && targetTransform.getY() + cameraOffset < Constants.VISION_LATERAL_TOLERANCE) {
                 inLatTolerance = true;
-            }
-
-            // forward movement
-            if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= Constants.VISION_END_DISTANCE) {
-                xSpeed = distance/2;
-            } else {
-                xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
             }
 
             // applying things to the drive assigned above
