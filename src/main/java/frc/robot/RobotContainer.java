@@ -58,7 +58,8 @@ public class RobotContainer {
     }, m_armSubsystem));
     // Configure the trigger bindings
     configureBindings();
-    // TODO remove this when we have real zeroing
+
+    // NOTE: these are NEEDED
     m_armSubsystem.resetShoulderPosition();
     m_armSubsystem.resetElbowPosition();
   }
@@ -114,7 +115,7 @@ public class RobotContainer {
     m_secondaryController.povUp().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
     m_secondaryController.povDown().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STARTING)));
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
     m_secondaryController.leftTrigger().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
     m_secondaryController.rightTrigger().onTrue(

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.security.CodeSigner;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -39,12 +41,13 @@ public class ArmSubsystem extends SubsystemBase {
    * work.
    */
   public enum KnownArmPlacement {
-    STARTING(90.0, -85.0),
+    STOWED(105.0, -42.5),
     SUBSTATION_APPROACH(125.0, 5.2),
     SUBSTATION_GRAB_HALFWAY(116.0, 1.0),
     SUBSTATION_GRAB_FULLWAY(107.4, -2.9),
     SCORE_PREP_INITIAL(102.8, -57.2),
-    SCORE_LOW(90.0, -53.0),
+    // SCORE_LOW(90.0, -53.0),
+    SCORE_LOW(110.0, 20.0),
     SCORE_MIDDLE(90.0, -7.0),
     SCORE_HIGH(56.0, 23.0);
 
@@ -63,7 +66,9 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowEncoder = m_elbowMotor.getEncoder();  
     // m_elbowMotor.setInverted(false);  
     m_elbowMotor.setIdleMode(IdleMode.kBrake);  
-    m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN);
+    m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_0, 0);
+    m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_1, 1);
+    m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN, 0);
     m_elbowController.setSmartMotionMaxVelocity(Constants.ELBOW_CRUISE_VELOCITY_RPM, 0);
     m_elbowController.setSmartMotionMaxAccel(Constants.ELBOW_PEAK_ACCELERATION, 0);
     m_elbowController.setSmartMotionMinOutputVelocity(0.0, 0);
@@ -79,6 +84,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_shoulderMotor.setInverted(true);
     m_shoulderMotor.setIdleMode(IdleMode.kBrake);  
     m_shoulderController.setP(Constants.SHOULDER_PROPORTIONAL_GAIN);
+    m_shoulderController.setD(Constants.SHOULDER_DERIVATIVE_GAIN);
     m_shoulderController.setSmartMotionMaxVelocity(Constants.SHOULDER_CRUISE_VELOCITY_RPM, 0);
     m_shoulderController.setSmartMotionMaxAccel(Constants.SHOULDER_PEAK_ACCELERATION, 0);
     m_shoulderController.setSmartMotionMinOutputVelocity(0.0, 0);
@@ -160,9 +166,16 @@ public class ArmSubsystem extends SubsystemBase {
    */
   void proceedToElbowPosition() {
     double currentRotation = m_elbowEncoder.getPosition();
-    double cosineScalar = Math.cos(Math.toRadians(currentRotation));
+    double cosineScalar = Math.cos(Math.toRadians(currentRotation  + m_shoulderEncoder.getPosition() - 90.0));
+    
+    int pidSlot = 0;
+    if (currentRotation > m_targetElbowPosition) {
+      pidSlot = 1;
+      cosineScalar = 0;
+    }
+
     m_elbowController.setReference(
-      m_targetElbowPosition, ControlType.kPosition, 0, 
+      m_targetElbowPosition, ControlType.kPosition, pidSlot, 
       Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
   }
 
@@ -183,6 +196,7 @@ public class ArmSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elbow rotations", m_elbowEncoder.getPosition());
+    SmartDashboard.putNumber("Elbow rotations to ground", m_elbowEncoder.getPosition() + m_shoulderEncoder.getPosition() - 90.0);
     SmartDashboard.putNumber("Elbow voltage", m_elbowMotor.getBusVoltage() * m_elbowMotor.getAppliedOutput());
     SmartDashboard.putNumber("Elbow current", m_elbowMotor.getOutputCurrent());
     SmartDashboard.putNumber("Elbow rotation target", m_targetElbowPosition);

@@ -148,7 +148,9 @@ public final class Constants {
 
                 public static final double ELBOW_ROTATIONS_PER_DEGREE = 5.0 / 36.0;
                 public static final double ELBOW_MAX_VOLTAGE_FF = 1.25;
-                public static final double ELBOW_PROPORTIONAL_GAIN = 0.0045;
+                public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 0.01;
+                public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.001;
+                public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
                 public static final double ELBOW_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
                 /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
                 public static final double ELBOW_CRUISE_VELOCITY_RPM = ELBOW_CRUISE_VELOCITY_DEG_PER_SEC * 60.0
@@ -162,7 +164,8 @@ public final class Constants {
                 public static final double SHOULDER_ROTATIONS_PER_DEGREE = 25.0 / 27.0;
                 // needs fixing; moves to fast and with to much force.
                 public static final double SHOULDER_MAX_VOLTAGE_FF = 0.5;
-                public static final double SHOULDER_PROPORTIONAL_GAIN = 0.01;
+                public static final double SHOULDER_PROPORTIONAL_GAIN = 0.02;
+                public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
                 public static final double SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
                 /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
                 public static final double SHOULDER_CRUISE_VELOCITY_RPM = SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC * 60.0
@@ -177,12 +180,12 @@ public final class Constants {
                 public static final double ARM_MOTORS_INTERGRAL_ZONE = 10000.0;
                 public static final double ARM_MOTORS_CLOSED_LOOP_PEAK_OUTPUT = 0.5;
 
-                // TODO now assuming bogus test start zero. Fix this.
                 public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 111.5;
-                public static final double ELBOW_ZERO_OFFSET = /* measure this */ -42.5;
+                public static final double ELBOW_ZERO_OFFSET = /* measure this */ -42.5 - SHOULDER_ZERO_OFFSET + 90.0;
 
                 public static final int LEFT_INTAKE_MOTOR = 12;
                 public static final int RIGHT_INTAKE_MOTOR = 13;
 
                 public static final double INTAKE_SPEED = 0.1;
+
 }
