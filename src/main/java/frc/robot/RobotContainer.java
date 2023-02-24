@@ -31,122 +31,135 @@ import frc.robot.subsystems.VisionSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
-  
-  private final CommandXboxController m_primaryController = new CommandXboxController(0);
-  private final CommandXboxController m_secondaryController = new CommandXboxController(1);
+    // The robot's subsystems and commands are defined here...
+    private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+    private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+    private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+    private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
-        modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(m_primaryController.getRightX())* Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-        false),
-        m_driveSubsystem));
- 
-    // m_armSubsystem.setDefaultCommand(
-    //     new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
-    m_armSubsystem.setDefaultCommand(new RunCommand(() -> {
-      m_armSubsystem.proceedToArmPosition();
-    }, m_armSubsystem));
-    // Configure the trigger bindings
-    configureBindings();
+    private final CommandXboxController m_primaryController = new CommandXboxController(0);
+    private final CommandXboxController m_secondaryController = new CommandXboxController(1);
 
-    // NOTE: these are NEEDED
-    m_armSubsystem.resetShoulderPosition();
-    m_armSubsystem.resetElbowPosition();
-  }
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
+                modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+                modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+                modifyAxis(m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+                false),
+                m_driveSubsystem));
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  @SuppressWarnings("unused")
-  private void configureBindings() {
-    //Primary Controller Vision Bindings
-    Trigger primaryButtonA = m_primaryController.a();
-    Trigger primaryButtonX = m_primaryController.x();
-    Trigger primaryButtonY = m_primaryController.y();
-    Trigger primaryButtonB = m_primaryController.b();
-    Trigger primaryLeftBumper = m_primaryController.leftBumper();
-    Trigger primaryLeftTrigger = m_primaryController.leftTrigger();
-    Trigger primaryRightBumper = m_primaryController.rightBumper();
-    Trigger primaryRightTrigger = m_primaryController.rightTrigger();
+        // m_armSubsystem.setDefaultCommand(
+        // new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
+        m_armSubsystem.setDefaultCommand(new RunCommand(() -> {
+            m_armSubsystem.proceedToArmPosition();
+        }, m_armSubsystem));
+        // Configure the trigger bindings
+        configureBindings();
+    }
 
-    primaryButtonX.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)), m_driveSubsystem)); 
-    primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem)); 
-    primaryButtonB.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)), m_driveSubsystem)); 
+    /**
+     * Use this method to define your trigger->command mappings. Triggers can be
+     * created via the
+     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+     * an arbitrary predicate, or via the named factories in {@link
+     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+     * {@link CommandXboxController
+     * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+     * PS4} controllers or
+     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+     * joysticks}.
+     */
+    @SuppressWarnings("unused")
+    private void configureBindings() {
+        // Primary Controller Vision Bindings
+        Trigger primaryButtonA = m_primaryController.a();
+        Trigger primaryButtonX = m_primaryController.x();
+        Trigger primaryButtonY = m_primaryController.y();
+        Trigger primaryButtonB = m_primaryController.b();
+        Trigger primaryLeftBumper = m_primaryController.leftBumper();
+        Trigger primaryLeftTrigger = m_primaryController.leftTrigger();
+        Trigger primaryRightBumper = m_primaryController.rightBumper();
+        Trigger primaryRightTrigger = m_primaryController.rightTrigger();
 
-    //driver nudges
-    primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
-                     .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
-    primaryRightBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, -0.4, 0, false), m_driveSubsystem))
-                      .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+        primaryButtonX
+                .whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)),
+                        m_driveSubsystem));
+        primaryButtonA.whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_driveSubsystem));
+        primaryButtonB
+                .whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)),
+                        m_driveSubsystem));
 
-    primaryLeftTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, -1, false), m_driveSubsystem))
-                      .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
-    primaryRightTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, 1, false), m_driveSubsystem))
-                       .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+        // driver nudges
+        primaryLeftBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0.4, 0, false), m_driveSubsystem))
+                .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+        primaryRightBumper.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, -0.4, 0, false), m_driveSubsystem))
+                .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
-    //Secondary Controller Arm Bindings
-    m_secondaryController.x().onTrue(new ZeroShoulderCommand(m_armSubsystem)
-        .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1))
-        .andThen(new ZeroElbowCommand(m_armSubsystem)));
-    m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
-        m_armSubsystem,
-        () -> -m_secondaryController.getLeftY(),
-        () -> -m_secondaryController.getRightY()));
+        primaryLeftTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, -1, false), m_driveSubsystem))
+                .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+        primaryRightTrigger.whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0, 0, 1, false), m_driveSubsystem))
+                .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
-    m_secondaryController.povUp().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    m_secondaryController.povDown().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_secondaryController.leftTrigger().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
-    m_secondaryController.rightTrigger().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
-    m_secondaryController.a().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    m_secondaryController.b().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
-    m_secondaryController.y().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
-    m_secondaryController.leftBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
-    m_secondaryController.rightBumper().whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED))).onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
-  }
+        // Secondary Controller Arm Bindings
+        /* m_secondaryController.x().onTrue(new ZeroShoulderCommand(m_armSubsystem)
+                .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1))
+                .andThen(new ZeroElbowCommand(m_armSubsystem))); */
+        m_secondaryController.back().toggleOnTrue(new ManualArmCommand(
+                m_armSubsystem,
+                () -> -m_secondaryController.getLeftY(),
+                () -> -m_secondaryController.getRightY()));
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return null;
-  }
+        m_secondaryController.povUp().onTrue(
+                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+        m_secondaryController.povDown().onTrue(
+                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+        m_secondaryController.leftTrigger().onTrue(
+                new InstantCommand(
+                        () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
+        m_secondaryController.rightTrigger().onTrue(
+                new InstantCommand(
+                        () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
+        m_secondaryController.a().onTrue(
+                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
+        m_secondaryController.b().onTrue(
+                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
+        m_secondaryController.y().onTrue(
+                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)));
+        m_secondaryController.leftBumper()
+                .whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED)))
+                .onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
+        m_secondaryController.rightBumper()
+                .whileTrue(new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(Constants.INTAKE_SPEED)))
+                .onFalse(new InstantCommand(() -> m_intakeSubsystem.setIntakeSpeed(0.0)));
+    }
 
-  private static double modifyAxis(double value) {
-    // Deadband
-    value = MathUtil.applyDeadband(value, 0.05);
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        // An example command will be run in autonomous
+        return null;
+    }
 
-    // Square the axis
-    value = Math.copySign(value * value, value);
+    private static double modifyAxis(double value) {
+        // Deadband
+        value = MathUtil.applyDeadband(value, 0.05);
 
-    return value;
-  }
+        // Square the axis
+        value = Math.copySign(value * value, value);
+
+        return value;
+    }
+
+    public void teleopInit() {
+        new ZeroShoulderCommand(m_armSubsystem)
+                .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
+                .andThen(new ZeroElbowCommand(m_armSubsystem))
+                .schedule();
+    }
 }

@@ -28,13 +28,13 @@ public class ZeroShoulderCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_armSubsystem.shoulderLimitReached() == true){
+    if (m_armSubsystem.shoulderLimitReached() == true) {
       shoulderLimitContacts++;
-      if (shoulderLimitContacts == 4){
+      if (shoulderLimitContacts == 4) {
         m_armSubsystem.resetShoulderPosition();
       }
     } else {
-      //shoulderLimitContacts = 0;
+      // shoulderLimitContacts = 0;
     }
     m_armSubsystem.setShoulderSpeed(0.2);
 
