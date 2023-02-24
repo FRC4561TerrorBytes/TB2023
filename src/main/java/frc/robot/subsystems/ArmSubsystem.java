@@ -39,7 +39,7 @@ public class ArmSubsystem extends SubsystemBase {
    * work.
    */
   public enum KnownArmPlacement {
-    STOWED(100.0, -60.0),
+    STOWED(110.0, -42.5),
     SUBSTATION_APPROACH(125.0, 5.2),
     SUBSTATION_GRAB_HALFWAY(116.0, 1.0),
     SUBSTATION_GRAB_FULLWAY(107.4, -2.9),
@@ -70,6 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowReverseLimitSwitch.enableLimitSwitch(true);
     m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
     m_elbowMotor.setSmartCurrentLimit(60);
+    // m_elbowMotor.setClosedLoopRampRate(1.5);
 
     m_shoulderMotor.restoreFactoryDefaults();
     m_shoulderController = m_shoulderMotor.getPIDController();
@@ -177,7 +178,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     int pidSlot = 0;
     if (currentRotation > m_targetShoulderPosition) {
-      // pidSlot = 1;
+      pidSlot = 1;
     }
 
     m_shoulderController.setReference(
