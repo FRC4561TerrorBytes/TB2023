@@ -189,4 +189,15 @@ public final class Constants {
 
   public static final double INTAKE_SPEED = 0.1;
 
+  public static final double AUTO_X_KP = 1.0;
+  public static final double AUTO_X_KI = 0.0;
+  public static final double AUTO_X_KD = 0.0;
+
+  public static final double AUTO_Y_KP = 1.0;
+  public static final double AUTO_Y_KI = 0.0;
+  public static final double AUTO_Y_KD = 0.0;
+
+  public static final double AUTO_THETA_KP = 1.0;
+  public static final double AUTO_THETA_KI = 0.0;
+  public static final double AUTO_THETA_KD = 0.0;
 }
