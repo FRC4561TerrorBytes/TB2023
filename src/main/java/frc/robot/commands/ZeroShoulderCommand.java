@@ -4,42 +4,52 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
 
-public class ResetArmCommand extends CommandBase {
+public class ZeroShoulderCommand extends CommandBase {
+  /** Creates a new ZeroShoulderCommand. */
   private ArmSubsystem m_armSubsystem;
+  private int shoulderLimitContacts;
 
-  /** Creates a new ResetArmCommand. */
-  public ResetArmCommand(ArmSubsystem armSubsystem) {
-    m_armSubsystem = armSubsystem;
-
+  public ZeroShoulderCommand(ArmSubsystem armSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
+    m_armSubsystem = armSubsystem;
     addRequirements(m_armSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    shoulderLimitContacts = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_armSubsystem.setArmDifferential(0.1, 0);
-    m_armSubsystem.proceedToArmPosition();
+    if (m_armSubsystem.shoulderLimitReached() == true) {
+      shoulderLimitContacts++;
+      if (shoulderLimitContacts == 4) {
+        m_armSubsystem.resetShoulderPosition();
+      }
+    } else {
+      // shoulderLimitContacts = 0;
+    }
+    m_armSubsystem.setShoulderSpeed(0.2);
+
+    SmartDashboard.putNumber("Shoulder Contacts", shoulderLimitContacts);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_armSubsystem.resetPosition();
+    m_armSubsystem.setShoulderSpeed(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_armSubsystem.armLimitsReached();
+    return shoulderLimitContacts >= 4;
   }
 }
