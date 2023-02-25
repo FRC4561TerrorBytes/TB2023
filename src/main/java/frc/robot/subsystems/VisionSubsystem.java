@@ -20,9 +20,8 @@ public class VisionSubsystem extends SubsystemBase {
     DriveSubsystem m_driveSubsystem;
 
     // change nickname later
-    PhotonCamera rightCamera = new PhotonCamera("Table");
-    PhotonCamera leftCamera = new PhotonCamera("Chair");
-    // PhotonCamera rightCamera = new PhotonCamera("Logitech_Webcam_C930e");
+    PhotonCamera rightCamera = new PhotonCamera("vanap");
+    PhotonCamera leftCamera = new PhotonCamera("panav");
 
     boolean inRotTolerance = false;
     boolean inLatTolerance = false;

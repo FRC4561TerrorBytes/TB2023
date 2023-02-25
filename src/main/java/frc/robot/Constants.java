@@ -107,10 +107,10 @@ public final class Constants {
       / CTRE_TALONFX_ENCODER_TICKS_PER_ROTATION;
 
   // fyi: offset right means lateral offset from center
-  public static final double LEFT_CAMERA_OFFSET_RIGHT = Units.inchesToMeters(12.5);
-  public static final double RIGHT_CAMERA_OFFSET_RIGHT = -Units.inchesToMeters(12.5);
-  public static final double LEFT_CAMERA_OFFSET_BACK = Units.inchesToMeters(22.0);
-  public static final double RIGHT_CAMERA_OFFSET_BACK = Units.inchesToMeters(22.0);
+  public static final double LEFT_CAMERA_OFFSET_RIGHT = .28;
+  public static final double RIGHT_CAMERA_OFFSET_RIGHT = -.28;
+  public static final double LEFT_CAMERA_OFFSET_BACK = .57;
+  public static final double RIGHT_CAMERA_OFFSET_BACK = .57;
   public static final double VISION_ROTATION_SCALING = 0.1;
   public static final double VISION_LATERAL_SCALING = 2;
 
@@ -148,7 +148,7 @@ public final class Constants {
 
   public static final double ELBOW_ROTATIONS_PER_DEGREE = 5.0 / 36.0;
   public static final double ELBOW_MAX_VOLTAGE_FF = 1.25;
-  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 0.01;
+  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 0.0085;
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.001;
   public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
   public static final double ELBOW_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
@@ -165,7 +165,7 @@ public final class Constants {
   // needs fixing; moves to fast and with to much force.
   public static final double SHOULDER_MAX_VOLTAGE_FF = 0.5;
   public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.02;
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.01;
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.02;
   public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
   public static final double SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
   /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
