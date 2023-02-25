@@ -9,7 +9,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualArmCommand;
@@ -20,6 +19,7 @@ import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -36,6 +36,7 @@ public class RobotContainer {
     private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
     private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
     private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
+    private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
 
     private final CommandXboxController m_primaryController = new CommandXboxController(0);
     private final CommandXboxController m_secondaryController = new CommandXboxController(1);
@@ -48,7 +49,7 @@ public class RobotContainer {
                 modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
                 modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
                 modifyAxis(m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-                false),
+                true),
                 m_driveSubsystem));
 
         // m_armSubsystem.setDefaultCommand(
