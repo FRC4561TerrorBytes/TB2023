@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
@@ -18,7 +19,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // change nickname later
     PhotonCamera rightCamera = new PhotonCamera("Table");
-    PhotonCamera leftCamera = new PhotonCamera("panav");
+    PhotonCamera leftCamera = new PhotonCamera("Chair");
     // PhotonCamera rightCamera = new PhotonCamera("Logitech_Webcam_C930e");
 
     boolean inRotTolerance = false;
@@ -44,6 +45,11 @@ public class VisionSubsystem extends SubsystemBase {
     double cameraOffset;
 
     double aprilTagOffset = -Units.inchesToMeters(28);
+    List<Double> averageDistance = new ArrayList<Double>();
+    List<Double> averageRotation = new ArrayList<Double>();
+    List<Double> averageLateral = new ArrayList<Double>();
+    int runningAverageLength = 20;
+    
 
     public VisionSubsystem(DriveSubsystem driveSubsystem) {
         m_driveSubsystem = driveSubsystem;
@@ -88,6 +94,14 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
         return target;
+    }
+
+    public double getAverage(List<Double> list){
+        double total = 0;
+        for(Double element : list){
+            total += element;
+        }
+        return (total/list.size());
     }
 
     public void centerAprilTag(double aprilTagOffset) {
@@ -174,6 +188,31 @@ public class VisionSubsystem extends SubsystemBase {
 
         // checking if a camera sees a target
         if (targetTransform != null) {
+
+
+            averageDistance.add(targetTransform.getX());
+            System.out.println("Adding to the list: " + targetTransform.getRotation().getZ());
+            if(averageDistance.size() > runningAverageLength){
+                averageDistance.remove(0);
+            }
+
+            averageRotation.add(targetTransform.getRotation().getZ());
+            if(averageRotation.size() > runningAverageLength){
+                averageRotation.remove(0);
+            }
+
+            averageLateral.add(targetTransform.getY());
+            if(averageLateral.size() > runningAverageLength){
+                averageLateral.remove(0);
+            }
+
+            double xAverage = getAverage(averageDistance);
+            double yAverage = getAverage(averageLateral);
+            double zAverage = getAverage(averageRotation);
+            System.out.println("rotation average: " + zAverage);
+
+
+
             double targetAngle = Units.radiansToDegrees(targetTransform.getRotation().getZ());
             double positiveAngle;
             // determining the sign of the angle of the target
@@ -182,43 +221,16 @@ public class VisionSubsystem extends SubsystemBase {
             // variables that will be applied to the drive substystem
             xSpeed = 0;
             rotation = ((180 - Math.abs(targetAngle)) * positiveAngle);
-            distance = targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK;
+            distance = xAverage - Constants.RIGHT_CAMERA_OFFSET_BACK;
             calculatedRotation = ((180 - Math.abs(targetAngle)) * positiveAngle);
 
             // calculation rotation
             if (!inRotTolerance) {
                 rotation = MathUtil.clamp(Math.abs(calculatedRotation), Constants.VISION_ROTATION_FLOOR_CLAMP, Constants.VISION_ROTATION_CEILING_CLAMP) * positiveAngle;
                 System.out.println("rotation speed: " + rotation);
+                System.out.println("calculated rotation: " + calculatedRotation);
             } else {
                 rotation = 0;
-            }
-
-            // rotation deadband
-            if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
-                inRotTolerance = false;
-            }
-            // rotation tolerance
-            if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
-                inRotTolerance = true;
-            }
-
-            // if rotation is right then correct for lateral
-            if (!inLatTolerance && inRotTolerance) {
-                ySpeed = Math.signum(targetTransform.getY() + cameraOffset)
-                        * MathUtil.clamp((Math.abs(targetTransform.getY() + cameraOffset)), Constants.VISION_LATERAL_FLOOR_CLAMP, Constants.VISION_LATERAL_CEILING_CLAMP);
-            } else if (inLatTolerance && !inRotTolerance) {
-                ySpeed = 0;
-            } else {
-                ySpeed = 0;
-            }
-
-            // lateral deadband
-            if (targetTransform.getY() + cameraOffset < -Constants.VISION_LATERAL_DEADBAND || targetTransform.getY() + cameraOffset > Constants.VISION_LATERAL_DEADBAND) {
-                inLatTolerance = false;
-            }
-            // lateral tolerance
-            if (targetTransform.getY() + cameraOffset > -Constants.VISION_LATERAL_TOLERANCE && targetTransform.getY() + cameraOffset < Constants.VISION_LATERAL_TOLERANCE) {
-                inLatTolerance = true;
             }
 
             // forward movement
@@ -228,9 +240,45 @@ public class VisionSubsystem extends SubsystemBase {
                 xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
             }
 
+            // rotation deadband
+            if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
+                inRotTolerance = false;
+                xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
+            }
+            // rotation tolerance
+            if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
+                inRotTolerance = true;
+            }
+
+            // if rotation is right then correct for lateral
+            if (!inLatTolerance && inRotTolerance) {
+                ySpeed = Math.signum(yAverage + cameraOffset)
+                        * MathUtil.clamp((Math.abs(yAverage + cameraOffset)), Constants.VISION_LATERAL_FLOOR_CLAMP, Constants.VISION_LATERAL_CEILING_CLAMP);
+            } else if (inLatTolerance && !inRotTolerance) {
+                ySpeed = 0;
+            } else {
+                ySpeed = 0;
+            }
+
+            // lateral deadband
+            if (yAverage + cameraOffset < -Constants.VISION_LATERAL_DEADBAND || yAverage + cameraOffset > Constants.VISION_LATERAL_DEADBAND) {
+                inLatTolerance = false;
+            }
+            // lateral tolerance
+            if (yAverage + cameraOffset > -Constants.VISION_LATERAL_TOLERANCE && yAverage + cameraOffset < Constants.VISION_LATERAL_TOLERANCE) {
+                inLatTolerance = true;
+            }
+
+            // forward movement
+            if (xAverage - Constants.RIGHT_CAMERA_OFFSET_BACK <= Constants.VISION_END_DISTANCE) {
+                xSpeed = 0;
+            } else {
+                xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
+            }
+
             // applying things to the drive assigned above
             m_driveSubsystem.drive(xSpeed, (ySpeed) * Constants.VISION_LATERAL_SCALING,
-                    -rotation * Constants.VISION_ROTATION_SCALING, false);
+                    rotation * Constants.VISION_ROTATION_SCALING, false);
         }
 
         else {
