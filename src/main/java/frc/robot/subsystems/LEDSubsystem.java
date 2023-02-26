@@ -30,6 +30,13 @@ public class LEDSubsystem extends SubsystemBase {
     /** Cached {@link GameState} singleton. */
     private final GameState m_gameState;
 
+    /** Avoid unneeded and potentially costly game piece LED updates. */
+    private GamePiece m_lastGamePieceApplied = null;
+    /** Avoid unneeded and potentially costly centered state LED updates. */
+    private CenteredState m_lastCenteredStateApplied = null;
+    /** Avoid unneeded and potentially costly game piece held LED updates. */
+    private boolean m_lastGamePieceHeldApplied = false;
+
     /**
      * Creates a new {@link LEDSubsystem}.
      */
@@ -81,37 +88,51 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         // First handle current game piece type for human player.
         final GamePiece gamePiece = m_gameState.getGamePieceDesired();
-        switch (gamePiece) {
-            case CONE:
-                setHumanPlayerLEDs(140, 40, 0);
-                break;
-            case CUBE:
-                setHumanPlayerLEDs(62, 13, 115);
-                break;
-            default:
-                setHumanPlayerLEDs(0, 0, 0);
-                break;
+        // Only apply LED update if it has not already been done.
+        if (m_lastGamePieceApplied != gamePiece) {
+            m_lastGamePieceApplied = gamePiece;
+            switch (gamePiece) {
+                case CONE:
+                    setHumanPlayerLEDs(140, 40, 0);
+                    break;
+                case CUBE:
+                    setHumanPlayerLEDs(62, 13, 115);
+                    break;
+                default:
+                    setHumanPlayerLEDs(0, 0, 0);
+                    break;
+            }
         }
 
         // Next set the at loading station driver side.
         // Having possession overrides all else.
         if (m_gameState.isGamePieceHeld()) {
-            setDriverSideLEDs(255, 255, 255);
+            // Only apply LED update if it has not already been done.
+            if (!m_lastGamePieceHeldApplied) {
+                m_lastGamePieceHeldApplied = true;
+                setDriverSideLEDs(255, 255, 255);
+            }
         } else {
+            // Make sure next game piece held transition gets applied.
+            m_lastGamePieceHeldApplied = false;
             final CenteredState centeredState = m_gameState.getCenteredState();
-            switch (centeredState) {
-                case NOTCENTERED:
-                    setDriverSideLEDs(255, 0, 0);
-                    break;
-                case PARTIAL:
-                    setDriverSideLEDs(251, 156, 0);
-                    break;
-                case CENTERED:
-                    setDriverSideLEDs(0, 255, 0);
-                    break;
-                default:
-                    setDriverSideLEDs(0, 0, 0);
-                    break;
+            // Only apply LED update if it has not already been done.
+            if (m_lastCenteredStateApplied != centeredState) {
+                m_lastCenteredStateApplied = centeredState;
+                switch (centeredState) {
+                    case NOTCENTERED:
+                        setDriverSideLEDs(255, 0, 0);
+                        break;
+                    case PARTIAL:
+                        setDriverSideLEDs(251, 156, 0);
+                        break;
+                    case CENTERED:
+                        setDriverSideLEDs(0, 255, 0);
+                        break;
+                    default:
+                        setDriverSideLEDs(0, 0, 0);
+                        break;
+                }
             }
         }
     }
