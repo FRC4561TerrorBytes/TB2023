@@ -1,56 +1,99 @@
 package frc.robot;
+
+/**
+ * A singleton instance of this class holds the current robot state with regard
+ * to game objectives such as the current game piece mode.
+ */
 public class GameState {
+    /** The singleton instance. */
     private static final GameState INSTANCE = new GameState();
 
-    public enum GamePiece{
+    /** The available game piece types. */
+    public enum GamePiece {
         CONE,
         CUBE,
         NONE;
     }
 
+    /**
+     * The current game piece type we are trying to handle and an indicator of we
+     * have one. Note that this information may not be accurate during autonomous.
+     */
     private GamePiece m_gamePieceDesired = GamePiece.NONE;
-    private GamePiece m_gamePieceHeld = GamePiece.NONE;
+    private boolean m_gamePieceHeld = false;
 
-
-    public enum CenteredState{
+    /** The possible states of an active April tag approach. */
+    public enum CenteredState {
         CENTERED,
         PARTIAL,
         NOTCENTERED,
         NONE;
     }
 
+    /** The current state of the active April tag approach. */
     private CenteredState m_centeredState = CenteredState.NONE;
 
-    private GameState(){
-
+    /** Private to only allow a single instance. */
+    private GameState() {
     }
 
-    public static GameState getInstance(){
+    /**
+     * Clients obtain the single instance here.
+     * 
+     * @return the single {@link GameState} instance.
+     */
+    public static GameState getInstance() {
         return INSTANCE;
     }
 
-    public GamePiece getGamePieceDesired(){
+    /**
+     * @return the type of {@link GamePiece} we are currently handling. Never
+     *         returns null.
+     */
+    public GamePiece getGamePieceDesired() {
         return m_gamePieceDesired;
     }
 
-    public void setGamePieceDesired(GamePiece piece){
-        m_gamePieceDesired = piece;
+    /**
+     * Changes the type of {@link GamePiece} we are currently handling.
+     * 
+     * @param piece the new type of game piece.
+     */
+    public void setGamePieceDesired(GamePiece piece) {
+        m_gamePieceDesired = piece == null ? GamePiece.NONE : piece;
     }
 
-
-    public GamePiece getGamePieceHeld(){
+    /**
+     * @return true if we are holding a {@link GamePiece} and false if not.
+     */
+    public boolean isGamePieceHeld() {
         return m_gamePieceHeld;
     }
-    
-    public void setGamePieceHeld(GamePiece piece){
-        m_gamePieceHeld = piece;
+
+    /**
+     * Sets the value returned by {@link #isGamePieceHeld()}. Typically set to true
+     * after getting a game piece and to false after scoring it.
+     * 
+     * @param pieceHeld the new value for {@link #isGamePieceHeld()}.
+     */
+    public void setGamePieceHeld(boolean pieceHeld) {
+        m_gamePieceHeld = pieceHeld;
     }
 
-    public CenteredState getCenteredState(){
+    /**
+     * @return the current state of the active April tag approach. Never returns
+     *         null.
+     */
+    public CenteredState getCenteredState() {
         return m_centeredState;
     }
 
-    public void setCenteredState(CenteredState state){
-        m_centeredState = state;
+    /**
+     * Sets the result of {@link #getCenteredState()}.
+     * 
+     * @param state the current state of the active April tag approach.
+     */
+    public void setCenteredState(CenteredState state) {
+        m_centeredState = state == null ? CenteredState.NONE : state;
     }
 }

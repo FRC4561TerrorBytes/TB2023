@@ -4,80 +4,115 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.GameState;
+import frc.robot.GameState.CenteredState;
+import frc.robot.GameState.GamePiece;
 
+/**
+ * The LED subsystem observes the {@link GameState} and sets the human player
+ * and driver feedback LEDs to signal important game state changes. While in the
+ * loading zone at the far end of the field, the half of the strip on the front
+ * of the arm is used to signal the human players and the half of the strip on
+ * the back of the arm is used to signal the drivers.
+ * 
+ * <p>
+ * Note that the two strips on the robot arm are driven as one strip. Both
+ * strips will always show the same pattern and colors. This is due to
+ * restrictions in the {@link AddressableLED} class and this underlying roboRio
+ * hardware.
+ * </p>
+ */
 public class LEDSubsystem extends SubsystemBase {
+    /** The connection for driving the LEDs. */
+    private final AddressableLED m_led = new AddressableLED(9);
+    /** A buffer for individually addressing each LED. */
+    private final AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(144);
 
-    AddressableLED m_led8 = new AddressableLED(9);
-    // AddressableLED m_led9 = new AddressableLED(8);// ADD PORT
-    AddressableLEDBuffer m_ledBuffer8 = new AddressableLEDBuffer(144);
-    // AddressableLEDBuffer m_ledBuffer9 = new AddressableLEDBuffer(144);
+    /** Cached {@link GameState} singleton. */
+    private final GameState m_gameState;
 
-    public GameState m_gameState;
-
-    public LEDSubsystem(){
+    /**
+     * Creates a new {@link LEDSubsystem}.
+     */
+    public LEDSubsystem() {
         m_gameState = GameState.getInstance();
-        m_led8.setLength(m_ledBuffer8.getLength());
-        // m_led9.setLength(m_ledBuffer9.getLength());
-        m_led8.setData(m_ledBuffer8);
-        // m_led9.setData(m_ledBuffer9);
-        m_led8.start();
-        // m_led9.start();
-
-
+        m_led.setLength(m_ledBuffer.getLength());
+        m_led.setData(m_ledBuffer);
+        m_led.start();
     }
 
-    public void setBackHalfLED(int r, int g, int b)
-    {
-        for (var i = 65; i < m_ledBuffer8.getLength(); i++) {
-
-            // Sets the specified LED to the RGB values for red
-            m_ledBuffer8.setRGB(i, r, g, b);
-            // m_ledBuffer9.setRGB(i, r, g, b);
+    /**
+     * Sets the human player, far end double substation facing, LEDs to the
+     * specified RGB color.
+     * 
+     * @param r the r value [0-255]
+     * @param g the g value [0-255]
+     * @param b the b value [0-255]
+     */
+    private void setHumanPlayerLEDs(int r, int g, int b) {
+        for (var i = 65; i < m_ledBuffer.getLength(); i++) {
+            m_ledBuffer.setRGB(i, r, g, b);
         }
-        m_led8.setData(m_ledBuffer8);
-
-        // m_led9.setData(m_ledBuffer9);
-
+        m_led.setData(m_ledBuffer);
     }
-    
-    public void setFrontHalfLED(int r, int g, int b){
+
+    /**
+     * Sets the driver, when in the far end loading zone, LEDs to the specified RGB
+     * color.
+     * 
+     * @param r the r value [0-255]
+     * @param g the g value [0-255]
+     * @param b the b value [0-255]
+     */
+    private void setDriverSideLEDs(int r, int g, int b) {
         for (var i = 0; i < 65; i++) {
-      // Sets the specified LED to the RGB values for red
-            m_ledBuffer8.setRGB(i, r, g, b);
-            // m_ledBuffer9.setRGB(i, r, g, b);
+            m_ledBuffer.setRGB(i, r, g, b);
         }
-        m_led8.setData(m_ledBuffer8);
-        // m_led9.setData(m_ledBuffer9);
+        m_led.setData(m_ledBuffer);
     }
 
-    
-    
-    // for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-    //   // Sets the specified LED to the RGB values for red
-    //   m_ledBuffer.setRGB(i, 0, 255, 0);
-    // }
-    // m_led.close();
-   
-    // m_led.setData(m_ledBuffer);
+    /**
+     * This implementation monitors the {@link GameState} and sets the LEDs
+     * accordingly.
+     * 
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     public void periodic() {
-        if(m_gameState.getCenteredState() != GameState.CenteredState.NONE){
-            if(m_gameState.getCenteredState() == GameState.CenteredState.NOTCENTERED){
-                if(m_gameState.getGamePieceHeld() == GameState.GamePiece.CONE || m_gameState.getGamePieceHeld() == GameState.GamePiece.CUBE){
-                    setBackHalfLED(255, 0, 0);
-                }
-                setFrontHalfLED(255, 0, 0);
-            }
-            else if(m_gameState.getCenteredState() == GameState.CenteredState.PARTIAL){
-                //TO DO CHECK IF WE HAVE ONE AND APPLY IT TO THE BACK
-                setFrontHalfLED(251, 156, 0);
-            }
-            else if(m_gameState.getCenteredState() == GameState.CenteredState.CENTERED){
-                setFrontHalfLED(0, 255, 0);
-            }
+        // First handle current game piece type for human player.
+        final GamePiece gamePiece = m_gameState.getGamePieceDesired();
+        switch (gamePiece) {
+            case CONE:
+                setHumanPlayerLEDs(140, 40, 0);
+                break;
+            case CUBE:
+                setHumanPlayerLEDs(62, 13, 115);
+                break;
+            default:
+                setHumanPlayerLEDs(0, 0, 0);
+                break;
         }
-        else{
-            setFrontHalfLED(0, 0, 0);
+
+        // Next set the at loading station driver side.
+        // Having possession overrides all else.
+        if (m_gameState.isGamePieceHeld()) {
+            setDriverSideLEDs(255, 255, 255);
+        } else {
+            final CenteredState centeredState = m_gameState.getCenteredState();
+            switch (centeredState) {
+                case NOTCENTERED:
+                    setDriverSideLEDs(255, 0, 0);
+                    break;
+                case PARTIAL:
+                    setDriverSideLEDs(251, 156, 0);
+                    break;
+                case CENTERED:
+                    setDriverSideLEDs(0, 255, 0);
+                    break;
+                default:
+                    setDriverSideLEDs(0, 0, 0);
+                    break;
+            }
         }
     }
 }
