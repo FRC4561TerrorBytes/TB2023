@@ -66,6 +66,8 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_0, 0);
     m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_1, 1);
     m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN, 0);
+    m_elbowController.setI(Constants.ELBOW_INTEGRAL_GAIN, 0);
+    m_elbowController.setIZone(Constants.ELBOW_IZONE, 0);
     m_elbowReverseLimitSwitch = m_elbowMotor.getReverseLimitSwitch(Type.kNormallyOpen);
     m_elbowReverseLimitSwitch.enableLimitSwitch(true);
     m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
@@ -82,7 +84,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_shoulderForwardLimitSwitch = m_shoulderMotor.getForwardLimitSwitch(Type.kNormallyOpen);
     m_shoulderReverseLimitSwitch = m_shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen);
     m_shoulderForwardLimitSwitch.enableLimitSwitch(true);
-    m_shoulderReverseLimitSwitch.enableLimitSwitch(true);
+    m_shoulderReverseLimitSwitch.enableLimitSwitch(false);
     m_shoulderEncoder.setPositionConversionFactor(1.0 / Constants.SHOULDER_ROTATIONS_PER_DEGREE);
     m_shoulderMotor.setSmartCurrentLimit(30);
 
