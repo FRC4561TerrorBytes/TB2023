@@ -299,7 +299,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_driveSubsystem.updateOdometry();
     }
 
     private class CenterAprilTag extends CommandBase {
