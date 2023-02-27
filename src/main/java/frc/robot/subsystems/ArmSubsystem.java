@@ -136,6 +136,13 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   /**
+   * @return current arm placement
+   */
+  public KnownArmPlacement getArmPlacement() {
+    return m_lastPlacement;
+  }
+
+  /**
    * @param targetPosition the target position in rotations.
    */
   void setShoulderPosition(double targetPosition) {
