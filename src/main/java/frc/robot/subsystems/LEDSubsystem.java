@@ -58,7 +58,7 @@ public class LEDSubsystem extends SubsystemBase {
      * @param b the b value [0-255]
      */
     private void setBackHalfLED(int r, int g, int b) {
-        for (var i = 65; i < m_ledBuffer.getLength(); i++) {
+        for (var i = 0; i < 65; i++) {
             m_ledBuffer.setRGB(i, r, g, b);
         }
         m_led.setData(m_ledBuffer);
@@ -73,7 +73,7 @@ public class LEDSubsystem extends SubsystemBase {
      * @param b the b value [0-255]
      */
     private void setFrontHalfLED(int r, int g, int b) {
-        for (var i = 0; i < 65; i++) {
+        for (var i = 65; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setRGB(i, r, g, b);
         }
         m_led.setData(m_ledBuffer);
