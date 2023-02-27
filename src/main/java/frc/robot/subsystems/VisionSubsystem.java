@@ -197,10 +197,7 @@ public class VisionSubsystem extends SubsystemBase {
                 averageDistance.remove(0);
             }
 
-            averageRotation.add(targetTransform.getRotation().getZ());
-            if(averageRotation.size() > runningAverageLength){
-                averageRotation.remove(0);
-            }
+          
 
             averageLateral.add(targetTransform.getY());
             if(averageLateral.size() > runningAverageLength){
@@ -209,10 +206,7 @@ public class VisionSubsystem extends SubsystemBase {
 
             double xAverage = getAverage(averageDistance);
             double yAverage = getAverage(averageLateral);
-            double zAverage = getAverage(averageRotation);
-            System.out.println("rotation average: " + zAverage);
-
-
+       
 
             double targetAngle = Units.radiansToDegrees(targetTransform.getRotation().getZ());
             double positiveAngle;
@@ -221,13 +215,20 @@ public class VisionSubsystem extends SubsystemBase {
 
             // variables that will be applied to the drive substystem
             xSpeed = 0;
-            rotation = ((180 - Math.abs(targetAngle)) * positiveAngle);
             distance = xAverage - Constants.RIGHT_CAMERA_OFFSET_BACK;
             calculatedRotation = ((180 - Math.abs(targetAngle)) * positiveAngle);
+            
+            averageRotation.add(calculatedRotation);
+            if(averageRotation.size() > runningAverageLength){
+                averageRotation.remove(0);
+            }
+
+            double zAverage = getAverage(averageRotation);
+            System.out.println("rotation average: " + zAverage);
 
             // calculation rotation
             if (!inRotTolerance) {
-                rotation = MathUtil.clamp(Math.abs(calculatedRotation), Constants.VISION_ROTATION_FLOOR_CLAMP, Constants.VISION_ROTATION_CEILING_CLAMP) * positiveAngle;
+                rotation = MathUtil.clamp(Math.abs(zAverage), Constants.VISION_ROTATION_FLOOR_CLAMP, Constants.VISION_ROTATION_CEILING_CLAMP) * positiveAngle;
                 System.out.println("rotation speed: " + rotation);
                 System.out.println("calculated rotation: " + calculatedRotation);
             } else {
@@ -242,12 +243,12 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // rotation deadband
-            if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
+            if (Math.abs(zAverage) > Constants.VISION_ROTATION_DEADBAND) {
                 inRotTolerance = false;
                 xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
             }
             // rotation tolerance
-            if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
+            if (Math.abs(zAverage) < Constants.VISION_ROTATION_TOLERANCE) {
                 inRotTolerance = true;
             }
 
