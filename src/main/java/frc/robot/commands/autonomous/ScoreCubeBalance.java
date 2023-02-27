@@ -24,6 +24,7 @@ public class ScoreCubeBalance extends SequentialCommandGroup {
   
   public ScoreCubeBalance() {
     addCommands(
+      new RunCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED), m_armSubsystem),
       new AutoTrajectory(m_driveSubsystem, "ScoreCubeBalance1", 1, 1).getCommandAndStop(),
       new RunCommand(() -> m_VisionSubsystem.centerAprilTag(0), m_VisionSubsystem).alongWith(new RunCommand(() -> m_driveSubsystem.updateOdometry(), m_driveSubsystem)),
       new RunCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH), m_armSubsystem),
