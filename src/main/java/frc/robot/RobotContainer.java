@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
@@ -19,6 +21,7 @@ import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
+import frc.robot.commands.autonomous.ScoreCubeBalance;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -46,6 +49,7 @@ public class RobotContainer {
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
   private final CommandXboxController m_tertiaryController = new CommandXboxController(2);
+    private final SendableChooser<SequentialCommandGroup> m_autoChooser = new SendableChooser<>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -177,15 +181,15 @@ public class RobotContainer {
         }));
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return null;
-  }
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        // An example command will be run in autonomous
+        return m_autoChooser.getSelected();
+    }
 
   private static double modifyAxis(double value) {
     // Deadband
