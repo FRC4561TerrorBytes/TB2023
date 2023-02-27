@@ -39,7 +39,7 @@ public class ArmSubsystem extends SubsystemBase {
    * work.
    */
   public enum KnownArmPlacement {
-    STOWED(100.0, -55.0),
+    STOWED(101, -58),
     SUBSTATION_APPROACH(125.0, 5.2),
     SUBSTATION_GRAB_HALFWAY(116.0, 1.0),
     SUBSTATION_GRAB_FULLWAY(107.4, -2.9),

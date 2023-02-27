@@ -119,9 +119,9 @@ public class RobotContainer {
             .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH))));
     m_secondaryController.x()
         .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
     m_secondaryController.axisLessThan(Axis.kLeftY.value, -0.5)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
         .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
     m_secondaryController.leftBumper().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));

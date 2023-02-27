@@ -181,8 +181,8 @@ public final class Constants {
   public static final double ARM_MOTORS_INTERGRAL_ZONE = 10000.0;
   public static final double ARM_MOTORS_CLOSED_LOOP_PEAK_OUTPUT = 0.5;
 
-  public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 111.5;
-  public static final double ELBOW_ZERO_OFFSET = /* measure this */ -42.5 - SHOULDER_ZERO_OFFSET + 90.0;
+  public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 109.5;
+  public static final double ELBOW_ZERO_OFFSET = /* measure this */ -47 - SHOULDER_ZERO_OFFSET + 90.0;
 
   public static final int LEFT_INTAKE_MOTOR = 12;
   public static final int RIGHT_INTAKE_MOTOR = 13;
