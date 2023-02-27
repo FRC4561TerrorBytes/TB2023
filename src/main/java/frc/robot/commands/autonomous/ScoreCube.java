@@ -10,25 +10,26 @@ import frc.robot.Constants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 
-public class ScoreCubeBalance extends SequentialCommandGroup {
-  /** Creates a new ScoreCubeBalance. */
-  private DriveSubsystem m_driveSubsystem;
-  private ArmSubsystem m_armSubsystem;
-  private VisionSubsystem m_VisionSubsystem;
-  private IntakeSubsystem m_intakeSubsystem;
-  private LEDSubsystem m_ledSubsystem;
-  public ScoreCubeBalance() {
+// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// information, see:
+// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+public class ScoreCube extends SequentialCommandGroup {
+  /** Creates a new ScoreCube. */
+  private DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  private ArmSubsystem m_armSubsystem = new ArmSubsystem();
+  private VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
+  private IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+
+  public ScoreCube() {
     addCommands(
       new AutoTrajectory(m_driveSubsystem, "ScoreCubeBalance1", 1, 1).getCommandAndStop(),
-      new RunCommand(() -> m_VisionSubsystem.centerAprilTag(0), m_VisionSubsystem).alongWith(new RunCommand(() -> m_driveSubsystem.updateOdometry(), m_driveSubsystem)),
+      new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_visionSubsystem).alongWith(new RunCommand(() -> m_driveSubsystem.updateOdometry(), m_driveSubsystem)),
       new RunCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH), m_armSubsystem),
       new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED), m_intakeSubsystem),
-      new AutoTrajectory(m_driveSubsystem, "ScoreCubeBalance2", 1, 1).getCommandAndStop()
-        //FIXME: Add auto balance
+      new AutoTrajectory(m_driveSubsystem, "ScoreCube1", 1, 1).getCommandAndStop()
     );
   }
 }

@@ -6,14 +6,17 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
+import frc.robot.commands.autonomous.ScoreCubeBalance;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -40,6 +43,7 @@ public class RobotContainer {
 
     private final CommandXboxController m_primaryController = new CommandXboxController(0);
     private final CommandXboxController m_secondaryController = new CommandXboxController(1);
+    private final SendableChooser<SequentialCommandGroup> m_autoChooser = new SendableChooser<>();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -57,6 +61,11 @@ public class RobotContainer {
         m_armSubsystem.setDefaultCommand(new RunCommand(() -> {
             m_armSubsystem.proceedToArmPosition();
         }, m_armSubsystem));
+
+        m_autoChooser.addOption("Do nothing", null);
+        m_autoChooser.addOption("ScoreCubeBalance", new ScoreCubeBalance());
+
+
         // Configure the trigger bindings
         configureBindings();
     }
@@ -144,8 +153,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        //FIXME: Add Autos To Chooser and Test + Add other Autos
-        return null;
+        return m_autoChooser.getSelected();
     }
 
     private static double modifyAxis(double value) {
