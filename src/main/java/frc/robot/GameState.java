@@ -11,15 +11,14 @@ public class GameState {
     /** The available game piece types. */
     public enum GamePiece {
         CONE,
-        CUBE,
-        NONE;
+        CUBE;
     }
 
     /**
      * The current game piece type we are trying to handle and an indicator of we
      * have one. Note that this information may not be accurate during autonomous.
      */
-    private GamePiece m_gamePieceDesired = GamePiece.NONE;
+    private GamePiece m_gamePieceDesired = GamePiece.CUBE;
     private boolean m_gamePieceHeld = false;
 
     /** The possible states of an active April tag approach. */
@@ -57,10 +56,10 @@ public class GameState {
     /**
      * Changes the type of {@link GamePiece} we are currently handling.
      * 
-     * @param piece the new type of game piece.
+     * @param piece the new type of game piece. Null is set as cube.
      */
-    public void setGamePieceDesired(GamePiece piece) {
-        m_gamePieceDesired = piece == null ? GamePiece.NONE : piece;
+    public void setGamePieceDesired(final GamePiece piece) {
+        m_gamePieceDesired = piece == null ? GamePiece.CUBE : piece;
     }
 
     /**
@@ -93,7 +92,7 @@ public class GameState {
      * 
      * @param state the current state of the active April tag approach.
      */
-    public void setCenteredState(CenteredState state) {
+    public void setCenteredState(final CenteredState state) {
         m_centeredState = state == null ? CenteredState.NONE : state;
     }
 }
