@@ -4,15 +4,17 @@
 
 package frc.robot.commands.autonomous;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 
 public class ScoreCubeBalance extends SequentialCommandGroup {
   /** Creates a new ScoreCubeBalance. */
@@ -24,11 +26,12 @@ public class ScoreCubeBalance extends SequentialCommandGroup {
   
   public ScoreCubeBalance() {
     addCommands(
-      new AutoTrajectory(m_driveSubsystem, "ScoreCubeBalance1", 1, 1).getCommandAndStop(),
       new RunCommand(() -> m_VisionSubsystem.centerAprilTag(0), m_VisionSubsystem).alongWith(new RunCommand(() -> m_driveSubsystem.updateOdometry(), m_driveSubsystem)),
-      new RunCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH), m_armSubsystem),
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)),
+      new WaitCommand(1.0),
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)),
       new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED), m_intakeSubsystem),
-      new AutoTrajectory(m_driveSubsystem, "ScoreCubeBalance2", 1, 1).getCommandAndStop(),
+      new AutoTrajectory(m_driveSubsystem, "ScoreCubeBalance", 1, 1).getCommandAndStop(),
       new BalanceAuto(m_driveSubsystem)
     );
   }
