@@ -32,7 +32,7 @@ public class ScoreCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     GameState.getInstance().setGamePieceHeld(false);
-    m_intakeSubsystem.stop();
+    m_intakeSubsystem.hold();
   }
 
   // Returns true when the command should end.

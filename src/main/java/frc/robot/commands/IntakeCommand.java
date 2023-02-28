@@ -7,12 +7,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GameState;
-import frc.robot.GameState.GamePiece;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeCommand extends CommandBase {
   private IntakeSubsystem m_intakeSubsystem;
-  private GamePiece m_gamePieceDesired;
   private Timer timeout = new Timer();
 
   /** Creates a new IntakeCommand. */
@@ -26,7 +24,6 @@ public class IntakeCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_gamePieceDesired = GameState.getInstance().getGamePieceDesired();
     timeout.reset();
   }
 
@@ -34,10 +31,7 @@ public class IntakeCommand extends CommandBase {
   @Override
   public void execute() {
     m_intakeSubsystem.intake();
-    if (m_intakeSubsystem.isFrontLimitBroken() && m_gamePieceDesired == GamePiece.CUBE) {
-      timeout.start();
-    }
-    if (m_intakeSubsystem.isBackLimitBroken()) {
+    if (m_intakeSubsystem.isStalled()) {
       timeout.start();
     }
   }
@@ -47,10 +41,8 @@ public class IntakeCommand extends CommandBase {
   public void end(boolean interrupted) {
     if (!interrupted) {
       GameState.getInstance().setGamePieceHeld(true);
-      m_intakeSubsystem.hold();
-    } else {
-      m_intakeSubsystem.stop();
     }
+    m_intakeSubsystem.hold();
     timeout.stop();
   }
 

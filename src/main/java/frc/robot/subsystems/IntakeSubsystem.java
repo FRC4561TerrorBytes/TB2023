@@ -5,20 +5,19 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private CANSparkMax m_leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR, MotorType.kBrushless); // front sensor
-  private CANSparkMax m_rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR, MotorType.kBrushless); // back sensor
-  private SparkMaxLimitSwitch m_frontLimit;
-  private SparkMaxLimitSwitch m_backLimit;
+  private final CANSparkMax m_leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR, MotorType.kBrushless);
+  private final CANSparkMax m_rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR, MotorType.kBrushless);
+  private final RelativeEncoder m_leftEncoder = m_leftIntakeMotor.getEncoder();
+  private final RelativeEncoder m_rightEncoder = m_rightIntakeMotor.getEncoder();
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
@@ -26,17 +25,6 @@ public class IntakeSubsystem extends SubsystemBase {
     m_rightIntakeMotor.setInverted(true);
     m_leftIntakeMotor.setIdleMode(IdleMode.kBrake);
     m_rightIntakeMotor.setIdleMode(IdleMode.kBrake);
-
-    m_frontLimit = m_leftIntakeMotor.getForwardLimitSwitch(Type.kNormallyOpen);
-    m_backLimit = m_rightIntakeMotor.getReverseLimitSwitch(Type.kNormallyOpen);
-  }
-
-  public boolean isFrontLimitBroken() {
-    return m_frontLimit.isPressed();
-  }
-
-  public boolean isBackLimitBroken() {
-    return m_backLimit.isPressed();
   }
 
   public void setIntakeSpeed(double speed) {
@@ -60,11 +48,19 @@ public class IntakeSubsystem extends SubsystemBase {
     setIntakeSpeed(0.0);
   }
 
+  public boolean isStalled() {
+    if (this.getCurrentCommand().getName().endsWith("IntakeCommand")) {
+      return m_leftEncoder.getVelocity() < 100.0 && m_rightEncoder.getVelocity() < 100.0;
+    }
+    return false;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    SmartDashboard.putBoolean("Front Intake Limit", isFrontLimitBroken());
-    SmartDashboard.putBoolean("Back Intake Limit", isBackLimitBroken());
+    SmartDashboard.putNumber("Left intake current", m_leftIntakeMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Left intake velocity", m_leftEncoder.getVelocity());
+    SmartDashboard.putNumber("Right intake current", m_rightIntakeMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Right intake velocity", m_rightEncoder.getVelocity());
   }
 }

@@ -163,14 +163,14 @@ public class RobotContainer {
 
     // Miscellaneous Bindings
 
+    // Always run intake at hold when not intaking or scoring.
+    m_intakeSubsystem.setDefaultCommand(new RunCommand(m_intakeSubsystem::hold, m_intakeSubsystem));
     // Run intake when arm in substation position
-    Trigger substationApproach = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_APPROACH);
     Trigger substationHalfway = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY);
     Trigger substationFullway = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY);
-    substationApproach.or(substationHalfway).or(substationFullway)
+    substationHalfway.or(substationFullway)
         .whileTrue(new IntakeCommand(m_intakeSubsystem).finallyDo(interrupted -> {
           if (!interrupted)
             m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH);
