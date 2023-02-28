@@ -17,7 +17,6 @@ public class LeaveCommunity extends SequentialCommandGroup {
 
   public LeaveCommunity() {
     addCommands(
-      new RunCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED), m_armSubsystem),
       new AutoTrajectory(m_driveSubsystem, "LeaveCommunity", 1, 1).getCommandAndStop()
     );
   }
