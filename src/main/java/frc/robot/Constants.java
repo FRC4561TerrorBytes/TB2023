@@ -151,7 +151,7 @@ public final class Constants {
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 0.0085;
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.002;
   public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
-  public static final double ELBOW_INTEGRAL_GAIN = 0.00002;
+  public static final double ELBOW_INTEGRAL_GAIN = 0.000015;
   public static final double ELBOW_IZONE = 5.0;
   public static final double ELBOW_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
   /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
@@ -191,5 +191,5 @@ public final class Constants {
 
   public static final double INTAKE_SPEED = 0.2;
   public static final double INTAKE_HOLD_SPEED = 0.05;
-  public static final double INTAKE_SCORE_SPEEED = -0.3;
+  public static final double INTAKE_SCORE_SPEEED = -0.1;
 }

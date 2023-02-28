@@ -39,10 +39,10 @@ public class ArmSubsystem extends SubsystemBase {
    * work.
    */
   public enum KnownArmPlacement {
-    STOWED(101, -58),
-    SUBSTATION_APPROACH(125.0, 5.2),
-    SUBSTATION_GRAB_HALFWAY(116.0, 1.0),
-    SUBSTATION_GRAB_FULLWAY(107.4, -2.9),
+    STOWED(101.0, -58.0),
+    SUBSTATION_APPROACH(120.0, 5.2),
+    SUBSTATION_GRAB_HALFWAY(108.0, 1.0),
+    SUBSTATION_GRAB_FULLWAY(91.4, -2.9),
     SCORE_PREP_INITIAL(102.8, -57.2),
     SCORE_LOW(90.0, -53.0),
     SCORE_MIDDLE(90.0, -7.0),
@@ -68,6 +68,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN, 0);
     m_elbowController.setI(Constants.ELBOW_INTEGRAL_GAIN, 0);
     m_elbowController.setIZone(Constants.ELBOW_IZONE, 0);
+    m_elbowController.setIMaxAccum(0.1, 0);
     m_elbowReverseLimitSwitch = m_elbowMotor.getReverseLimitSwitch(Type.kNormallyOpen);
     m_elbowReverseLimitSwitch.enableLimitSwitch(true);
     m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
@@ -153,6 +154,7 @@ public class ArmSubsystem extends SubsystemBase {
    * @param targetPosition the target position in rotations.
    */
   void setElbowPosition(double targetPosition) {
+    m_elbowController.setIAccum(0.0);
     m_targetElbowPosition = targetPosition;
   }
 

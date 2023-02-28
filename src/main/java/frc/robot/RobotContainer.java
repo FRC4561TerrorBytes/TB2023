@@ -127,11 +127,11 @@ public class RobotContainer {
                 () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH))));
     m_secondaryController.x()
         .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+    m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
     m_secondaryController.axisLessThan(Axis.kLeftY.value, -0.5)
         .onTrue(new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
     m_secondaryController.leftBumper().onTrue(
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
@@ -164,10 +164,13 @@ public class RobotContainer {
     // Miscellaneous Bindings
 
     // Run intake when arm in substation position
-    Trigger substationApproach = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_APPROACH);
-    Trigger substationHalfway = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY);
-    Trigger substationFullway = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY);
-    substationApproach.and(substationHalfway).and(substationFullway)
+    Trigger substationApproach = new Trigger(
+        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_APPROACH);
+    Trigger substationHalfway = new Trigger(
+        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY);
+    Trigger substationFullway = new Trigger(
+        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY);
+    substationApproach.or(substationHalfway).or(substationFullway)
         .whileTrue(new IntakeCommand(m_intakeSubsystem).finallyDo(interrupted -> {
           if (!interrupted)
             m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH);

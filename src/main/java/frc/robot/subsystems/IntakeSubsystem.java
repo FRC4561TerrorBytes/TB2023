@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -26,8 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
     m_leftIntakeMotor.setIdleMode(IdleMode.kBrake);
     m_rightIntakeMotor.setIdleMode(IdleMode.kBrake);
 
-    m_frontLimit = m_leftIntakeMotor.getForwardLimitSwitch(Type.kNormallyClosed);
-    m_backLimit = m_rightIntakeMotor.getReverseLimitSwitch(Type.kNormallyClosed);
+    m_frontLimit = m_leftIntakeMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+    m_backLimit = m_rightIntakeMotor.getReverseLimitSwitch(Type.kNormallyOpen);
   }
 
   public boolean isFrontLimitBroken() {
@@ -62,5 +63,8 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    SmartDashboard.putBoolean("Front Intake Limit", isFrontLimitBroken());
+    SmartDashboard.putBoolean("Back Intake Limit", isBackLimitBroken());
   }
 }
