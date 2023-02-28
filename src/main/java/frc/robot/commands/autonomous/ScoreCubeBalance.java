@@ -15,6 +15,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 
 public class ScoreCubeBalance extends SequentialCommandGroup {
   /** Creates a new ScoreCubeBalance. */
