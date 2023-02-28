@@ -21,7 +21,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // change nickname later
     PhotonCamera rightCamera = new PhotonCamera("vanap");
-    PhotonCamera leftCamera = new PhotonCamera("panav");
+    PhotonCamera leftCamera = new PhotonCamera("Table");
 
     boolean inRotTolerance = false;
     boolean inLatTolerance = false;

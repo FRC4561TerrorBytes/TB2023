@@ -106,7 +106,7 @@ public class LEDSubsystem extends SubsystemBase {
             if (((m_lastGamePieceHeldApplied == null)
                     || (m_lastGamePieceHeldApplied.booleanValue() != isGamePieceHeld))) {
                 m_lastGamePieceHeldApplied = isGamePieceHeld;
-                setBackHalfLED(255, 255, 255);
+                setBackHalfLED(0, 0, 255);
             }
         } else {
             // Nothing to apply for not held, but match last applied state.
