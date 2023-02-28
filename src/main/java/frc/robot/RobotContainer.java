@@ -172,4 +172,11 @@ public class RobotContainer {
                 .andThen(new ZeroElbowCommand(m_armSubsystem))
                 .schedule();
     }
+
+    public void autoInit() {
+      new ZeroShoulderCommand(m_armSubsystem)
+              .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
+              .andThen(new ZeroElbowCommand(m_armSubsystem))
+              .schedule();
+  }
 }

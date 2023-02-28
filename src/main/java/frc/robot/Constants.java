@@ -187,7 +187,9 @@ public final class Constants {
   public static final int LEFT_INTAKE_MOTOR = 12;
   public static final int RIGHT_INTAKE_MOTOR = 13;
 
-  public static final double INTAKE_SPEED = 0.1;
+  public static final double INTAKE_SPEED = 0.2;
+  public static final double INTAKE_HOLD_SPEED = 0.05;
+  public static final double INTAKE_SCORE_SPEEED = -0.3;
 
   public static final double AUTO_X_KP = 1.0;
   public static final double AUTO_X_KI = 0.0;
