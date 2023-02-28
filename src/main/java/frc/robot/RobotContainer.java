@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ManualArmCommand;
+import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -78,19 +80,24 @@ public class RobotContainer {
     // Primary Controller Bindings
 
     // Scoring
-    m_primaryController.b().whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)),
-        m_driveSubsystem));
-    m_primaryController.y().whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0.0), m_driveSubsystem));
-    m_primaryController.x().whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)),
-        m_driveSubsystem));
+    m_primaryController.b()
+        .whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)),
+            m_driveSubsystem));
+    m_primaryController.y()
+        .whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0.0), m_driveSubsystem));
+    m_primaryController.x()
+        .whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)),
+            m_driveSubsystem));
 
     // Substation grabs
     m_primaryController.leftBumper()
         .whileTrue(
-            new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(29.565)), m_driveSubsystem));
+            new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(29.565)),
+                m_driveSubsystem));
     m_primaryController.rightBumper()
         .whileTrue(
-            new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(29.565)), m_driveSubsystem));
+            new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(29.565)),
+                m_driveSubsystem));
 
     // Driver nudges
     m_primaryController.povUp()
@@ -116,23 +123,30 @@ public class RobotContainer {
     m_secondaryController.y().onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE))
             .andThen(new WaitCommand(1.0))
-            .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH))));
+            .andThen(new InstantCommand(
+                () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH))));
     m_secondaryController.x()
         .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_secondaryController.axisLessThan(Axis.kLeftY.value, -0.5)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
     m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
         .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+    m_secondaryController.axisLessThan(Axis.kLeftY.value, -0.5)
+        .onTrue(new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
     m_secondaryController.leftBumper().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
+        new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
     m_secondaryController.leftTrigger().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
+        new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
 
     // Game piece indication
     m_secondaryController.start()
         .onTrue(new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE)));
     m_secondaryController.back()
         .onTrue(new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
+
+    // Score
+    m_secondaryController.rightBumper().onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
 
     // Tertiary Controller Bindings
 
@@ -146,6 +160,21 @@ public class RobotContainer {
     m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
         .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
         .andThen(new ZeroElbowCommand(m_armSubsystem)));
+
+    // Miscellaneous Bindings
+
+    // Always run intake at hold when not intaking or scoring.
+    m_intakeSubsystem.setDefaultCommand(new RunCommand(m_intakeSubsystem::hold, m_intakeSubsystem));
+    // Run intake when arm in substation position
+    Trigger substationHalfway = new Trigger(
+        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY);
+    Trigger substationFullway = new Trigger(
+        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY);
+    substationHalfway.or(substationFullway)
+        .whileTrue(new IntakeCommand(m_intakeSubsystem).finallyDo(interrupted -> {
+          if (!interrupted)
+            m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH);
+        }));
   }
 
   /**
