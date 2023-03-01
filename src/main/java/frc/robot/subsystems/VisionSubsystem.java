@@ -10,6 +10,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.GameState;
@@ -49,7 +50,7 @@ public class VisionSubsystem extends SubsystemBase {
     List<Double> averageDistance = new ArrayList<Double>();
     List<Double> averageRotation = new ArrayList<Double>();
     List<Double> averageLateral = new ArrayList<Double>();
-    int runningAverageLength = 20;
+    int runningAverageLength = 2;
     
 
     public VisionSubsystem(DriveSubsystem driveSubsystem) {
@@ -110,9 +111,10 @@ public class VisionSubsystem extends SubsystemBase {
         // right camera stuff
         var rightResult = rightCamera.getLatestResult();
         // checking for targets in view
-        if (rightResult.hasTargets()) {
+        var rightClosestTarget = getClosestTarget(rightCamera);
+        if (rightResult.hasTargets() && rightClosestTarget != null) {
             // checks if a certain target id is seen
-            rightTarget = getAprilTagByID(rightResult.getTargets(), getClosestTarget(rightCamera).getFiducialId());
+            rightTarget = getAprilTagByID(rightResult.getTargets(), rightClosestTarget.getFiducialId());
 
             // setting boolean if we see a target and the transform of the target
             if (rightTarget != null) {
@@ -128,10 +130,11 @@ public class VisionSubsystem extends SubsystemBase {
 
         // left camera stuff
         var leftResult = leftCamera.getLatestResult();
+        var leftClosestTarget = getClosestTarget(leftCamera);
         // checking for targets in view
-        if (leftResult.hasTargets()) {
+        if (leftResult.hasTargets() && leftClosestTarget != null) {
             // checks if a certain target id is seen
-            leftTarget = getAprilTagByID(leftResult.getTargets(), getClosestTarget(leftCamera).getFiducialId());
+            leftTarget = getAprilTagByID(leftResult.getTargets(), leftClosestTarget.getFiducialId());
 
             // setting boolean if we see a target and the transform of the target
             if (leftTarget != null) {
@@ -199,7 +202,7 @@ public class VisionSubsystem extends SubsystemBase {
 
           
 
-            averageLateral.add(targetTransform.getY());
+            averageLateral.add(targetTransform.getY() + cameraOffset);
             if(averageLateral.size() > runningAverageLength){
                 averageLateral.remove(0);
             }
@@ -218,17 +221,17 @@ public class VisionSubsystem extends SubsystemBase {
             distance = xAverage - Constants.RIGHT_CAMERA_OFFSET_BACK;
             calculatedRotation = ((180 - Math.abs(targetAngle)) * positiveAngle);
             
-            averageRotation.add(calculatedRotation);
-            if(averageRotation.size() > runningAverageLength){
-                averageRotation.remove(0);
-            }
+            // averageRotation.add(calculatedRotation);
+            // if(averageRotation.size() > runningAverageLength){
+            //     averageRotation.remove(0);
+            // }
 
-            double zAverage = getAverage(averageRotation);
-            System.out.println("rotation average: " + zAverage);
+            // double zAverage = getAverage(averageRotation);
+            // System.out.println("rotation average: " + zAverage);
 
             // calculation rotation
             if (!inRotTolerance) {
-                rotation = MathUtil.clamp(Math.abs(zAverage), Constants.VISION_ROTATION_FLOOR_CLAMP, Constants.VISION_ROTATION_CEILING_CLAMP) * positiveAngle;
+                rotation = MathUtil.clamp(Math.abs(calculatedRotation), Constants.VISION_ROTATION_FLOOR_CLAMP, Constants.VISION_ROTATION_CEILING_CLAMP) * positiveAngle;
                 System.out.println("rotation speed: " + rotation);
                 System.out.println("calculated rotation: " + calculatedRotation);
             } else {
@@ -243,19 +246,19 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // rotation deadband
-            if (Math.abs(zAverage) > Constants.VISION_ROTATION_DEADBAND) {
+            if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
                 inRotTolerance = false;
                 xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
             }
             // rotation tolerance
-            if (Math.abs(zAverage) < Constants.VISION_ROTATION_TOLERANCE) {
+            if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
                 inRotTolerance = true;
             }
 
             // if rotation is right then correct for lateral
             if (!inLatTolerance && inRotTolerance) {
-                ySpeed = Math.signum(yAverage + cameraOffset)
-                        * MathUtil.clamp((Math.abs(yAverage + cameraOffset)), Constants.VISION_LATERAL_FLOOR_CLAMP, Constants.VISION_LATERAL_CEILING_CLAMP);
+                ySpeed = Math.signum(yAverage )//+ cameraOffset)
+                        * MathUtil.clamp((Math.abs(yAverage)), Constants.VISION_LATERAL_FLOOR_CLAMP, Constants.VISION_LATERAL_CEILING_CLAMP);
             } else if (inLatTolerance && !inRotTolerance) {
                 ySpeed = 0;
             } else {
@@ -263,11 +266,11 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // lateral deadband
-            if (yAverage + cameraOffset < -Constants.VISION_LATERAL_DEADBAND || yAverage + cameraOffset > Constants.VISION_LATERAL_DEADBAND) {
+            if (yAverage < -Constants.VISION_LATERAL_DEADBAND || yAverage  > Constants.VISION_LATERAL_DEADBAND) {
                 inLatTolerance = false;
             }
             // lateral tolerance
-            if (yAverage + cameraOffset > -Constants.VISION_LATERAL_TOLERANCE && yAverage + cameraOffset < Constants.VISION_LATERAL_TOLERANCE) {
+            if (yAverage  > -Constants.VISION_LATERAL_TOLERANCE && yAverage  < Constants.VISION_LATERAL_TOLERANCE) {
                 inLatTolerance = true;
             }
 
@@ -279,15 +282,16 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // applying things to the drive assigned above
-            m_driveSubsystem.drive(xSpeed, (ySpeed) * Constants.VISION_LATERAL_SCALING,
+            m_driveSubsystem.drive(xSpeed*0.9, (ySpeed) * Constants.VISION_LATERAL_SCALING,
                     -rotation * Constants.VISION_ROTATION_SCALING, false);
-
+        System.out.println("InLatTolerance: " + inLatTolerance);
+            SmartDashboard.putBoolean("Rotation Tolerance", inRotTolerance);
             if (inLatTolerance && inRotTolerance) {
                 GameState.getInstance().setCenteredState(CenteredState.CENTERED);
             } else if (inRotTolerance && !(inLatTolerance)) {
                 GameState.getInstance().setCenteredState(CenteredState.PARTIAL);
             } else {
-                // System.out.println("red led here");
+                System.out.println("red led here");
                 GameState.getInstance().setCenteredState(CenteredState.NOTCENTERED);
             }
         }

@@ -8,6 +8,7 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -106,24 +107,24 @@ public final class Constants {
       / CTRE_TALONFX_ENCODER_TICKS_PER_ROTATION;
 
   // fyi: offset right means lateral offset from center
-  public static final double LEFT_CAMERA_OFFSET_RIGHT = .28;
-  public static final double RIGHT_CAMERA_OFFSET_RIGHT = -.28;
-  public static final double LEFT_CAMERA_OFFSET_BACK = .57;
-  public static final double RIGHT_CAMERA_OFFSET_BACK = .57;
+  public static final double LEFT_CAMERA_OFFSET_RIGHT = Units.inchesToMeters(11.75);
+  public static final double RIGHT_CAMERA_OFFSET_RIGHT = Units.inchesToMeters(-11.75);
+  public static final double LEFT_CAMERA_OFFSET_BACK = Units.inchesToMeters(20);
+  public static final double RIGHT_CAMERA_OFFSET_BACK = Units.inchesToMeters(20);
   public static final double VISION_ROTATION_SCALING = 0.1;
   public static final double VISION_LATERAL_SCALING = 2;
 
   public static final double VISION_ROTATION_FLOOR_CLAMP = 2;
   public static final double VISION_ROTATION_CEILING_CLAMP = 50;
   public static final double VISION_ROTATION_DEADBAND = 6;
-  public static final double VISION_ROTATION_TOLERANCE = 3;
+  public static final double VISION_ROTATION_TOLERANCE = 2;
 
   public static final double VISION_LATERAL_FLOOR_CLAMP = 0.2;
   public static final double VISION_LATERAL_CEILING_CLAMP = 0.5;
-  public static final double VISION_LATERAL_DEADBAND = 0.1;
-  public static final double VISION_LATERAL_TOLERANCE = 0.05;
+  public static final double VISION_LATERAL_DEADBAND = 0.15;
+  public static final double VISION_LATERAL_TOLERANCE = 0.1;
 
-  public static final double VISION_END_DISTANCE = 0.45;
+  public static final double VISION_END_DISTANCE = 0.3;
   public static final double VISION_FORWARD_FLOOR_CLAMP = 0.2;
   public static final double VISION_FORWARD_CEILING_CLAMP = 1;
 
