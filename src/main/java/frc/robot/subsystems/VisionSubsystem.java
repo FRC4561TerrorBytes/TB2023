@@ -20,6 +20,7 @@ import frc.robot.GameState.CenteredState;
 
 public class VisionSubsystem extends SubsystemBase {
     private static final int OUT_OF_ROT_TOLERANCE_DEBOUNCE = 4;
+    private static final int LOST_TARGET_DEBOUNCE = 4;
 
     DriveSubsystem m_driveSubsystem;
 
@@ -30,6 +31,7 @@ public class VisionSubsystem extends SubsystemBase {
     boolean inRotTolerance = false;
     int outOfRotToleranceDebounceCount = OUT_OF_ROT_TOLERANCE_DEBOUNCE;
     boolean inLatTolerance = false;
+    int lostTargetDebouceCount = 0;
 
     double xSpeed;
     double ySpeed;
@@ -192,6 +194,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         // checking if a camera sees a target
         if (targetTransform != null) {
+            lostTargetDebouceCount = 0;
             averageDistance.add(targetTransform.getX());
             if(averageDistance.size() > runningAverageLength){
                 averageDistance.remove(0);
@@ -290,8 +293,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         else {
-            // if we have not target rotate in place
-            m_driveSubsystem.drive(0, 0, 0.5, false);
+            lostTargetDebouceCount++;
         }
     }
 
@@ -324,8 +326,9 @@ public class VisionSubsystem extends SubsystemBase {
 
         @Override
         public boolean isFinished() {
-            // TODO check for drive stall.
-            return false;
+            // TODO check for drive stall. That is, up against
+            // substation wall or grid edges.
+            return lostTargetDebouceCount >= LOST_TARGET_DEBOUNCE;
         }
         
         @Override
