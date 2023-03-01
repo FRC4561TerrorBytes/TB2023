@@ -5,10 +5,9 @@
 package frc.robot.commands.autonomous;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
+import frc.robot.commands.ScoreCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -20,19 +19,14 @@ import frc.robot.subsystems.VisionSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ScoreCubeLeaveCommunity extends SequentialCommandGroup {
   /** Creates a new ScoreCube. */
-  private DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private ArmSubsystem m_armSubsystem = new ArmSubsystem();
-  private VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
-  private IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-
-  public ScoreCubeLeaveCommunity() {
+  public ScoreCubeLeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, VisionSubsystem m_visionSubsystem, IntakeSubsystem m_intakeSubsystem) {
     addCommands(
-      new RunCommand(() -> m_visionSubsystem.centerAprilTag(0), m_visionSubsystem).alongWith(new RunCommand(() -> m_driveSubsystem.updateOdometry(), m_driveSubsystem)),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)),
       new WaitCommand(1.0),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)),
-      new RunCommand(() -> m_intakeSubsystem.setIntakeSpeed(-Constants.INTAKE_SPEED), m_intakeSubsystem),
-      new AutoTrajectory(m_driveSubsystem, "LeaveCommunity", 1, 1).getCommandAndStop()
+      new WaitCommand(1.0),
+      new ScoreCommand(m_intakeSubsystem).withTimeout(0.5),
+      new DriveUntilCommand(m_driveSubsystem, -1.0, () -> false).withTimeout(5)
     );
   }
 }
