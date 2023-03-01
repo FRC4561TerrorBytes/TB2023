@@ -19,6 +19,7 @@ import frc.robot.GameState;
 import frc.robot.GameState.CenteredState;
 
 public class VisionSubsystem extends SubsystemBase {
+    private static final int OUT_OF_ROT_TOLERANCE_DEBOUNCE = 4;
 
     DriveSubsystem m_driveSubsystem;
 
@@ -27,6 +28,7 @@ public class VisionSubsystem extends SubsystemBase {
     PhotonCamera leftCamera = new PhotonCamera("Table");
 
     boolean inRotTolerance = false;
+    int outOfRotToleranceDebounceCount = OUT_OF_ROT_TOLERANCE_DEBOUNCE;
     boolean inLatTolerance = false;
 
     double xSpeed;
@@ -235,11 +237,15 @@ public class VisionSubsystem extends SubsystemBase {
 
             // rotation deadband
             if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
-                inRotTolerance = false;
-                xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
+                outOfRotToleranceDebounceCount++;
+                if (outOfRotToleranceDebounceCount >= OUT_OF_ROT_TOLERANCE_DEBOUNCE) {
+                    inRotTolerance = false;
+                    xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
+                }
             }
             // rotation tolerance
             if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
+                outOfRotToleranceDebounceCount = 0;
                 inRotTolerance = true;
             }
 
@@ -306,6 +312,7 @@ public class VisionSubsystem extends SubsystemBase {
         public void initialize() {
             inLatTolerance = false;
             inRotTolerance = false;
+            outOfRotToleranceDebounceCount = OUT_OF_ROT_TOLERANCE_DEBOUNCE;
             averageDistance.clear();
             averageLateral.clear();
         }
