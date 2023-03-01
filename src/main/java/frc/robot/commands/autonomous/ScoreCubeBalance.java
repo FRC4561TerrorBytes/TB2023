@@ -4,6 +4,8 @@
 
 package frc.robot.commands.autonomous;
 
+import java.time.Instant;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -24,7 +26,7 @@ public class ScoreCubeBalance extends SequentialCommandGroup {
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)),
       new WaitCommand(1.0),
       new ScoreCommand(m_intakeSubsystem).withTimeout(0.5),
-      new BalanceAuto(m_driveSubsystem).withTimeout(3.0)
+      new BalanceAuto(m_driveSubsystem).withTimeout(3.0).alongWith(new WaitCommand(0.5).andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))))
     );
   }
 }
