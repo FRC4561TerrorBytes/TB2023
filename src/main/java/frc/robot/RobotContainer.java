@@ -23,6 +23,7 @@ import frc.robot.GameState.GamePiece;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.ScoreCommand;
+import frc.robot.commands.ZeroArmCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
 import frc.robot.commands.autonomous.LeaveCommunity;
@@ -70,6 +71,12 @@ public class RobotContainer {
         m_driveSubsystem));
 
     m_armSubsystem.setDefaultCommand(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
+
+    m_autoChooser.addOption("Do Nothing", null);
+    m_autoChooser.addOption("Leave Community", new LeaveCommunity(m_driveSubsystem, m_armSubsystem));
+    m_autoChooser.addOption("Score Cube Balance", new ScoreCubeBalance(m_driveSubsystem, m_armSubsystem, m_visionSubsystem, m_intakeSubsystem));
+    m_autoChooser.addOption("Score Cube Leave Community", new ScoreCubeLeaveCommunity(m_driveSubsystem, m_armSubsystem, m_visionSubsystem, m_intakeSubsystem));
+
 
     // Configure the trigger bindings
     configureBindings();
@@ -189,7 +196,10 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        return m_autoChooser.getSelected();
+        if (m_autoChooser != null) {
+            return m_autoChooser.getSelected().beforeStarting(new ZeroArmCommand(m_armSubsystem));
+        }
+        return null;
     }
 
   private static double modifyAxis(double value) {

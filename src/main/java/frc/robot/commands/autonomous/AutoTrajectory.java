@@ -50,7 +50,7 @@ public class AutoTrajectory {
                             Translation2d targetTranslation, Rotation2d targetRotation){
         m_driveSubsystem = driveSubsystem;
         m_pathPlannerTrajectory = PathPlanner.generatePath(new PathConstraints(maxSpeedMetersPerSec, maxAccelerationMetersPerSecSquared),
-                                                         new PathPoint(new Translation2d(), m_driveSubsystem.geRotation2d(), new Rotation2d()),
+                                                         new PathPoint(new Translation2d(), m_driveSubsystem.getRotation2d(), new Rotation2d()),
                                                          new PathPoint(targetTranslation, new Rotation2d(), targetRotation));
 
         // Auto PID Controllers
