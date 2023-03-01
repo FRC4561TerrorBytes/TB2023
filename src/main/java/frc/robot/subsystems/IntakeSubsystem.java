@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,12 +26,6 @@ public class IntakeSubsystem extends SubsystemBase {
     m_leftIntakeMotor.setIdleMode(IdleMode.kBrake);
     m_rightIntakeMotor.setIdleMode(IdleMode.kBrake);
 
-    m_frontLimit = m_leftIntakeMotor.getForwardLimitSwitch(Type.kNormallyClosed);
-    m_backLimit = m_rightIntakeMotor.getReverseLimitSwitch(Type.kNormallyClosed);
-  }
-
-  public boolean isFrontLimitBroken() {
-    return m_frontLimit.isPressed();
   }
 
   public void setIntakeSpeed(double speed) {

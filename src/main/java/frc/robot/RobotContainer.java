@@ -7,16 +7,13 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController.Axis;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
@@ -29,13 +26,12 @@ import frc.robot.commands.ZeroShoulderCommand;
 import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCubeBalance;
 import frc.robot.commands.autonomous.ScoreCubeLeaveCommunity;
-import frc.robot.commands.autonomous.ScoreCubeBalance;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -76,7 +72,7 @@ public class RobotContainer {
     m_autoChooser.addOption("Leave Community", new LeaveCommunity(m_driveSubsystem, m_armSubsystem));
     m_autoChooser.addOption("Score Cube Balance", new ScoreCubeBalance(m_driveSubsystem, m_armSubsystem, m_visionSubsystem, m_intakeSubsystem));
     m_autoChooser.addOption("Score Cube Leave Community", new ScoreCubeLeaveCommunity(m_driveSubsystem, m_armSubsystem, m_visionSubsystem, m_intakeSubsystem));
-
+    SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
     configureBindings();
