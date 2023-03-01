@@ -121,10 +121,10 @@ public final class Constants {
 
   public static final double VISION_LATERAL_FLOOR_CLAMP = 0.2;
   public static final double VISION_LATERAL_CEILING_CLAMP = 0.5;
-  public static final double VISION_LATERAL_DEADBAND = 0.15;
-  public static final double VISION_LATERAL_TOLERANCE = 0.1;
+  public static final double VISION_LATERAL_DEADBAND = 0.1;
+  public static final double VISION_LATERAL_TOLERANCE = 0.05;
 
-  public static final double VISION_END_DISTANCE = 0.3;
+  public static final double VISION_END_DISTANCE = Units.inchesToMeters(9);
   public static final double VISION_FORWARD_FLOOR_CLAMP = 0.2;
   public static final double VISION_FORWARD_CEILING_CLAMP = 1;
 
