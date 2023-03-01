@@ -119,14 +119,14 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public boolean onChargeStation() {
-    return m_pigeon.getPitch() < -20;
+    return Math.abs(m_pigeon.getPitch()) > 20;
   }
 
   public boolean onPitchDown() {
     // double[] angleRates = new double[3];
     // m_pigeon.getRawGyro(angleRates);
     // return onChargeStation() && angleRates[0] < -1;
-    return m_pigeon.getPitch() > -10;
+    return Math.abs(m_pigeon.getPitch()) < 10;
   }
 
   public void stop() {
