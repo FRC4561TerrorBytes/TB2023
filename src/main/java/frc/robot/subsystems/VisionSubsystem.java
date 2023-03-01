@@ -11,12 +11,16 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.GameState;
 import frc.robot.GameState.CenteredState;
 
 public class VisionSubsystem extends SubsystemBase {
+    private static final int OUT_OF_ROT_TOLERANCE_DEBOUNCE = 4;
+    private static final int LOST_TARGET_DEBOUNCE = 4;
 
     DriveSubsystem m_driveSubsystem;
 
@@ -25,11 +29,11 @@ public class VisionSubsystem extends SubsystemBase {
     PhotonCamera leftCamera = new PhotonCamera("Table");
 
     boolean inRotTolerance = false;
+    int outOfRotToleranceDebounceCount = OUT_OF_ROT_TOLERANCE_DEBOUNCE;
     boolean inLatTolerance = false;
-    boolean prevTarget = false;
+    int lostTargetDebouceCount = 0;
 
     double xSpeed;
-    double leftYSpeed;
     double ySpeed;
     double rotation;
     double distance;
@@ -39,19 +43,13 @@ public class VisionSubsystem extends SubsystemBase {
     Transform3d targetTransform;
     PhotonTrackedTarget leftTarget;
     PhotonTrackedTarget rightTarget;
-    boolean rightTargetValid;
     boolean rightTargetIDValid;
-    boolean leftTargetValid;
     boolean leftTargetIDValid;
-    boolean anyTargetValid;
     double cameraOffset;
 
-    double aprilTagOffset = -Units.inchesToMeters(28);
     List<Double> averageDistance = new ArrayList<Double>();
-    List<Double> averageRotation = new ArrayList<Double>();
     List<Double> averageLateral = new ArrayList<Double>();
     int runningAverageLength = 2;
-    
 
     public VisionSubsystem(DriveSubsystem driveSubsystem) {
         m_driveSubsystem = driveSubsystem;
@@ -106,8 +104,17 @@ public class VisionSubsystem extends SubsystemBase {
         return (total/list.size());
     }
 
-    public void centerAprilTag(double aprilTagOffset) {
+    /**
+     * Obtain centering command here for consistant command tuning and safety.
+     * 
+     * @param aprilTagOffset the offset (in meters) of the tag to track.
+     * @return a new April tag tracking command.
+     */
+    public Command centerAprilTagCommand(final double aprilTagOffset) {
+        return new CenterAprilTag(aprilTagOffset);
+    }
 
+    private void centerAprilTag(final double aprilTagOffset) {
         // right camera stuff
         var rightResult = rightCamera.getLatestResult();
         // checking for targets in view
@@ -185,41 +192,30 @@ public class VisionSubsystem extends SubsystemBase {
             targetTransform = null;
         }
 
-
-
-
-
-
         // checking if a camera sees a target
         if (targetTransform != null) {
-
-
+            lostTargetDebouceCount = 0;
             averageDistance.add(targetTransform.getX());
-            System.out.println("Adding to the list: " + targetTransform.getRotation().getZ());
             if(averageDistance.size() > runningAverageLength){
                 averageDistance.remove(0);
             }
-
-          
 
             averageLateral.add(targetTransform.getY() + cameraOffset);
             if(averageLateral.size() > runningAverageLength){
                 averageLateral.remove(0);
             }
 
-            double xAverage = getAverage(averageDistance);
-            double yAverage = getAverage(averageLateral);
-       
+            final double xAverage = getAverage(averageDistance);
+            final double yAverage = getAverage(averageLateral);
 
-            double targetAngle = Units.radiansToDegrees(targetTransform.getRotation().getZ());
-            double positiveAngle;
+            final double targetAngle = Units.radiansToDegrees(targetTransform.getRotation().getZ());
             // determining the sign of the angle of the target
-            positiveAngle = Math.signum(targetAngle);
+            final double positiveAngle = Math.signum(targetAngle);
 
             // variables that will be applied to the drive substystem
             xSpeed = 0;
             distance = xAverage - Constants.RIGHT_CAMERA_OFFSET_BACK;
-            calculatedRotation = ((180 - Math.abs(targetAngle)) * positiveAngle);
+            calculatedRotation = ((180.0 - Math.abs(targetAngle)) * positiveAngle);
             
             // averageRotation.add(calculatedRotation);
             // if(averageRotation.size() > runningAverageLength){
@@ -227,13 +223,10 @@ public class VisionSubsystem extends SubsystemBase {
             // }
 
             // double zAverage = getAverage(averageRotation);
-            // System.out.println("rotation average: " + zAverage);
 
             // calculation rotation
             if (!inRotTolerance) {
                 rotation = MathUtil.clamp(Math.abs(calculatedRotation), Constants.VISION_ROTATION_FLOOR_CLAMP, Constants.VISION_ROTATION_CEILING_CLAMP) * positiveAngle;
-                System.out.println("rotation speed: " + rotation);
-                System.out.println("calculated rotation: " + calculatedRotation);
             } else {
                 rotation = 0;
             }
@@ -247,11 +240,15 @@ public class VisionSubsystem extends SubsystemBase {
 
             // rotation deadband
             if (Math.abs(calculatedRotation) > Constants.VISION_ROTATION_DEADBAND) {
-                inRotTolerance = false;
-                xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
+                outOfRotToleranceDebounceCount++;
+                if (outOfRotToleranceDebounceCount >= OUT_OF_ROT_TOLERANCE_DEBOUNCE) {
+                    inRotTolerance = false;
+                    xSpeed = MathUtil.clamp(distance/2, Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP/2);
+                }
             }
             // rotation tolerance
             if (Math.abs(calculatedRotation) < Constants.VISION_ROTATION_TOLERANCE) {
+                outOfRotToleranceDebounceCount = 0;
                 inRotTolerance = true;
             }
 
@@ -275,7 +272,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // forward movement
-            if (xAverage - Constants.RIGHT_CAMERA_OFFSET_BACK <= Constants.VISION_END_DISTANCE) {
+            if (distance <= Constants.VISION_END_DISTANCE) {
                 xSpeed = 0;
             } else {
                 xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
@@ -284,26 +281,59 @@ public class VisionSubsystem extends SubsystemBase {
             // applying things to the drive assigned above
             m_driveSubsystem.drive(xSpeed*0.9, (ySpeed) * Constants.VISION_LATERAL_SCALING,
                     -rotation * Constants.VISION_ROTATION_SCALING, false);
-        System.out.println("InLatTolerance: " + inLatTolerance);
+            SmartDashboard.putBoolean("In Lat Tol", inLatTolerance);
             SmartDashboard.putBoolean("Rotation Tolerance", inRotTolerance);
             if (inLatTolerance && inRotTolerance) {
                 GameState.getInstance().setCenteredState(CenteredState.CENTERED);
             } else if (inRotTolerance && !(inLatTolerance)) {
                 GameState.getInstance().setCenteredState(CenteredState.PARTIAL);
             } else {
-                System.out.println("red led here");
                 GameState.getInstance().setCenteredState(CenteredState.NOTCENTERED);
             }
         }
 
         else {
-            // if we have not target rotate in place
-            m_driveSubsystem.drive(0, 0, 0.5, false);
+            lostTargetDebouceCount++;
         }
     }
 
     @Override
     public void periodic() {
         
+    }
+
+    private class CenterAprilTag extends CommandBase {
+        private final double aprilTagOffset;
+
+        private CenterAprilTag(final double aprilTagOffset) {
+            this.aprilTagOffset = aprilTagOffset;
+            addRequirements(m_driveSubsystem);
+        }
+
+        @Override
+        public void initialize() {
+            inLatTolerance = false;
+            inRotTolerance = false;
+            outOfRotToleranceDebounceCount = OUT_OF_ROT_TOLERANCE_DEBOUNCE;
+            averageDistance.clear();
+            averageLateral.clear();
+        }
+
+        @Override
+        public void execute() {
+            centerAprilTag(aprilTagOffset);
+        }
+
+        @Override
+        public boolean isFinished() {
+            // TODO check for drive stall. That is, up against
+            // substation wall or grid edges.
+            return lostTargetDebouceCount >= LOST_TARGET_DEBOUNCE;
+        }
+        
+        @Override
+        public void end(boolean interrupted) {
+            m_driveSubsystem.stop();
+        }
     }
 }
