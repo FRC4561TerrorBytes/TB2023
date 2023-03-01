@@ -26,7 +26,7 @@ public class ScoreCubeLeaveCommunity extends SequentialCommandGroup {
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)),
       new WaitCommand(1.0),
       new ScoreCommand(m_intakeSubsystem).withTimeout(0.5),
-      new DriveUntilCommand(m_driveSubsystem, -1.0, () -> false).withTimeout(5)
+      new DriveUntilCommand(m_driveSubsystem, -1.0, () -> false).withTimeout(5).alongWith(new WaitCommand(0.5).andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))))
     );
   }
 }
