@@ -81,23 +81,17 @@ public class RobotContainer {
 
     // Scoring
     m_primaryController.b()
-        .whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(22)),
-            m_driveSubsystem));
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(22)));
     m_primaryController.y()
-        .whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(0.0), m_driveSubsystem));
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(0.0));
     m_primaryController.x()
-        .whileTrue(new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(22)),
-            m_driveSubsystem));
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22)));
 
     // Substation grabs
     m_primaryController.leftBumper()
-        .whileTrue(
-            new RunCommand(() -> m_visionSubsystem.centerAprilTag(-Units.inchesToMeters(29.565)),
-                m_driveSubsystem));
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(29.565)));
     m_primaryController.rightBumper()
-        .whileTrue(
-            new RunCommand(() -> m_visionSubsystem.centerAprilTag(Units.inchesToMeters(29.565)),
-                m_driveSubsystem));
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(29.565)));
 
     // Driver nudges
     m_primaryController.povUp()
