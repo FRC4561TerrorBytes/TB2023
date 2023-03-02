@@ -12,12 +12,14 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 public class ScoreCubeBalance extends SequentialCommandGroup {
-  /** Creates a new ScoreCubeBalance. */
-  
-  public ScoreCubeBalance(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, VisionSubsystem m_visionSubsystem, IntakeSubsystem m_intakeSubsystem) {
+  /** Scores preloaded cube on center link, drives back and balances on charge station
+   * @param m_driveSubsyste The drive subsystem required to drive
+   * @param m_armSubsystem The arm subsystem required to move arm
+   * @param m_intakeSubsystem The intake subsystem required to outake / score
+  */
+  public ScoreCubeBalance(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, IntakeSubsystem m_intakeSubsystem) {
     addCommands(
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
       new WaitCommand(1.0),

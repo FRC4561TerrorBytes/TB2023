@@ -12,14 +12,19 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ScoreCubeLeaveCommunity extends SequentialCommandGroup {
-  /** Creates a new ScoreCube. */
-  public ScoreCubeLeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, VisionSubsystem m_visionSubsystem, IntakeSubsystem m_intakeSubsystem) {
+  /** Creates a new ScoreCube.
+   * Scores preloaded cube, moves backwards and leaves community immediately after. 
+   * @param m_driveSubsyste The drive subsystem required to drive
+   * @param m_armSubsystem The arm subsystem required to move arm
+   * @param m_intakeSubsystem The intake subsystem required to outake / score
+   * @param fileName The string containing the .path file that specifies the path to run on each side of the field - 
+   * ("LeaveCommunityRight" or "LeaveCommunityLeft")
+  */
+
+  public ScoreCubeLeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, 
+                                  IntakeSubsystem m_intakeSubsystem, String fileName) {
     addCommands(
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
       new WaitCommand(1.0),
@@ -31,7 +36,7 @@ public class ScoreCubeLeaveCommunity extends SequentialCommandGroup {
       new WaitCommand(1.0),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
       new WaitCommand(1.0),
-      new DriveUntilCommand(m_driveSubsystem, -1.0, () -> false).withTimeout(5)
+      new AutoTrajectory(m_driveSubsystem, fileName, 1, 1).getCommandAndStop()
     );
   }
 }
