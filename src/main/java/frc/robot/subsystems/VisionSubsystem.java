@@ -283,9 +283,9 @@ public class VisionSubsystem extends SubsystemBase {
                     -rotation * Constants.VISION_ROTATION_SCALING, false);
             SmartDashboard.putBoolean("In Lat Tol", inLatTolerance);
             SmartDashboard.putBoolean("Rotation Tolerance", inRotTolerance);
-            if (inLatTolerance && inRotTolerance) {
+            if (inLatTolerance && inRotTolerance && xSpeed == 0.0) {
                 GameState.getInstance().setCenteredState(CenteredState.CENTERED);
-            } else if (inRotTolerance && !(inLatTolerance) && distance > backOffset + 0.1) {
+            } else if (inRotTolerance && !(inLatTolerance)) {
                 GameState.getInstance().setCenteredState(CenteredState.PARTIAL);
             } else {
                 GameState.getInstance().setCenteredState(CenteredState.NOTCENTERED);
@@ -324,13 +324,21 @@ public class VisionSubsystem extends SubsystemBase {
         @Override
         public void execute() {
             centerAprilTag(m_aprilTagOffset, m_backOffset);
+            SmartDashboard.putBoolean("driving forward", false);
+            SmartDashboard.putNumber("lost targets", lostTargetDebouceCount);
         }
 
         @Override
         public boolean isFinished() {
             // TODO check for drive stall. That is, up against
             // substation wall or grid edges.
-            return lostTargetDebouceCount >= LOST_TARGET_DEBOUNCE;
+            if(lostTargetDebouceCount >= LOST_TARGET_DEBOUNCE){
+                return true;
+            }
+            else if(GameState.getInstance().getCenteredState() == CenteredState.CENTERED){
+                return true;
+            }
+            return false;
         }
         
         @Override
