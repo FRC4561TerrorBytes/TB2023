@@ -285,7 +285,7 @@ public class VisionSubsystem extends SubsystemBase {
             SmartDashboard.putBoolean("Rotation Tolerance", inRotTolerance);
             if (inLatTolerance && inRotTolerance) {
                 GameState.getInstance().setCenteredState(CenteredState.CENTERED);
-            } else if (inRotTolerance && !(inLatTolerance)) {
+            } else if (inRotTolerance && !(inLatTolerance) && distance > backOffset + 0.1) {
                 GameState.getInstance().setCenteredState(CenteredState.PARTIAL);
             } else {
                 GameState.getInstance().setCenteredState(CenteredState.NOTCENTERED);

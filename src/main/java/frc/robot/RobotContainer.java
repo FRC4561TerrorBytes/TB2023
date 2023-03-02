@@ -19,6 +19,7 @@ import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
+import frc.robot.commands.DriveDistance;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -89,9 +90,9 @@ public class RobotContainer {
 
     // Substation grabs
     m_primaryController.leftBumper()
-        .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(29.565), Units.inchesToMeters(30)));
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(29.565), Units.inchesToMeters(20)).andThen(new DriveDistance(m_driveSubsystem, 0.5, 0.3)));
     m_primaryController.rightBumper()
-        .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(29.565), Units.inchesToMeters(30)));
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(29.565), Units.inchesToMeters(20)).andThen(new DriveDistance(m_driveSubsystem, 0.5, 0.3)));
 
     // Driver nudges
     m_primaryController.povUp()
