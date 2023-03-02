@@ -111,11 +111,11 @@ public class RobotContainer {
         m_primaryController.x()
             .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22), Units.inchesToMeters(9)));
 
-        // Substation grabs
-        m_primaryController.leftBumper()
-                .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(29.565), Units.inchesToMeters(20)).andThen(new DriveDistance(m_driveSubsystem, 0.5, 0.3)));
-        m_primaryController.rightBumper()
-                .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(29.565), Units.inchesToMeters(20)).andThen(new DriveDistance(m_driveSubsystem, 0.5, 0.3)));
+    // Substation grabs
+    m_primaryController.leftBumper()
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(29.565), Units.inchesToMeters(30)).andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5), 1)));
+    m_primaryController.rightBumper()
+        .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(29.565), Units.inchesToMeters(30)).andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5), 1)));
 
         // Driver nudges
         m_primaryController.povUp()
