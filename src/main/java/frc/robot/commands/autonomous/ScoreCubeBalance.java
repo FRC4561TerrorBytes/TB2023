@@ -19,12 +19,18 @@ public class ScoreCubeBalance extends SequentialCommandGroup {
   
   public ScoreCubeBalance(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, VisionSubsystem m_visionSubsystem, IntakeSubsystem m_intakeSubsystem) {
     addCommands(
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)),
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
       new WaitCommand(1.0),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH)),
       new WaitCommand(1.0),
       new ScoreCommand(m_intakeSubsystem).withTimeout(0.5),
-      new BalanceAuto(m_driveSubsystem).withTimeout(3.0).alongWith(new WaitCommand(0.5).andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))))
+      new DriveUntilCommand(m_driveSubsystem, -0.5, () -> false).withTimeout(0.5),
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
+      new WaitCommand(1.0),
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
+      new WaitCommand(1.0),
+      new BalanceAuto(m_driveSubsystem).withTimeout(5.0),
+      new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))
     );
   }
 }

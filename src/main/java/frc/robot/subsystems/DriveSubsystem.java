@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -62,6 +63,7 @@ public class DriveSubsystem extends SubsystemBase {
                                                                         getModulePositions());
 
   public DriveSubsystem() {
+    m_pigeon.setYaw(180.0);
   }
 
   /**
@@ -126,7 +128,7 @@ public class DriveSubsystem extends SubsystemBase {
     // double[] angleRates = new double[3];
     // m_pigeon.getRawGyro(angleRates);
     // return onChargeStation() && angleRates[0] < -1;
-    return Math.abs(m_pigeon.getPitch()) < 10;
+    return Math.abs(m_pigeon.getPitch()) < 12;
   }
 
   public void stop() {
@@ -136,5 +138,8 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
+    SmartDashboard.putBoolean("On Charge Station", onChargeStation());
+    SmartDashboard.putBoolean("On Pitch Down", onPitchDown());
   }
 }

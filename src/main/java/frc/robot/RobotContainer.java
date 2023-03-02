@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController.Axis;
@@ -12,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -43,147 +44,149 @@ import frc.robot.subsystems.VisionSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
-  private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
+    // The robot's subsystems and commands are defined here...
+    private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+    private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+    private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+    private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
+    private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
 
-  private final CommandXboxController m_primaryController = new CommandXboxController(0);
-  private final CommandXboxController m_secondaryController = new CommandXboxController(1);
-  private final CommandXboxController m_tertiaryController = new CommandXboxController(2);
-    private final SendableChooser<SequentialCommandGroup> m_autoChooser = new SendableChooser<>();
+    private final CommandXboxController m_primaryController = new CommandXboxController(0);
+    private final CommandXboxController m_secondaryController = new CommandXboxController(1);
+    private final CommandXboxController m_tertiaryController = new CommandXboxController(2);
+    private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
-        modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-        true),
-        m_driveSubsystem));
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
+                modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+                modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+                modifyAxis(-m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+                true),
+                m_driveSubsystem));
 
-    m_armSubsystem.setDefaultCommand(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
+        m_armSubsystem.setDefaultCommand(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
 
-    m_autoChooser.addOption("Do Nothing", null);
-    m_autoChooser.addOption("Leave Community", new LeaveCommunity(m_driveSubsystem, m_armSubsystem));
-    m_autoChooser.addOption("Score Cube Balance", new ScoreCubeBalance(m_driveSubsystem, m_armSubsystem, m_visionSubsystem, m_intakeSubsystem));
-    m_autoChooser.addOption("Score Cube Leave Community", new ScoreCubeLeaveCommunity(m_driveSubsystem, m_armSubsystem, m_visionSubsystem, m_intakeSubsystem));
-    SmartDashboard.putData("Auto chooser", m_autoChooser);
+        m_autoChooser.setDefaultOption("Do Nothing", () -> new WaitCommand(1.0));
+        m_autoChooser.addOption("Leave Community", () -> new LeaveCommunity(m_driveSubsystem, m_armSubsystem));
+        m_autoChooser.addOption("Score Cube Balance",
+                () -> new ScoreCubeBalance(m_driveSubsystem, m_armSubsystem, m_visionSubsystem, m_intakeSubsystem));
+        m_autoChooser.addOption("Score Cube Leave Community", () -> new ScoreCubeLeaveCommunity(m_driveSubsystem,
+                m_armSubsystem, m_visionSubsystem, m_intakeSubsystem));
+        SmartDashboard.putData("Auto chooser", m_autoChooser);
 
-    // Configure the trigger bindings
-    configureBindings();
-  }
+        // Configure the trigger bindings
+        configureBindings();
+    }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    // Primary Controller Bindings
+    /**
+     * Use this method to define your trigger->command mappings. Triggers can be
+     * created via the
+     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+     * an arbitrary predicate, or via the named factories in {@link
+     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+     * {@link CommandXboxController
+     * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+     * PS4} controllers or
+     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+     * joysticks}.
+     */
+    private void configureBindings() {
+        // Primary Controller Bindings
 
-    // Scoring
-    m_primaryController.b()
-        .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(22)));
-    m_primaryController.y()
-        .whileTrue(m_visionSubsystem.centerAprilTagCommand(0.0));
-    m_primaryController.x()
-        .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22)));
+        // Scoring
+        m_primaryController.b()
+                .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(22)));
+        m_primaryController.y()
+                .whileTrue(m_visionSubsystem.centerAprilTagCommand(0.0));
+        m_primaryController.x()
+                .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22)));
 
-    // Substation grabs
-    m_primaryController.leftBumper()
-        .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(29.565)));
-    m_primaryController.rightBumper()
-        .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(29.565)));
+        // Substation grabs
+        m_primaryController.leftBumper()
+                .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(29.565)));
+        m_primaryController.rightBumper()
+                .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(29.565)));
 
-    // Driver nudges
-    m_primaryController.povUp()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.4, 0.0, 0.0, true), m_driveSubsystem))
-        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
-    m_primaryController.povDown()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-0.4, 0.0, 0.0, true), m_driveSubsystem))
-        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
-    m_primaryController.povLeft()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.4, 0.0, true), m_driveSubsystem))
-        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
-    m_primaryController.povRight()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.4, 0.0, true), m_driveSubsystem))
-        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+        // Driver nudges
+        m_primaryController.povUp()
+                .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.4, 0.0, 0.0, true), m_driveSubsystem))
+                .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+        m_primaryController.povDown()
+                .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-0.4, 0.0, 0.0, true), m_driveSubsystem))
+                .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+        m_primaryController.povLeft()
+                .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.4, 0.0, true), m_driveSubsystem))
+                .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+        m_primaryController.povRight()
+                .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.4, 0.0, true), m_driveSubsystem))
+                .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
-    // Secondary Controller Bindings
+        // Secondary Controller Bindings
 
-    // Arm positions
-    m_secondaryController.a()
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    m_secondaryController.b()
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
-    m_secondaryController.y().onTrue(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE))
-            .andThen(new WaitCommand(1.0))
-            .andThen(new InstantCommand(
-                () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH))));
-    m_secondaryController.x()
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_secondaryController.axisLessThan(Axis.kLeftY.value, -0.5)
-        .onTrue(new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    m_secondaryController.leftBumper().onTrue(
-        new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
-    m_secondaryController.leftTrigger().onTrue(
-        new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
+        // Arm positions
+        m_secondaryController.a()
+                .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
+        m_secondaryController.b()
+                .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
+        m_secondaryController.y().onTrue(
+                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE))
+                        .andThen(new WaitCommand(1.0))
+                        .andThen(new InstantCommand(
+                                () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH))));
+        m_secondaryController.x()
+                .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+        m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
+                .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+        m_secondaryController.axisLessThan(Axis.kLeftY.value, -0.5)
+                .onTrue(new InstantCommand(
+                        () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+        m_secondaryController.leftBumper().onTrue(
+                new InstantCommand(
+                        () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
+        m_secondaryController.leftTrigger().onTrue(
+                new InstantCommand(
+                        () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
 
-    // Game piece indication
-    m_secondaryController.start()
-        .onTrue(new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE)));
-    m_secondaryController.back()
-        .onTrue(new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
+        // Game piece indication
+        m_secondaryController.start()
+                .onTrue(new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE)));
+        m_secondaryController.back()
+                .onTrue(new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
 
-    // Score
-    m_secondaryController.rightBumper().onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
+        // Score
+        m_secondaryController.rightBumper().onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
 
-    // Tertiary Controller Bindings
+        // Tertiary Controller Bindings
 
-    // Switch between manual arm control
-    m_tertiaryController.back().onTrue(new ManualArmCommand(
-        m_armSubsystem,
-        () -> -m_tertiaryController.getLeftY(),
-        () -> -m_tertiaryController.getRightY()).until(m_tertiaryController.start()));
+        // Switch between manual arm control
+        m_tertiaryController.back().onTrue(new ManualArmCommand(
+                m_armSubsystem,
+                () -> -m_tertiaryController.getLeftY(),
+                () -> -m_tertiaryController.getRightY()).until(m_tertiaryController.start()));
 
-    // Re:Zero − Starting Life in Another World
-    m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
-        .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
-        .andThen(new ZeroElbowCommand(m_armSubsystem)));
+        // Re:Zero − Starting Life in Another World
+        m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
+                .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
+                .andThen(new ZeroElbowCommand(m_armSubsystem)));
 
-    // Miscellaneous Bindings
+        // Miscellaneous Bindings
 
-    // Always run intake at hold when not intaking or scoring.
-    m_intakeSubsystem.setDefaultCommand(new RunCommand(m_intakeSubsystem::hold, m_intakeSubsystem));
-    // Run intake when arm in substation position
-    Trigger substationHalfway = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY);
-    Trigger substationFullway = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY);
-    substationHalfway.or(substationFullway)
-        .whileTrue(new IntakeCommand(m_intakeSubsystem).finallyDo(interrupted -> {
-          if (!interrupted)
-            m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH);
-        }));
-  }
+        // Always run intake at hold when not intaking or scoring.
+        m_intakeSubsystem.setDefaultCommand(new RunCommand(m_intakeSubsystem::hold, m_intakeSubsystem));
+        // Run intake when arm in substation position
+        Trigger substationHalfway = new Trigger(
+                () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY);
+        Trigger substationFullway = new Trigger(
+                () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY);
+        substationHalfway.or(substationFullway)
+                .whileTrue(new IntakeCommand(m_intakeSubsystem).finallyDo(interrupted -> {
+                    if (!interrupted)
+                        m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH);
+                }));
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -192,20 +195,24 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        if (m_autoChooser != null) {
-            return m_autoChooser.getSelected().beforeStarting(new ZeroArmCommand(m_armSubsystem));
+        var commandSupplier = m_autoChooser.getSelected();
+        if (commandSupplier != null) {
+            return commandSupplier.get()
+                    .alongWith(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem))
+                    .alongWith(new InstantCommand(() -> m_intakeSubsystem.hold()))
+                    .beforeStarting(new ZeroArmCommand(m_armSubsystem));
         }
         return null;
     }
 
-  private static double modifyAxis(double value) {
-    // Deadband
-    value = MathUtil.applyDeadband(value, 0.05);
+    private static double modifyAxis(double value) {
+        // Deadband
+        value = MathUtil.applyDeadband(value, 0.05);
 
-    // Square the axis
-    value = Math.copySign(value * value, value);
+        // Square the axis
+        value = Math.copySign(value * value, value);
 
-    return value;
-  }
+        return value;
+    }
 
 }
