@@ -110,11 +110,11 @@ public class VisionSubsystem extends SubsystemBase {
      * @param aprilTagOffset the offset (in meters) of the tag to track.
      * @return a new April tag tracking command.
      */
-    public Command centerAprilTagCommand(final double aprilTagOffset) {
-        return new CenterAprilTag(aprilTagOffset);
+    public Command centerAprilTagCommand(final double aprilTagOffset, final double backOffset) {
+        return new CenterAprilTag(aprilTagOffset, backOffset);
     }
 
-    private void centerAprilTag(final double aprilTagOffset) {
+    private void centerAprilTag(final double aprilTagOffset, final double backOffset) {
         // right camera stuff
         var rightResult = rightCamera.getLatestResult();
         // checking for targets in view
@@ -232,7 +232,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // forward movement
-            if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= Constants.VISION_END_DISTANCE) {
+            if (targetTransform.getX() - Constants.RIGHT_CAMERA_OFFSET_BACK <= backOffset) {
                 xSpeed = 0;
             } else {
                 xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
@@ -272,7 +272,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // forward movement
-            if (distance <= Constants.VISION_END_DISTANCE) {
+            if (distance <= backOffset) {
                 xSpeed = 0;
             } else {
                 xSpeed = Math.signum(distance) * MathUtil.clamp(Math.abs(distance), Constants.VISION_FORWARD_FLOOR_CLAMP, Constants.VISION_FORWARD_CEILING_CLAMP);
@@ -303,10 +303,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     private class CenterAprilTag extends CommandBase {
-        private final double aprilTagOffset;
+        private final double m_aprilTagOffset;
+        private final double m_backOffset;
 
-        private CenterAprilTag(final double aprilTagOffset) {
-            this.aprilTagOffset = aprilTagOffset;
+        private CenterAprilTag(final double aprilTagOffset, final double backOffset) {
+            m_aprilTagOffset = aprilTagOffset;
+            m_backOffset = backOffset;
             addRequirements(m_driveSubsystem);
         }
 
@@ -321,7 +323,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         @Override
         public void execute() {
-            centerAprilTag(aprilTagOffset);
+            centerAprilTag(m_aprilTagOffset, m_backOffset);
         }
 
         @Override
