@@ -45,6 +45,14 @@ public class IntakeSubsystem extends SubsystemBase {
     setIntakeSpeed(Constants.INTAKE_SCORE_SPEEED);
   }
 
+  public void scoreConeMiddle() {
+    setIntakeSpeed(Constants.INTAKE_CONE_MIDDLE_SPEED);
+  }
+
+  public void scoreConeHigh() {
+    setIntakeSpeed(Constants.INTAKE_CONE_HIGH_SPEED);
+  }
+
   public void stop() {
     setIntakeSpeed(0.0);
   }

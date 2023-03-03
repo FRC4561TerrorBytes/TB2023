@@ -20,7 +20,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ManualArmCommand;
+import frc.robot.commands.MoveConeHighCommand;
+import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreCommand;
+import frc.robot.commands.ScoreConeHighCommand;
+import frc.robot.commands.ScoreConeMiddleCommand;
 import frc.robot.commands.ZeroArmCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
@@ -101,6 +105,8 @@ public class RobotContainer {
             .whileTrue(m_visionSubsystem.centerAprilTagCommand(-Units.inchesToMeters(22), Units.inchesToMeters(9)));
         m_primaryController.y()
             .whileTrue(m_visionSubsystem.centerAprilTagCommand(0.0, Units.inchesToMeters(9)));
+        m_primaryController.a()
+            .whileTrue(m_visionSubsystem.centerAprilTagCommand(0.0, Units.inchesToMeters(9)));
         m_primaryController.x()
             .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22), Units.inchesToMeters(9)));
 
@@ -118,10 +124,10 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-0.4, 0.0, 0.0, true), m_driveSubsystem))
                 .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
         m_primaryController.povLeft()
-                .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.4, 0.0, true), m_driveSubsystem))
+                .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.4, 0.0, true), m_driveSubsystem))
                 .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
         m_primaryController.povRight()
-                .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.4, 0.0, true), m_driveSubsystem))
+                .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.4, 0.0, true), m_driveSubsystem))
                 .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
         // Secondary Controller Bindings
@@ -132,10 +138,10 @@ public class RobotContainer {
         m_secondaryController.b()
                 .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
         m_secondaryController.y().onTrue(
-                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE))
-                        .andThen(new WaitCommand(1.0))
+                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+                        .andThen(new WaitCommand(0.5))
                         .andThen(new InstantCommand(
-                                () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_HIGH))));
+                                () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH))));
         m_secondaryController.x()
                 .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
         m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
@@ -157,7 +163,25 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
 
         // Score
-        m_secondaryController.rightBumper().onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
+        Trigger cubeTrigger = new Trigger(
+                () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CUBE);
+        cubeTrigger.and(m_secondaryController.rightBumper()).onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
+        Trigger coneTrigger = new Trigger(
+                () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CONE);
+        coneTrigger.and(m_secondaryController.rightBumper()).onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
+        coneTrigger.and(m_secondaryController.b()).onTrue(new MoveConeMiddleCommand(m_armSubsystem, m_intakeSubsystem).withTimeout(1.5));
+        coneTrigger.and(m_secondaryController.y()).onTrue(new MoveConeHighCommand(m_armSubsystem, m_intakeSubsystem).withTimeout(1.5));
+        Trigger scoreLow = new Trigger(
+                () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_LOW);
+        coneTrigger.and(scoreLow).and(m_secondaryController.rightBumper()).onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
+        // Note: cone auto scores
+        // Trigger scoreMiddle = new Trigger(
+        //         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_MIDDLE_LOWER);
+        // coneTrigger.and(scoreMiddle).and(m_secondaryController.rightBumper()).onTrue(new ScoreConeMiddleCommand(m_intakeSubsystem).withTimeout(0.5));
+        Trigger scoreHigh = new Trigger(
+                () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
+        coneTrigger.and(scoreHigh).and(m_secondaryController.rightBumper()).onTrue(new ScoreConeHighCommand(m_intakeSubsystem).withTimeout(0.5));
+
 
         // Tertiary Controller Bindings
 
