@@ -39,10 +39,11 @@ public class SparkPIDConfig {
   private SparkMaxPIDController m_pidController;
 
   public SparkPIDConfig(boolean invertMotor, double maxRPM,
-                        double kP, double kI, double kD, double mechanicalEfficiency, double tolerance, 
-                        double lowerLimit, double upperLimit, boolean enableSoftLimits,
-                        double velocityRPM, double accelerationRPMPerSec) {
-    this(invertMotor, maxRPM, kP, kI, kD, mechanicalEfficiency, tolerance, lowerLimit, upperLimit, enableSoftLimits, velocityRPM, accelerationRPMPerSec, 1);
+      double kP, double kI, double kD, double mechanicalEfficiency, double tolerance,
+      double lowerLimit, double upperLimit, boolean enableSoftLimits,
+      double velocityRPM, double accelerationRPMPerSec) {
+    this(invertMotor, maxRPM, kP, kI, kD, mechanicalEfficiency, tolerance, lowerLimit, upperLimit, enableSoftLimits,
+        velocityRPM, accelerationRPMPerSec, 1);
   }
 
   /**

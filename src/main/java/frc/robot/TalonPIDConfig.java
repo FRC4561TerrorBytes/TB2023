@@ -14,7 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 
 import edu.wpi.first.math.MathUtil;
 
-/** 
+/**
  * Automates the configuration of Talon PID and MotionMagic parameters
  */
 public class TalonPIDConfig {
@@ -48,20 +48,21 @@ public class TalonPIDConfig {
    * Create a TalonPIDConfig, without MotionMagic parameters
    * <p>
    * USE FOR VELOCITY PID ONLY!
-   * @param sensorPhase set sensor phase of encoder
-   * @param invertMotor invert motor or not
-   * @param maxRPM max RPM of encoder
-   * @param ticksPerRotation number of ticks in one encoder revolution
-   * @param kP proportional gain
-   * @param kI integral gain
-   * @param kD derivative gain
+   * 
+   * @param sensorPhase          set sensor phase of encoder
+   * @param invertMotor          invert motor or not
+   * @param maxRPM               max RPM of encoder
+   * @param ticksPerRotation     number of ticks in one encoder revolution
+   * @param kP                   proportional gain
+   * @param kI                   integral gain
+   * @param kD                   derivative gain
    * @param mechanicalEfficiency mechanical efficiency of mechanism [0.0, +1.0]
-   * @param tolerance tolerance of PID loop in ticks per 100ms
+   * @param tolerance            tolerance of PID loop in ticks per 100ms
    */
   public TalonPIDConfig(boolean sensorPhase, boolean invertMotor,
-                        double maxRPM, double ticksPerRotation,
-                        double kP, double kI, double kD, 
-                        double mechanicalEfficiency, double tolerance) {
+      double maxRPM, double ticksPerRotation,
+      double kP, double kI, double kD,
+      double mechanicalEfficiency, double tolerance) {
     this.m_sensorPhase = sensorPhase;
     this.m_invertMotor = invertMotor;
     this.m_maxRPM = maxRPM * mechanicalEfficiency;
@@ -78,23 +79,24 @@ public class TalonPIDConfig {
    * Create a TalonPIDConfig, with MotionMagic parameters
    * <p>
    * USE FOR POSITION PID ONLY!
-   * @param sensorPhase set sensor phase of encoder
-   * @param invertMotor invert motor or not
-   * @param ticksPerRotation number of ticks in one encoder revolution
-   * @param maxRPM max RPM for this motor
-   * @param kP proportional gain
-   * @param kI integral gain
-   * @param kD derivative gain
-   * @param mechanicalEfficiency mechanical efficiency of mechanism [0.0, +1.0]
-   * @param tolerance tolerance of PID loop in ticks
-   * @param velocity MotionMagic cruise velocity in RPM
+   * 
+   * @param sensorPhase           set sensor phase of encoder
+   * @param invertMotor           invert motor or not
+   * @param ticksPerRotation      number of ticks in one encoder revolution
+   * @param maxRPM                max RPM for this motor
+   * @param kP                    proportional gain
+   * @param kI                    integral gain
+   * @param kD                    derivative gain
+   * @param mechanicalEfficiency  mechanical efficiency of mechanism [0.0, +1.0]
+   * @param tolerance             tolerance of PID loop in ticks
+   * @param velocity              MotionMagic cruise velocity in RPM
    * @param accelerationRPMPerSec MotionMagic acceleration in RPM
-   * @param motionSmoothing MotionMagic smoothing factor [0, 8]
+   * @param motionSmoothing       MotionMagic smoothing factor [0, 8]
    */
   public TalonPIDConfig(boolean sensorPhase, boolean invertMotor, double ticksPerRotation, double maxRPM,
-                        double kP, double kI, double kD, double mechanicalEfficiency, double tolerance, 
-                        double lowerLimit, double upperLimit, boolean enableSoftLimits,
-                        double velocityRPM, double accelerationRPMPerSec, int motionSmoothing) {
+      double kP, double kI, double kD, double mechanicalEfficiency, double tolerance,
+      double lowerLimit, double upperLimit, boolean enableSoftLimits,
+      double velocityRPM, double accelerationRPMPerSec, int motionSmoothing) {
     this.m_sensorPhase = sensorPhase;
     this.m_invertMotor = invertMotor;
     this.m_ticksPerRotation = ticksPerRotation;
@@ -106,7 +108,7 @@ public class TalonPIDConfig {
     this.m_lowerLimit = lowerLimit;
     this.m_upperLimit = upperLimit;
     this.m_enableSoftLimits = enableSoftLimits;
-    
+
     this.m_velocityRPM = velocityRPM;
     this.m_accelerationRPMPerSec = accelerationRPMPerSec;
     this.m_motionSmoothing = MathUtil.clamp(motionSmoothing, MIN_MOTION_SMOOTHING, MAX_MOTION_SMOOTHING);
@@ -116,19 +118,20 @@ public class TalonPIDConfig {
 
   /**
    * Initializes Talon PID and MotionMagic parameters
-   * @param talon Talon motor controller to apply settings to
-   * @param feedbackDevice Feedback device to use for Talon PID
+   * 
+   * @param talon              Talon motor controller to apply settings to
+   * @param feedbackDevice     Feedback device to use for Talon PID
    * @param forwardLimitSwitch Enable forward limit switch
    * @param reverseLimitSwitch Enable reverse limit switch
    */
-  public void initializeTalonPID(BaseTalon talon, FeedbackDevice feedbackDevice, 
-                                 boolean forwardLimitSwitch, boolean reverseLimitSwitch) {
+  public void initializeTalonPID(BaseTalon talon, FeedbackDevice feedbackDevice,
+      boolean forwardLimitSwitch, boolean reverseLimitSwitch) {
     // Reset Talon to default
     talon.configFactoryDefault();
 
     // Configure feedback sensor
     talon.configSelectedFeedbackSensor(feedbackDevice);
-    
+
     // Configure forward and reverse soft limits
     if (m_enableSoftLimits) {
       talon.configForwardSoftLimitThreshold(m_upperLimit);
@@ -169,18 +172,21 @@ public class TalonPIDConfig {
     talon.enableVoltageCompensation(true);
 
     // Configure MotionMagic values
-    if (m_motionMagic) {  
+    if (m_motionMagic) {
       talon.configMotionCruiseVelocity(rpmToTicksPer100ms(m_velocityRPM));
       talon.configMotionAcceleration(rpmToTicksPer100ms(m_accelerationRPMPerSec));
       talon.configMotionSCurveStrength(m_motionSmoothing);
-    } 
+    }
   }
 
   /**
    * Initializes Talon PID and MotionMagic parameters
    * <p>
-   * Calls {@link TalonPIDConfig#initializeTalonPID(BaseTalon, FeedbackDevice, boolean, boolean)} with no limit switches 
-   * @param talon Talon motor controller to apply settings to
+   * Calls
+   * {@link TalonPIDConfig#initializeTalonPID(BaseTalon, FeedbackDevice, boolean, boolean)}
+   * with no limit switches
+   * 
+   * @param talon          Talon motor controller to apply settings to
    * @param feedbackDevice Feedback device to use for Talon PID
    */
   public void initializeTalonPID(BaseTalon talon, FeedbackDevice feedbackDevice) {
@@ -189,6 +195,7 @@ public class TalonPIDConfig {
 
   /**
    * Convert RPM to ticks per 100ms
+   * 
    * @param rpm RPM
    * @return Value in ticks per 100ms
    */
@@ -198,6 +205,7 @@ public class TalonPIDConfig {
 
   /**
    * Convert ticks per 100ms to RPM
+   * 
    * @param ticks Encoder ticks per 100ms
    * @return Value in RPM
    */

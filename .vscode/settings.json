@@ -26,5 +26,7 @@
     },
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
-  "java.project.sourcePaths": []
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false
 }

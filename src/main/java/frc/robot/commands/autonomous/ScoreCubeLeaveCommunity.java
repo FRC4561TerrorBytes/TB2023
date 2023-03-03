@@ -14,29 +14,32 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class ScoreCubeLeaveCommunity extends SequentialCommandGroup {
-  /** Creates a new ScoreCube.
-   * Scores preloaded cube, moves backwards and leaves community immediately after. 
-   * @param m_driveSubsyste The drive subsystem required to drive
-   * @param m_armSubsystem The arm subsystem required to move arm
+  /**
+   * Creates a new ScoreCube.
+   * Scores preloaded cube, moves backwards and leaves community immediately
+   * after.
+   * 
+   * @param m_driveSubsyste   The drive subsystem required to drive
+   * @param m_armSubsystem    The arm subsystem required to move arm
    * @param m_intakeSubsystem The intake subsystem required to outake / score
-   * @param fileName The string containing the .path file that specifies the path to run on each side of the field - 
-   * ("LeaveCommunityRight" or "LeaveCommunityLeft")
-  */
+   * @param fileName          The string containing the .path file that specifies
+   *                          the path to run on each side of the field -
+   *                          ("LeaveCommunityRight" or "LeaveCommunityLeft")
+   */
 
-  public ScoreCubeLeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, 
-                                  IntakeSubsystem m_intakeSubsystem, String fileName) {
+  public ScoreCubeLeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem,
+      IntakeSubsystem m_intakeSubsystem, String fileName) {
     addCommands(
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
-      new WaitCommand(1.0),
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH)),
-      new WaitCommand(1.0),
-      new ScoreCommand(m_intakeSubsystem).withTimeout(0.5),
-      new DriveUntilCommand(m_driveSubsystem, -0.5, () -> false).withTimeout(0.5),
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
-      new WaitCommand(1.0),
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
-      new WaitCommand(1.0),
-      new AutoTrajectory(m_driveSubsystem, fileName, 1, 1).getCommandAndStop()
-    );
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
+        new WaitCommand(1.0),
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH)),
+        new WaitCommand(1.0),
+        new ScoreCommand(m_intakeSubsystem).withTimeout(0.5),
+        new DriveUntilCommand(m_driveSubsystem, -0.5, () -> false).withTimeout(0.5),
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
+        new WaitCommand(1.0),
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
+        new WaitCommand(1.0),
+        new AutoTrajectory(m_driveSubsystem, fileName, 1, 1).getCommandAndStop());
   }
 }

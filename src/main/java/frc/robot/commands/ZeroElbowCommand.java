@@ -28,13 +28,13 @@ public class ZeroElbowCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_armSubsystem.elbowLimitReached() == true){
+    if (m_armSubsystem.elbowLimitReached() == true) {
       elbowLimitContacts++;
-      if (elbowLimitContacts == 4){
+      if (elbowLimitContacts == 4) {
         m_armSubsystem.resetElbowPosition();
       }
     } else {
-      //elbowLimitContacts = 0;
+      // elbowLimitContacts = 0;
     }
     m_armSubsystem.setElbowSpeed(0.0);
 

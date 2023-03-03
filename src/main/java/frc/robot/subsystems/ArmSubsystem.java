@@ -4,9 +4,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 

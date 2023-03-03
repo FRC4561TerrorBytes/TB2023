@@ -20,65 +20,71 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class AutoTrajectory {
 
-    DriveSubsystem m_driveSubsystem;
-    PathPlannerTrajectory m_pathPlannerTrajectory;
-    PPSwerveControllerCommand m_swerveControllerCommand;
+  DriveSubsystem m_driveSubsystem;
+  PathPlannerTrajectory m_pathPlannerTrajectory;
+  PPSwerveControllerCommand m_swerveControllerCommand;
 
-    public AutoTrajectory(DriveSubsystem driveSubsystem, String autoPathName, double maxSpeedMetersPerSec, double maxAccelerationMetersPerSecSquared){
-        this.m_driveSubsystem = driveSubsystem;
+  public AutoTrajectory(DriveSubsystem driveSubsystem, String autoPathName, double maxSpeedMetersPerSec,
+      double maxAccelerationMetersPerSecSquared) {
+    this.m_driveSubsystem = driveSubsystem;
 
-        m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec, maxAccelerationMetersPerSecSquared);
+    m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
+        maxAccelerationMetersPerSecSquared);
 
-        // Auto PID Controllers
-        PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
-        PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
-        PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI, Constants.AUTO_THETA_KD);
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    // Auto PID Controllers
+    PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
+    PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
+    PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
+        Constants.AUTO_THETA_KD);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        m_swerveControllerCommand = new PPSwerveControllerCommand(
-            m_pathPlannerTrajectory, 
-            m_driveSubsystem::getPose,
-            Constants.DRIVE_KINEMATICS,
-            xController, 
-            yController, 
-            thetaController,
-            m_driveSubsystem::setModuleStates, 
-            m_driveSubsystem);
-    }
+    m_swerveControllerCommand = new PPSwerveControllerCommand(
+        m_pathPlannerTrajectory,
+        m_driveSubsystem::getPose,
+        Constants.DRIVE_KINEMATICS,
+        xController,
+        yController,
+        thetaController,
+        m_driveSubsystem::setModuleStates,
+        m_driveSubsystem);
+  }
 
-    public AutoTrajectory(DriveSubsystem driveSubsystem, double maxSpeedMetersPerSec, double maxAccelerationMetersPerSecSquared, 
-                            Translation2d targetTranslation, Rotation2d targetRotation){
-        m_driveSubsystem = driveSubsystem;
-        m_pathPlannerTrajectory = PathPlanner.generatePath(new PathConstraints(maxSpeedMetersPerSec, maxAccelerationMetersPerSecSquared),
-                                                         new PathPoint(new Translation2d(), m_driveSubsystem.getRotation2d(), new Rotation2d()),
-                                                         new PathPoint(targetTranslation, new Rotation2d(), targetRotation));
+  public AutoTrajectory(DriveSubsystem driveSubsystem, double maxSpeedMetersPerSec,
+      double maxAccelerationMetersPerSecSquared,
+      Translation2d targetTranslation, Rotation2d targetRotation) {
+    m_driveSubsystem = driveSubsystem;
+    m_pathPlannerTrajectory = PathPlanner.generatePath(
+        new PathConstraints(maxSpeedMetersPerSec, maxAccelerationMetersPerSecSquared),
+        new PathPoint(new Translation2d(), m_driveSubsystem.getRotation2d(), new Rotation2d()),
+        new PathPoint(targetTranslation, new Rotation2d(), targetRotation));
 
-        // Auto PID Controllers
-        PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
-        xController.setTolerance(0.01);
-        PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
-        yController.setTolerance(0.01);
-        PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI, Constants.AUTO_THETA_KD);
-        thetaController.setTolerance(0.1);
+    // Auto PID Controllers
+    PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
+    xController.setTolerance(0.01);
+    PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
+    yController.setTolerance(0.01);
+    PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
+        Constants.AUTO_THETA_KD);
+    thetaController.setTolerance(0.1);
 
-        m_swerveControllerCommand = new PPSwerveControllerCommand(
-            m_pathPlannerTrajectory, 
-            m_driveSubsystem::getPose,
-            Constants.DRIVE_KINEMATICS,
-            xController, 
-            yController, 
-            thetaController, 
-            m_driveSubsystem::setModuleStates, 
-            m_driveSubsystem);
-    }
+    m_swerveControllerCommand = new PPSwerveControllerCommand(
+        m_pathPlannerTrajectory,
+        m_driveSubsystem::getPose,
+        Constants.DRIVE_KINEMATICS,
+        xController,
+        yController,
+        thetaController,
+        m_driveSubsystem::setModuleStates,
+        m_driveSubsystem);
+  }
 
-    public void resetOdometry(){
-        m_driveSubsystem.resetOdometry(m_pathPlannerTrajectory.getInitialHolonomicPose());
-    }
+  public void resetOdometry() {
+    m_driveSubsystem.resetOdometry(m_pathPlannerTrajectory.getInitialHolonomicPose());
+  }
 
-    public Command getCommandAndStop(){
-        return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(
-            m_swerveControllerCommand.withTimeout(m_pathPlannerTrajectory.getTotalTimeSeconds()).andThen(() -> m_driveSubsystem.stop())
-        );
-    }
+  public Command getCommandAndStop() {
+    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(
+        m_swerveControllerCommand.withTimeout(m_pathPlannerTrajectory.getTotalTimeSeconds())
+            .andThen(() -> m_driveSubsystem.stop()));
+  }
 }

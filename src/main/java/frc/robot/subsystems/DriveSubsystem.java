@@ -19,48 +19,47 @@ import frc.robot.Constants;
 
 public class DriveSubsystem extends SubsystemBase {
 
-  //Pigeon gyro
+  // Pigeon gyro
   private final PigeonIMU m_pigeon = new PigeonIMU(Constants.PIGEON_ID);
 
-  //Swerve Modules
+  // Swerve Modules
   private final SwerveModule m_frontLeftModule = new SwerveModule(
-                                                    Constants.FRONT_LEFT_DRIVE_MOTOR , 
-                                                    Constants.FRONT_LEFT_STEER_MOTOR, 
-                                                    Constants.FRONT_LEFT_STEER_ENCODER,
-                                                    Constants.FRONT_LEFT_STEER_OFFSET,
-                                                    Constants.TURN_MOTOR_CONFIG,
-                                                    Constants.FRONT_LEFT_DRIVE_MOTOR_INVERTED,
-                                                    Constants.FRONT_LEFT_TURN_MOTOR_INVERTED);
+      Constants.FRONT_LEFT_DRIVE_MOTOR,
+      Constants.FRONT_LEFT_STEER_MOTOR,
+      Constants.FRONT_LEFT_STEER_ENCODER,
+      Constants.FRONT_LEFT_STEER_OFFSET,
+      Constants.TURN_MOTOR_CONFIG,
+      Constants.FRONT_LEFT_DRIVE_MOTOR_INVERTED,
+      Constants.FRONT_LEFT_TURN_MOTOR_INVERTED);
   private final SwerveModule m_frontRightModule = new SwerveModule(
-                                                    Constants.FRONT_RIGHT_DRIVE_MOTOR, 
-                                                    Constants.FRONT_RIGHT_STEER_MOTOR, 
-                                                    Constants.FRONT_RIGHT_STEER_ENCODER, 
-                                                    Constants.FRONT_RIGHT_STEER_OFFSET,
-                                                    Constants.TURN_MOTOR_CONFIG,
-                                                    Constants.FRONT_RIGHT_DRIVE_MOTOR_INVERTED,
-                                                    Constants.FRONT_RIGHT_TURN_MOTOR_INVERTED);
+      Constants.FRONT_RIGHT_DRIVE_MOTOR,
+      Constants.FRONT_RIGHT_STEER_MOTOR,
+      Constants.FRONT_RIGHT_STEER_ENCODER,
+      Constants.FRONT_RIGHT_STEER_OFFSET,
+      Constants.TURN_MOTOR_CONFIG,
+      Constants.FRONT_RIGHT_DRIVE_MOTOR_INVERTED,
+      Constants.FRONT_RIGHT_TURN_MOTOR_INVERTED);
   private final SwerveModule m_backLeftModule = new SwerveModule(
-                                                    Constants.BACK_LEFT_DRIVE_MOTOR, 
-                                                    Constants.BACK_LEFT_STEER_MOTOR, 
-                                                    Constants.BACK_LEFT_STEER_ENCODER, 
-                                                    Constants.BACK_LEFT_STEER_OFFSET,
-                                                    Constants.TURN_MOTOR_CONFIG,
-                                                    Constants.BACK_LEFT_DRIVE_MOTOR_INVERTED,
-                                                    Constants.BACK_LEFT_TURN_MOTOR_INVERTED);
+      Constants.BACK_LEFT_DRIVE_MOTOR,
+      Constants.BACK_LEFT_STEER_MOTOR,
+      Constants.BACK_LEFT_STEER_ENCODER,
+      Constants.BACK_LEFT_STEER_OFFSET,
+      Constants.TURN_MOTOR_CONFIG,
+      Constants.BACK_LEFT_DRIVE_MOTOR_INVERTED,
+      Constants.BACK_LEFT_TURN_MOTOR_INVERTED);
   private final SwerveModule m_backRightModule = new SwerveModule(
-                                                    Constants.BACK_RIGHT_DRIVE_MOTOR, 
-                                                    Constants.BACK_RIGHT_STEER_MOTOR, 
-                                                    Constants.BACK_RIGHT_STEER_ENCODER, 
-                                                    Constants.BACK_RIGHT_STEER_OFFSET,
-                                                    Constants.TURN_MOTOR_CONFIG,
-                                                    Constants.BACK_RIGHT_DRIVE_MOTOR_INVERTED,
-                                                    Constants.BACK_RIGHT_TURN_MOTOR_INVERTED);
-  
+      Constants.BACK_RIGHT_DRIVE_MOTOR,
+      Constants.BACK_RIGHT_STEER_MOTOR,
+      Constants.BACK_RIGHT_STEER_ENCODER,
+      Constants.BACK_RIGHT_STEER_OFFSET,
+      Constants.TURN_MOTOR_CONFIG,
+      Constants.BACK_RIGHT_DRIVE_MOTOR_INVERTED,
+      Constants.BACK_RIGHT_TURN_MOTOR_INVERTED);
 
-  //Odometry
-  private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS, 
-                                                                        Rotation2d.fromDegrees(m_pigeon.getYaw()), 
-                                                                        getModulePositions());
+  // Odometry
+  private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
+      Rotation2d.fromDegrees(m_pigeon.getYaw()),
+      getModulePositions());
 
   public DriveSubsystem() {
     m_pigeon.setYaw(180.0);
@@ -69,14 +68,14 @@ public class DriveSubsystem extends SubsystemBase {
   /**
    * Method to drive the robot using joystick info.
    *
-   * @param xSpeed Speed of the robot in the x direction (forward).
-   * @param ySpeed Speed of the robot in the y direction (sideways).
-   * @param rot Angular rate of the robot.
-   * @param fieldRelative Whether the provided x and y speeds are relative to the field.
+   * @param xSpeed        Speed of the robot in the x direction (forward).
+   * @param ySpeed        Speed of the robot in the y direction (sideways).
+   * @param rot           Angular rate of the robot.
+   * @param fieldRelative Whether the provided x and y speeds are relative to the
+   *                      field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    var swerveModuleStates =
-    Constants.DRIVE_KINEMATICS.toSwerveModuleStates(
+    var swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_pigeon.getYaw()))
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
@@ -113,10 +112,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
-      m_frontLeftModule.getPosition(),
-      m_frontRightModule.getPosition(),
-      m_backLeftModule.getPosition(),
-      m_backRightModule.getPosition()
+        m_frontLeftModule.getPosition(),
+        m_frontRightModule.getPosition(),
+        m_backLeftModule.getPosition(),
+        m_backRightModule.getPosition()
     };
   }
 
