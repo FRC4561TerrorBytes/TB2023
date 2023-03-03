@@ -5,11 +5,17 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class LeaveCommunity extends SequentialCommandGroup {
-  /** Creates a new LeaveCommunity. */
+  /** Drives back and exits community without scoring or balancing
+   * @param m_driveSubsyste The drive subsystem required to drive
+   * @param m_armSubsystem The arm subsystem required to move arm
+   * @param m_intakeSubsystem The intake subsystem required to outake / score
+   * @param fileName The string containing the .path file that specifies the path to run on each side of the field - 
+   * ("LeaveCommunityRight" or "LeaveCommunityLeft")
+  */
 
-  public LeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem) {
+  public LeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, String fileName) {
     addCommands(
-      new DriveUntilCommand(m_driveSubsystem, -2, () -> false).withTimeout(3)
+      new AutoTrajectory(m_driveSubsystem, fileName, 1, 1).getCommandAndStop()
     );
   }
 }
