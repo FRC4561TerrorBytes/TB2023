@@ -146,6 +146,22 @@ public class ArmSubsystem extends SubsystemBase {
     return m_lastPlacement;
   }
 
+  public void nudgeShoulderForward() {
+    setShoulderPosition(m_targetShoulderPosition - Constants.SHOULDER_NUDGE_DEGREES);
+  }
+
+  public void nudgeShoulderBackward() {
+    setShoulderPosition(m_targetShoulderPosition + Constants.SHOULDER_NUDGE_DEGREES);
+  }
+
+  public void nudgeElbowUp() {
+    setElbowPosition(m_targetElbowPosition + Constants.ELBOW_NUDGE_DEGREES);
+  }
+
+  public void nudgeElbowDown() {
+    setElbowPosition(m_targetElbowPosition - Constants.ELBOW_NUDGE_DEGREES);
+  }
+
   /**
    * @param targetPosition the target position in rotations.
    */
