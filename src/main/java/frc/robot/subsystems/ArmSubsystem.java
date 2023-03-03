@@ -45,8 +45,11 @@ public class ArmSubsystem extends SubsystemBase {
     SUBSTATION_GRAB_FULLWAY(91.4, -2.9),
     SCORE_PREP_INITIAL(102.8, -57.2),
     SCORE_LOW(90.0, -53.0),
-    SCORE_MIDDLE(90.0, -7.0),
-    SCORE_HIGH(56.0, 23.0);
+    SCORE_MIDDLE(90, 3.0),
+    SCORE_CUBE_HIGH(56.0, 23.0),
+    SCORE_CONE_HIGH(53.0, 35),
+    SCORE_CONE_MIDDLE_UPPER(65.0, 15.0),
+    SCORE_CONE_MIDDLE_LOWER(85.0, -5.0);
 
     public final double m_shoulderAngle;
     public final double m_elbowAngle;
