@@ -158,16 +158,6 @@ public class RobotContainer {
     m_secondaryController.a()
         .onTrue(new InstantCommand(() -> m_armSubsystem
             .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    m_secondaryController.b()
-        .onTrue(new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
-    m_secondaryController.y().onTrue(
-        new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
-            .andThen(new WaitCommand(0.5))
-            .andThen(new InstantCommand(
-                () -> m_armSubsystem.setKnownArmPlacement(
-                    KnownArmPlacement.SCORE_CUBE_HIGH))));
     m_secondaryController.x()
         .onTrue(new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
@@ -195,11 +185,23 @@ public class RobotContainer {
         .onTrue(new InstantCommand(
             () -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
 
-    // Score
+    // Cube scoring
     Trigger cubeTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CUBE);
+    cubeTrigger.and(m_secondaryController.b())
+        .onTrue(new InstantCommand(() -> m_armSubsystem
+            .setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
+    cubeTrigger.and(m_secondaryController.y())
+        .onTrue(new InstantCommand(() -> m_armSubsystem
+            .setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+            .andThen(new WaitCommand(0.5))
+            .andThen(new InstantCommand(
+                () -> m_armSubsystem.setKnownArmPlacement(
+                    KnownArmPlacement.SCORE_CUBE_HIGH))));
     cubeTrigger.and(m_secondaryController.rightBumper())
         .onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
+
+    // Cone scoring
     Trigger coneTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CONE);
     coneTrigger.and(m_secondaryController.b())
@@ -210,12 +212,6 @@ public class RobotContainer {
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_LOW);
     coneTrigger.and(scoreLow).and(m_secondaryController.rightBumper())
         .onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
-    // Note: cone auto scores
-    // Trigger scoreMiddle = new Trigger(
-    // () -> m_armSubsystem.getArmPlacement() ==
-    // KnownArmPlacement.SCORE_CONE_MIDDLE_LOWER);
-    // coneTrigger.and(scoreMiddle).and(m_secondaryController.rightBumper()).onTrue(new
-    // ScoreConeMiddleCommand(m_intakeSubsystem).withTimeout(0.5));
     Trigger scoreHigh = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
     coneTrigger.and(scoreHigh).and(m_secondaryController.rightBumper())
