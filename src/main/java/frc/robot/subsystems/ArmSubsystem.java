@@ -159,7 +159,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void nudgeElbowDown() {
-    setElbowPosition(m_targetElbowPosition - Constants.ELBOW_NUDGE_DEGREES);
+    setElbowPosition(m_targetElbowPosition - 2.0);
   }
 
   /**
