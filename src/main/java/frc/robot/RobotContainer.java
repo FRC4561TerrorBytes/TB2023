@@ -132,13 +132,13 @@ public class RobotContainer {
             .centerAprilTagCommand(-Units.inchesToMeters(29.565),
                 Units.inchesToMeters(30))
             .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
-                1)));
+                1.5)));
     m_primaryController.rightBumper()
         .whileTrue(m_visionSubsystem
             .centerAprilTagCommand(Units.inchesToMeters(29.565),
                 Units.inchesToMeters(30))
             .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
-                1)));
+                1.5)));
 
     // Driver nudges
     m_primaryController.povUp()
