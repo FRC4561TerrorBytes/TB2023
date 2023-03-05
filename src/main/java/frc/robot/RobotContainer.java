@@ -251,12 +251,16 @@ public class RobotContainer {
         .alongWith(new WaitCommand(1))
         .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))));
 */
+
+  Trigger scoreCubeHigh = new Trigger(
+    () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CUBE_HIGH);
+
     m_secondaryController.x().onTrue(new ConditionalCommand(
       new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
         .alongWith(new WaitCommand(1))
         .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),  
-      () -> coneTrigger.and(scoreConeHigh).getAsBoolean()));
+      () -> (coneTrigger.and(scoreConeHigh)).or(cubeTrigger.and(scoreCubeHigh)).getAsBoolean()));
 
     // Tertiary Controller Bindings
 
