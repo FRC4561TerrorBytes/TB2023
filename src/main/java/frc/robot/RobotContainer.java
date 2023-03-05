@@ -195,6 +195,14 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(
                 KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
+    m_secondaryController.rightTrigger().onTrue(
+      new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(
+                KnownArmPlacement.SCORE_LOW))
+            .andThen(new WaitCommand(1))
+            .andThen(new InstantCommand( () -> m_armSubsystem
+              .setKnownArmPlacement(
+              KnownArmPlacement.FLOOR_GRAB))));
 
     // Arm nudges
     m_secondaryController.povLeft().onTrue(new InstantCommand(m_armSubsystem::nudgeShoulderBackward));
@@ -262,6 +270,15 @@ public class RobotContainer {
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),  
       () -> (coneTrigger.and(scoreConeHigh)).or(cubeTrigger.and(scoreCubeHigh)).getAsBoolean()));
 
+  Trigger FloorGrab = new Trigger(
+    () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB);
+  FloorGrab.and(cubeTrigger).and(m_secondaryController.x())
+      .onTrue(new InstantCommand( () -> m_armSubsystem
+        .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW))
+        .andThen(new WaitCommand(1))
+        .andThen(new InstantCommand( () -> m_armSubsystem
+          .setKnownArmPlacement(KnownArmPlacement.STOWED))));
+
     // Tertiary Controller Bindings
 
     // Switch between manual arm control
@@ -308,6 +325,10 @@ public class RobotContainer {
           .beforeStarting(new ZeroArmCommand(m_armSubsystem));
     }
     return null;
+  }
+
+  public void teleopInit() {
+    new ZeroArmCommand(m_armSubsystem).schedule();
   }
 
   private static double modifyAxis(double value) {
