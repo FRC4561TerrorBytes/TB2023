@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -25,12 +26,14 @@ import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.ScoreConeHighCommand;
+import frc.robot.commands.ScoreConeMiddleCommand;
 import frc.robot.commands.ZeroArmCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
 import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCubeBalance;
 import frc.robot.commands.autonomous.ScoreCubeLeaveCommunity;
+import frc.robot.commands.autonomous.ScoreCubeStop;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -77,16 +80,19 @@ public class RobotContainer {
 
     m_autoChooser.setDefaultOption("Do Nothing", () -> new WaitCommand(1.0));
     m_autoChooser.addOption("LeaveCommRight",
-        () -> new LeaveCommunity(m_driveSubsystem, m_armSubsystem, "LeaveCommunityRight"));
+        () -> new LeaveCommunity(m_driveSubsystem, m_armSubsystem, 0.2));
     m_autoChooser.addOption("LeaveCommLeft",
-        () -> new LeaveCommunity(m_driveSubsystem, m_armSubsystem, "LeaveCommunityLeft"));
+        () -> new LeaveCommunity(m_driveSubsystem, m_armSubsystem, -0.2));
     m_autoChooser.addOption("ScoreCubeBalance",
         () -> new ScoreCubeBalance(m_driveSubsystem, m_armSubsystem,
             m_intakeSubsystem));
+    m_autoChooser.addOption("ScoreCubeStop",
+        () -> new ScoreCubeStop(m_driveSubsystem, m_armSubsystem,
+            m_intakeSubsystem));
     m_autoChooser.addOption("ScoreCubeLeaveCommRight", () -> new ScoreCubeLeaveCommunity(m_driveSubsystem,
-        m_armSubsystem, m_intakeSubsystem, "LeaveCommunityRight"));
+        m_armSubsystem, m_intakeSubsystem, 0.1));
     m_autoChooser.addOption("ScoreCubeLeaveCommLeft", () -> new ScoreCubeLeaveCommunity(m_driveSubsystem,
-        m_armSubsystem, m_intakeSubsystem, "LeaveCommunityLeft"));
+        m_armSubsystem, m_intakeSubsystem, -0.1));
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
@@ -151,16 +157,29 @@ public class RobotContainer {
         .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.4, 0.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+    m_primaryController.rightTrigger()
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.0, 1.0, true),
+            m_driveSubsystem))
+        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+    m_primaryController.leftTrigger()
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.0, -1.0, true),
+            m_driveSubsystem))
+        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     // Secondary Controller Bindings
+
+    // Zero button for operator
+
+    m_secondaryController.leftStick().and(m_secondaryController.rightStick())
+      .onTrue(new ZeroArmCommand(m_armSubsystem));
 
     // Arm positions
     m_secondaryController.a()
         .onTrue(new InstantCommand(() -> m_armSubsystem
             .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    m_secondaryController.x()
+    /*m_secondaryController.x()
         .onTrue(new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));*/
     m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
         .onTrue(new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
@@ -218,10 +237,26 @@ public class RobotContainer {
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_LOW);
     coneTrigger.and(scoreLow).and(m_secondaryController.rightBumper())
         .onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
-    Trigger scoreHigh = new Trigger(
+    Trigger scoreMiddleCone = new Trigger(
+        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_MIDDLE_LOWER);
+    coneTrigger.and(scoreMiddleCone).and(m_secondaryController.rightBumper())
+        .onTrue(new ScoreConeMiddleCommand(m_intakeSubsystem).withTimeout(0.5));
+    Trigger scoreConeHigh = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
-    coneTrigger.and(scoreHigh).and(m_secondaryController.rightBumper())
+    coneTrigger.and(scoreConeHigh).and(m_secondaryController.rightBumper())
         .onTrue(new ScoreConeHighCommand(m_intakeSubsystem).withTimeout(0.5));
+/*
+    coneTrigger.and(scoreConeHigh).and(m_secondaryController.x())
+        .onTrue(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        .alongWith(new WaitCommand(1))
+        .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))));
+*/
+    m_secondaryController.x().onTrue(new ConditionalCommand(
+      new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        .alongWith(new WaitCommand(1))
+        .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))),
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),  
+      () -> coneTrigger.and(scoreConeHigh).getAsBoolean()));
 
     // Tertiary Controller Bindings
 

@@ -13,6 +13,7 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.GameState;
 
 public class ArmSubsystem extends SubsystemBase {
   // private WPI_TalonFX m_elbowMotor = new WPI_TalonFX(4);
@@ -47,7 +48,7 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_LOW(90.0, -53.0),
     SCORE_MIDDLE(90, 3.0),
     SCORE_CUBE_HIGH(56.0, 23.0),
-    SCORE_CONE_HIGH(53.0, 35),
+    SCORE_CONE_HIGH(53.0, 30.0),
     SCORE_CONE_MIDDLE_UPPER(65.0, 15.0),
     SCORE_CONE_MIDDLE_LOWER(85.0, -5.0);
 
@@ -76,7 +77,9 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowReverseLimitSwitch.enableLimitSwitch(true);
     m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
     m_elbowMotor.setSmartCurrentLimit(60);
-
+    m_elbowMotor.enableVoltageCompensation(12.0);
+    m_elbowController.setOutputRange(-0.15, 0.15);
+    
     m_shoulderMotor.restoreFactoryDefaults();
     m_shoulderController = m_shoulderMotor.getPIDController();
     m_shoulderEncoder = m_shoulderMotor.getEncoder();
@@ -88,9 +91,11 @@ public class ArmSubsystem extends SubsystemBase {
     m_shoulderForwardLimitSwitch = m_shoulderMotor.getForwardLimitSwitch(Type.kNormallyOpen);
     m_shoulderReverseLimitSwitch = m_shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen);
     m_shoulderForwardLimitSwitch.enableLimitSwitch(true);
-    m_shoulderReverseLimitSwitch.enableLimitSwitch(false);
+    m_shoulderReverseLimitSwitch.enableLimitSwitch(true);
     m_shoulderEncoder.setPositionConversionFactor(1.0 / Constants.SHOULDER_ROTATIONS_PER_DEGREE);
     m_shoulderMotor.setSmartCurrentLimit(30);
+    m_shoulderMotor.enableVoltageCompensation(12.0);
+    m_shoulderMotor.setClosedLoopRampRate(0.3);
 
     // NOTE: these are NEEDED
     resetShoulderPosition();
@@ -229,8 +234,8 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elbow voltage", m_elbowMotor.getBusVoltage() * m_elbowMotor.getAppliedOutput());
     SmartDashboard.putNumber("Elbow current", m_elbowMotor.getOutputCurrent());
     SmartDashboard.putNumber("Elbow rotation target", m_targetElbowPosition);
-    // SmartDashboard.putNumber("Elbow placement", m_lastPlacement == null ? 999 :
-    // m_lastPlacement.m_elbowAngle);
+    SmartDashboard.putNumber("Elbow placement", m_lastPlacement == null ? 999 :
+      m_lastPlacement.m_elbowAngle);
     SmartDashboard.putBoolean("Elbow LimitR", m_elbowReverseLimitSwitch.isPressed());
     SmartDashboard.putBoolean("Shoudler LimitR", m_shoulderReverseLimitSwitch.isPressed());
     SmartDashboard.putBoolean("Shoulder LimitF", m_shoulderForwardLimitSwitch.isPressed());
@@ -238,6 +243,7 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shoulder voltage", m_shoulderMotor.getBusVoltage() * m_shoulderMotor.getAppliedOutput());
     SmartDashboard.putNumber("Shoulder current", m_shoulderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Shoulder rotation target", m_targetShoulderPosition);
+    SmartDashboard.putBoolean("Game Piece Held", GameState.getInstance().isGamePieceHeld());
     // SmartDashboard.putNumber("Shoulder placement", m_lastPlacement == null ? 999
     // : m_lastPlacement.m_shoulderAngle);
     /*

@@ -86,7 +86,7 @@ public final class Constants {
   public static final double BACK_RIGHT_STEER_OFFSET = 60.73;
 
   public static final double DRIVE_CURRENT_LIMIT = 80.0;
-  public static final int TURN_CURRENT_LIMIT = 80;
+  public static final int TURN_CURRENT_LIMIT = 40;
   public static final double DRIVE_CURRENT_THRESHOLD = 120.0;
   public static final double DRIVE_CURRENT_TIME_THRESHOLD = 0.1; // seconds
   // current limits for drivetrain turn and steer motors

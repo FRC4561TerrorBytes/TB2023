@@ -16,8 +16,9 @@ public class LeaveCommunity extends SequentialCommandGroup {
    *                          ("LeaveCommunityRight" or "LeaveCommunityLeft")
    */
 
-  public LeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, String fileName) {
+  public LeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, double yDirection) {
     addCommands(
-        new AutoTrajectory(m_driveSubsystem, fileName, 1, 1).getCommandAndStop());
+      new DriveUntilCommand(m_driveSubsystem, -1, yDirection, () -> false).withTimeout(5)
+    );
   }
 }
