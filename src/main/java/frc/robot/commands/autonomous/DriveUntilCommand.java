@@ -11,13 +11,15 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveUntilCommand extends CommandBase {
   private DriveSubsystem m_driveSubsystem;
-  private double m_speed;
+  private double m_xSpeed;
+  private double m_ySpeed;
   private BooleanSupplier m_endCondition;
 
   /** Creates a new DriveUntilCommand. */
-  public DriveUntilCommand(DriveSubsystem driveSubsystem, double speed, BooleanSupplier endCondition) {
+  public DriveUntilCommand(DriveSubsystem driveSubsystem, double xSpeed, double ySpeed, BooleanSupplier endCondition) {
     m_driveSubsystem = driveSubsystem;
-    m_speed = speed;
+    m_xSpeed = xSpeed;
+    m_ySpeed = ySpeed;
     m_endCondition = endCondition;
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -27,7 +29,7 @@ public class DriveUntilCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_driveSubsystem.drive(m_speed, 0, 0, false);
+    m_driveSubsystem.drive(m_xSpeed, m_ySpeed, 0, false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
