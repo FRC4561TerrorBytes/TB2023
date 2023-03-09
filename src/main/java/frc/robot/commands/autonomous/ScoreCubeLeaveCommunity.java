@@ -28,18 +28,19 @@ public class ScoreCubeLeaveCommunity extends SequentialCommandGroup {
    */
 
   public ScoreCubeLeaveCommunity(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem,
-      IntakeSubsystem m_intakeSubsystem, String fileName) {
+      IntakeSubsystem m_intakeSubsystem, double yDirection) {
     addCommands(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
         new WaitCommand(1.0),
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH)),
         new WaitCommand(1.0),
         new ScoreCommand(m_intakeSubsystem).withTimeout(0.5),
-        new DriveUntilCommand(m_driveSubsystem, -0.5, () -> false).withTimeout(0.5),
+        new DriveUntilCommand(m_driveSubsystem, -0.5, 0, () -> false).withTimeout(0.5),
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
         new WaitCommand(1.0),
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
         new WaitCommand(1.0),
-        new AutoTrajectory(m_driveSubsystem, fileName, 1, 1).getCommandAndStop());
+        new DriveUntilCommand(m_driveSubsystem, -1, yDirection, () -> false).withTimeout(5)
+    );
   }
 }

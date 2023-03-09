@@ -86,7 +86,7 @@ public final class Constants {
   public static final double BACK_RIGHT_STEER_OFFSET = 60.73;
 
   public static final double DRIVE_CURRENT_LIMIT = 80.0;
-  public static final int TURN_CURRENT_LIMIT = 80;
+  public static final int TURN_CURRENT_LIMIT = 40;
   public static final double DRIVE_CURRENT_THRESHOLD = 120.0;
   public static final double DRIVE_CURRENT_TIME_THRESHOLD = 0.1; // seconds
   // current limits for drivetrain turn and steer motors
@@ -162,6 +162,7 @@ public final class Constants {
   public static final double ELBOW_PEAK_ACCELERATION = ELBOW_CRUISE_VELOCITY_RPM
       / ELBOW_SECONDS_TO_CRUISE_RPM;
   public static final double ELBOW_TOLERANCE = ELBOW_ROTATIONS_PER_DEGREE / 2.0;
+  public static final double ELBOW_NUDGE_DEGREES = 3.0;
 
   public static final double SHOULDER_ROTATIONS_PER_DEGREE = 25.0 / 27.0;
   // needs fixing; moves to fast and with to much force.
@@ -178,6 +179,7 @@ public final class Constants {
   public static final double SHOULDER_PEAK_ACCELERATION = SHOULDER_CRUISE_VELOCITY_RPM
       / SHOULDER_SECONDS_TO_CRUISE_RPM;
   public static final double SHOULDER_TOLERANCE = SHOULDER_ROTATIONS_PER_DEGREE / 2.0;
+  public static final double SHOULDER_NUDGE_DEGREES = 3.0;
 
   public static final double ARM_MOTORS_NEUTRAL_DEADBAND = 0.0001;
   public static final double ARM_MOTORS_INTERGRAL_ZONE = 10000.0;
