@@ -11,9 +11,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class AutoRotate extends CommandBase {
+public class ScoreAlign extends CommandBase {
   /** Creates a new AutoRotate. */
-  private final CommandXboxController m_primaryController = new CommandXboxController(0);
 
   DriveSubsystem m_driveSubsystem;
 
@@ -21,7 +20,7 @@ public class AutoRotate extends CommandBase {
   double rotateTo = 180.0;
   double rotateTolerance = 3.0;
 
-  public AutoRotate(DriveSubsystem driveSubsystem) {
+  public ScoreAlign(DriveSubsystem driveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_driveSubsystem = driveSubsystem;
     addRequirements(m_driveSubsystem);
@@ -35,19 +34,8 @@ public class AutoRotate extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveSubsystem.drive(modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-    modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND, rotateTo - m_driveSubsystem.getPose().getRotation().getDegrees(), true);
+    m_driveSubsystem.drive(0, 0, rotateTo - m_driveSubsystem.getPose().getRotation().getDegrees(), false);
     System.out.println("rotation speed: " + (rotateTo - m_driveSubsystem.getPose().getRotation().getDegrees()));
-  }
-
-  private static double modifyAxis(double value) {
-    // Deadband
-    value = MathUtil.applyDeadband(value, 0.05);
-
-    // Square the axis
-    value = Math.copySign(value * value, value);
-
-    return value;
   }
 
   // Called once the command ends or is interrupted.
