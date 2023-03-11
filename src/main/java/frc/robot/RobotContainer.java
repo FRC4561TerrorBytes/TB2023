@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
 import frc.robot.commands.DriveDistance;
+import frc.robot.commands.DriveLateral;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.MoveConeHighCommand;
@@ -126,8 +127,7 @@ public class RobotContainer {
     m_primaryController.x()
         .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22),
             Units.inchesToMeters(9)));
-    m_primaryController.start().onTrue(new ScoreAlign(m_driveSubsystem));
-
+    m_primaryController.start().whileTrue(new ScoreAlign(m_driveSubsystem, m_visionSubsystem));//.andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.5)));
 
     // Substation grabs
     m_primaryController.leftBumper()
