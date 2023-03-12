@@ -61,21 +61,21 @@ public class ScoreAlign extends CommandBase {
   public boolean isFinished() {
     System.out.println("target Rotation: " + rotateTo);
     if(Math.signum(startingAngle) != Math.signum(m_driveSubsystem.getPose().getRotation().getDegrees())){
-      // if(Math.abs((m_driveSubsystem.getPose().getRotation().getDegrees()%360)) >= rotateTo + rotateTolerance){
-        System.out.println("rotation has finished");
-        // m_driveSubsystem.drive(0, 0, 1 * Math.signum(), false);
-        if (Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees()%360 - rotateTo) >  rotateTolerance) { //add to if above
 
+      if (Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees()%360 - rotateTo) <  rotateTolerance) { //add to if above
+          //Logic in progress, just had an idea 
+          System.out.println("Rotation has finished");
+          return true;
         }
-        return true;
+        else{
+          System.out.println("rotation has not finished");
+          return false;
+        }
+        
       }
       else{
         System.out.println("rotation has not finished");
         return false;
       }
-    else{
-      System.out.println("rotation has not finished");
-      return false;
-    }
   }
 }
