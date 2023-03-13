@@ -146,10 +146,10 @@ public final class Constants {
   public static final int ELBOW_MOTOR = 11;
   public static final int SHOULDER_MOTOR = 10;
 
-  public static final double ELBOW_ROTATIONS_PER_DEGREE = 5.0 / 36.0;
+  public static final double ELBOW_ROTATIONS_PER_DEGREE = 5.0 / 12.0;
   public static final double ELBOW_MAX_VOLTAGE_FF = 1.25;
-  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 0.0085;
-  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.002;
+  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 0.2;
+  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.006;
   public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
   public static final double ELBOW_INTEGRAL_GAIN = 0.000015;
   public static final double ELBOW_IZONE = 5.0;
@@ -167,8 +167,8 @@ public final class Constants {
   public static final double SHOULDER_ROTATIONS_PER_DEGREE = 25.0 / 27.0;
   // needs fixing; moves to fast and with to much force.
   public static final double SHOULDER_MAX_VOLTAGE_FF = 0.5;
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.02;
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.02;
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.015; // Backwards
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.012; // Forwards
   public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
   public static final double SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
   /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */

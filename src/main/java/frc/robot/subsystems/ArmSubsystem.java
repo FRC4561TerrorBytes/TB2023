@@ -79,7 +79,9 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
     m_elbowMotor.setSmartCurrentLimit(60);
     m_elbowMotor.enableVoltageCompensation(12.0);
-    m_elbowController.setOutputRange(-0.15, 0.15);
+    m_elbowController.setOutputRange(-0.15, 0.25);
+    //m_elbowMotor.setClosedLoopRampRate(1.0);
+    //m_elbowMotor.setOpenLoopRampRate(1.0);
     
     m_shoulderMotor.restoreFactoryDefaults();
     m_shoulderController = m_shoulderMotor.getPIDController();
@@ -97,6 +99,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_shoulderMotor.setSmartCurrentLimit(30);
     m_shoulderMotor.enableVoltageCompensation(12.0);
     m_shoulderMotor.setClosedLoopRampRate(0.3);
+    m_shoulderMotor.setOpenLoopRampRate(0.3);
 
     // NOTE: these are NEEDED
     resetShoulderPosition();

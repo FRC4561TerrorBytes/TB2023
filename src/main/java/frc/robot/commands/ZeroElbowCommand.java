@@ -36,7 +36,7 @@ public class ZeroElbowCommand extends CommandBase {
     } else {
       // elbowLimitContacts = 0;
     }
-    m_armSubsystem.setElbowSpeed(0.0);
+    m_armSubsystem.setElbowSpeed(-0.15);
 
     SmartDashboard.putNumber("Elbow Contacts", elbowLimitContacts);
   }
