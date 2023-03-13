@@ -248,6 +248,7 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shoulder current", m_shoulderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Shoulder rotation target", m_targetShoulderPosition);
     SmartDashboard.putBoolean("Game Piece Held", GameState.getInstance().isGamePieceHeld());
+    SmartDashboard.putNumber("Elbow Temp (C)", m_elbowMotor.getMotorTemperature());
     // SmartDashboard.putNumber("Shoulder placement", m_lastPlacement == null ? 999
     // : m_lastPlacement.m_shoulderAngle);
     /*

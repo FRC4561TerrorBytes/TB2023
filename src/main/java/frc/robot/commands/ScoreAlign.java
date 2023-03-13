@@ -4,78 +4,62 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 public class ScoreAlign extends CommandBase {
   /** Creates a new AutoRotate. */
 
-  DriveSubsystem m_driveSubsystem;
-  VisionSubsystem m_visionSubsystem;
+  final DriveSubsystem m_driveSubsystem;
+  final PIDController m_pidController = new PIDController(0.05, 0, 0);
 
   Pose2d startPosition;
-  double rotateTo = 180.0;
-  double rotateTolerance = 0.1;
 
   double startingAngle;
 
-  public ScoreAlign(DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
+  public ScoreAlign(DriveSubsystem driveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_driveSubsystem = driveSubsystem;
-    m_visionSubsystem = visionSubsystem;
     addRequirements(m_driveSubsystem);
-    addRequirements(m_visionSubsystem);
+    m_pidController.enableContinuousInput(-180.0, 180.0);
+    m_pidController.setSetpoint(180.0);
+    m_pidController.setTolerance(0.1);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startingAngle = m_driveSubsystem.getPose().getRotation().getDegrees();
+    m_pidController.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     double rawAngle = m_driveSubsystem.getPose().getRotation().getDegrees();
-    double angle = rawAngle%360;
-    double calculatedAngle = rotateTo - angle;
+    double rotationRate = m_pidController.calculate(rawAngle);
+    rotationRate += 1.0 * Math.signum(rotationRate);
 
-    m_driveSubsystem.drive(0, 0, 1.3 * Math.signum(angle), false);
+    m_driveSubsystem.drive(0, 0, rotationRate, false);
 
-    System.out.println("raw angle: " + rawAngle);
-    System.out.println("angle: " + angle);
-    System.out.println("calculatedAngle: " + calculatedAngle);
+    System.out.println("Raw Angle: " + rawAngle);
+    System.out.println("Rotation Rate: " + rotationRate);
+    SmartDashboard.putNumber("Raw Angle", rawAngle);
+    SmartDashboard.putNumber("Rotation Rate", rotationRate);
   }
 
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
+    m_driveSubsystem.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    System.out.println("target Rotation: " + rotateTo);
-    if(Math.signum(startingAngle) != Math.signum(m_driveSubsystem.getPose().getRotation().getDegrees())){
-
-      if (Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees()%360 - rotateTo) <  rotateTolerance) { //add to if above
-          //Logic in progress, just had an idea 
-          System.out.println("Rotation has finished");
-          return true;
-        }
-        else{
-          System.out.println("rotation has not finished");
-          return false;
-        }
-        
-      }
-      else{
-        System.out.println("rotation has not finished");
-        return false;
-      }
+    return m_pidController.atSetpoint();
   }
 }
