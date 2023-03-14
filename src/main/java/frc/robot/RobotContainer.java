@@ -135,7 +135,7 @@ public class RobotContainer {
         //.andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.5)));
     m_primaryController.back()
         .whileTrue(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.05));
-
+      //Try onTrue for command actuation, might be interesting
     // Substation grabs
     m_primaryController.leftBumper()
         .whileTrue(m_visionSubsystem

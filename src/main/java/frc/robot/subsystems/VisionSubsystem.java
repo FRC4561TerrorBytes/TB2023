@@ -108,6 +108,7 @@ public class VisionSubsystem extends SubsystemBase {
     PhotonTrackedTarget leftTarget = getTargetData(leftCamera);
     PhotonTrackedTarget rightTarget = getTargetData(rightCamera);
     if(leftTarget == null && rightTarget == null){
+      System.out.println("get lateral distance returning 0");
       return 0.0;
     }
     else if(leftTarget == null && rightTarget != null){
@@ -128,6 +129,8 @@ public class VisionSubsystem extends SubsystemBase {
         return leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
       }
     }
+    
+    System.out.println("get lateral distance returning 0-1");
     return 0.0;
   }
 

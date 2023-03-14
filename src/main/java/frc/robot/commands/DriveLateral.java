@@ -14,11 +14,10 @@ public class DriveLateral extends CommandBase {
   private double m_startingY;
   private double m_distance;
 
-  private PIDController m_controller = new PIDController(0.005, 0.0, 0.0);
+  private PIDController m_controller = new PIDController(5, 0.0, 0.0);
 
   /** Creates a new DriveDistance. */
   public DriveLateral(DriveSubsystem driveSubsystem, double distance, double tolerance) {
-    m_controller.reset();
     m_driveSubsystem = driveSubsystem;
     m_distance = distance;
     m_controller.setSetpoint(distance);
@@ -30,6 +29,7 @@ public class DriveLateral extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_controller.reset();
     m_startingY = m_driveSubsystem.getPose().getY();
   }
 
@@ -37,6 +37,7 @@ public class DriveLateral extends CommandBase {
   @Override
   public void execute() {
     double lateralMoveSpeed = m_controller.calculate(m_driveSubsystem.getPose().getY(), m_startingY + m_distance);
+    System.out.println("thing we give calculate: " + ( m_startingY + m_distance));
     System.out.println("lateral speed: " + lateralMoveSpeed);
     m_driveSubsystem.drive(0, lateralMoveSpeed, 0, false);
     SmartDashboard.putBoolean("driving forward", true);
