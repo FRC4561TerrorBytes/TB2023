@@ -36,6 +36,7 @@ import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCubeBalance;
 import frc.robot.commands.autonomous.ScoreCubeLeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCubeStop;
+import frc.robot.commands.autonomous.ScoreLeaveCommBal;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -92,9 +93,11 @@ public class RobotContainer {
         () -> new ScoreCubeStop(m_driveSubsystem, m_armSubsystem,
             m_intakeSubsystem));
     m_autoChooser.addOption("ScoreCubeLeaveCommRight", () -> new ScoreCubeLeaveCommunity(m_driveSubsystem,
-        m_armSubsystem, m_intakeSubsystem, 0.1));
+        m_armSubsystem, m_intakeSubsystem, 0.1)); //FIXME Increase y speeds if we hit charge station on leave
     m_autoChooser.addOption("ScoreCubeLeaveCommLeft", () -> new ScoreCubeLeaveCommunity(m_driveSubsystem,
-        m_armSubsystem, m_intakeSubsystem, -0.1));
+        m_armSubsystem, m_intakeSubsystem, -0.1)); //FIXME Increase y speeds if we hit charge station on leave
+    m_autoChooser.addOption("ScoreCubeLeaveCommBalance", () -> new ScoreLeaveCommBal(m_driveSubsystem, 
+        m_armSubsystem, m_intakeSubsystem));
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
@@ -127,7 +130,11 @@ public class RobotContainer {
     m_primaryController.x()
         .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22),
             Units.inchesToMeters(9)));
-    m_primaryController.start().whileTrue(new ScoreAlign(m_driveSubsystem));//.andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.5)));
+    m_primaryController.start()
+        .whileTrue(new ScoreAlign(m_driveSubsystem));
+        //.andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.5)));
+    m_primaryController.back()
+        .whileTrue(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.05));
 
     // Substation grabs
     m_primaryController.leftBumper()
@@ -292,7 +299,7 @@ public class RobotContainer {
 
     // Re:Zero − Starting Life in Another World
     m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
-        .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
+        .alongWith(new RunCommand(() -> m_armSubsystem.setManualElbowSpeed(0.1)).withTimeout(1.0))
         .andThen(new ZeroElbowCommand(m_armSubsystem)));
 
     // Miscellaneous Bindings

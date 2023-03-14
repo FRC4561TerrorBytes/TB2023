@@ -124,16 +124,16 @@ public class ArmSubsystem extends SubsystemBase {
     return m_elbowReverseLimitSwitch.isPressed();
   }
 
-  public void setArmSpeed(double shoulderSpeed, double elbowSpeed) {
-    setShoulderSpeed(shoulderSpeed);
-    setElbowSpeed(elbowSpeed);
+  public void setManualArmSpeed(double shoulderSpeed, double elbowSpeed) {
+    setManualShoulderSpeed(shoulderSpeed);
+    setManualElbowSpeed(elbowSpeed);
   }
 
-  public void setShoulderSpeed(double shoulderSpeed) {
+  public void setManualShoulderSpeed(double shoulderSpeed) {
     m_shoulderMotor.set(shoulderSpeed);
   }
 
-  public void setElbowSpeed(double elbowSpeed) {
+  public void setManualElbowSpeed(double elbowSpeed) {
     m_elbowMotor.set(elbowSpeed);
   }
 

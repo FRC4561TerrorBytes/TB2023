@@ -4,22 +4,25 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveLateral extends CommandBase {
   private DriveSubsystem m_driveSubsystem;
-  private Pose2d m_startingPose;
-  private double m_speed;
+  private double m_startingY;
   private double m_distance;
 
+  private PIDController m_controller = new PIDController(0.005, 0.0, 0.0);
+
   /** Creates a new DriveDistance. */
-  public DriveLateral(DriveSubsystem driveSubsystem, double distance, double speed) {
+  public DriveLateral(DriveSubsystem driveSubsystem, double distance, double tolerance) {
+    m_controller.reset();
     m_driveSubsystem = driveSubsystem;
-    m_speed = speed;
     m_distance = distance;
+    m_controller.setSetpoint(distance);
+    m_controller.setTolerance(tolerance);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_driveSubsystem);
   }
@@ -27,32 +30,28 @@ public class DriveLateral extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_startingPose = m_driveSubsystem.getPose();
+    m_startingY = m_driveSubsystem.getPose().getY();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveSubsystem.drive(0, m_speed*Math.signum(m_distance), 0, false);
+    double lateralMoveSpeed = m_controller.calculate(m_driveSubsystem.getPose().getY(), m_startingY + m_distance);
+    System.out.println("lateral speed: " + lateralMoveSpeed);
+    m_driveSubsystem.drive(0, lateralMoveSpeed, 0, false);
     SmartDashboard.putBoolean("driving forward", true);
+    System.out.println("finished: " + m_controller.atSetpoint());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_driveSubsystem.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Math.signum(m_distance) == 1){
-      return m_startingPose.getY() + m_distance < m_driveSubsystem.getPose().getY();
-    }
-    else if(Math.signum(m_distance) == -1){
-      return m_startingPose.getY() + m_distance > m_driveSubsystem.getPose().getY();
-    }
-    else{
-      return false;
-    }
+    return m_controller.atSetpoint();
   }
 }

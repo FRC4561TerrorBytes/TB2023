@@ -57,12 +57,13 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.BACK_RIGHT_TURN_MOTOR_INVERTED);
 
   // Odometry
-  private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
-      Rotation2d.fromDegrees(m_pigeon.getYaw()),
-      getModulePositions());
+  private final SwerveDriveOdometry m_odometry;
 
   public DriveSubsystem() {
     m_pigeon.setYaw(180.0);
+    m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
+      Rotation2d.fromDegrees(m_pigeon.getYaw()),
+      getModulePositions());
   }
 
   /**
@@ -128,6 +129,10 @@ public class DriveSubsystem extends SubsystemBase {
     // m_pigeon.getRawGyro(angleRates);
     // return onChargeStation() && angleRates[0] < -1;
     return Math.abs(m_pigeon.getPitch()) < 12;
+  }
+
+  public double getPigeonYaw(){
+    return m_pigeon.getYaw();
   }
 
   public void stop() {

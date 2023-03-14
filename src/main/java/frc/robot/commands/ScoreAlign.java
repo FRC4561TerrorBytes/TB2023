@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
@@ -15,10 +14,6 @@ public class ScoreAlign extends CommandBase {
 
   final DriveSubsystem m_driveSubsystem;
   final PIDController m_pidController = new PIDController(0.05, 0, 0);
-
-  Pose2d startPosition;
-
-  double startingAngle;
 
   public ScoreAlign(DriveSubsystem driveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -42,10 +37,8 @@ public class ScoreAlign extends CommandBase {
     double rotationRate = m_pidController.calculate(rawAngle);
     rotationRate += 1.0 * Math.signum(rotationRate);
 
-    m_driveSubsystem.drive(0, 0, rotationRate, false);
+    m_driveSubsystem.drive(0, 0, rotationRate, true);
 
-    System.out.println("Raw Angle: " + rawAngle);
-    System.out.println("Rotation Rate: " + rotationRate);
     SmartDashboard.putNumber("Raw Angle", rawAngle);
     SmartDashboard.putNumber("Rotation Rate", rotationRate);
   }

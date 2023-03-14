@@ -123,7 +123,6 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     if (resetLoop++ == 300) {
-      System.out.println("got here uwu");
       m_turnEncoder.setPosition(Math.toRadians(m_absEncoder.getAbsolutePosition() - m_steerOffset));
     }
   }
