@@ -10,19 +10,15 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveLateral extends CommandBase {
-  private DriveSubsystem m_driveSubsystem;
-  private double m_startingY;
-  private double m_distance;
-
-  private PIDController m_controller = new PIDController(5, 0.0, 0.0);
+  private final DriveSubsystem m_driveSubsystem;
+  private final double m_distance;
+  private final PIDController m_controller = new PIDController(5.0, 0.0, 0.0);
 
   /** Creates a new DriveDistance. */
   public DriveLateral(DriveSubsystem driveSubsystem, double distance, double tolerance) {
     m_driveSubsystem = driveSubsystem;
     m_distance = distance;
-    m_controller.setSetpoint(distance);
     m_controller.setTolerance(tolerance);
-    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_driveSubsystem);
   }
 
@@ -30,18 +26,24 @@ public class DriveLateral extends CommandBase {
   @Override
   public void initialize() {
     m_controller.reset();
-    m_startingY = m_driveSubsystem.getPose().getY();
+    final double startingY = m_driveSubsystem.getPose().getY();
+    final double setPoint = startingY + m_distance;
+    m_controller.setSetpoint(startingY);
+    SmartDashboard.putNumber("Lat init strtY", startingY);
+    SmartDashboard.putNumber("Lat init dist", m_distance);
+    SmartDashboard.putNumber("Lat init setPt", setPoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double lateralMoveSpeed = m_controller.calculate(m_driveSubsystem.getPose().getY(), m_startingY + m_distance);
-    System.out.println("thing we give calculate: " + ( m_startingY + m_distance));
-    System.out.println("lateral speed: " + lateralMoveSpeed);
+    final double currentY = m_driveSubsystem.getPose().getY();
+    double pidSpeed = m_controller.calculate(currentY);
+    double lateralMoveSpeed = pidSpeed + (0.25 * Math.signum(pidSpeed));
+    SmartDashboard.putNumber("Lat exe curY", currentY);
+    SmartDashboard.putNumber("Lat exe pidSp", pidSpeed);
+    SmartDashboard.putNumber("Lat exe speed", lateralMoveSpeed);
     m_driveSubsystem.drive(0, lateralMoveSpeed, 0, false);
-    SmartDashboard.putBoolean("driving forward", true);
-    System.out.println("finished: " + m_controller.atSetpoint());
   }
 
   // Called once the command ends or is interrupted.
@@ -53,6 +55,7 @@ public class DriveLateral extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    SmartDashboard.putBoolean("Lat estFini", m_controller.atSetpoint());
     return m_controller.atSetpoint();
   }
 }
