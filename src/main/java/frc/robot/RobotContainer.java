@@ -241,9 +241,9 @@ public class RobotContainer {
     Trigger coneTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CONE);
     coneTrigger.and(m_secondaryController.b())
-        .onTrue(new MoveConeMiddleCommand(m_armSubsystem, m_intakeSubsystem).withTimeout(1.5));
+        .onTrue(new MoveConeMiddleCommand(m_armSubsystem).withTimeout(3.0));
     coneTrigger.and(m_secondaryController.y())
-        .onTrue(new MoveConeHighCommand(m_armSubsystem, m_intakeSubsystem).withTimeout(1.5));
+        .onTrue(new MoveConeHighCommand(m_armSubsystem).withTimeout(1.5));
     Trigger scoreLow = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_LOW);
     coneTrigger.and(scoreLow).and(m_secondaryController.rightBumper())

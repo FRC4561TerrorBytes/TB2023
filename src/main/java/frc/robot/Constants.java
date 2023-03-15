@@ -149,7 +149,7 @@ public final class Constants {
   public static final double ELBOW_ROTATIONS_PER_DEGREE = 5.0 / 12.0;
   public static final double ELBOW_MAX_VOLTAGE_FF = 1.25;
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 0.2;
-  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.006;
+  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.0045;
   public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
   public static final double ELBOW_INTEGRAL_GAIN = 0.000015;
   public static final double ELBOW_IZONE = 5.0;
@@ -185,8 +185,8 @@ public final class Constants {
   public static final double ARM_MOTORS_INTERGRAL_ZONE = 10000.0;
   public static final double ARM_MOTORS_CLOSED_LOOP_PEAK_OUTPUT = 0.5;
 
-  public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 121.0;
-  public static final double ELBOW_ZERO_OFFSET = /* measure this */ -36.0 - SHOULDER_ZERO_OFFSET + 90.0;
+  public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 121.5;
+  public static final double ELBOW_ZERO_OFFSET = /* measure this */ -33.0 - SHOULDER_ZERO_OFFSET + 90.0;
 
   public static final int LEFT_INTAKE_MOTOR = 12;
   public static final int RIGHT_INTAKE_MOTOR = 13;
