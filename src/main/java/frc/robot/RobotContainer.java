@@ -180,9 +180,6 @@ public class RobotContainer {
     m_secondaryController.a()
         .onTrue(new InstantCommand(() -> m_armSubsystem
             .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    /*m_secondaryController.x()
-        .onTrue(new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));*/
     m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
         .onTrue(new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
@@ -256,26 +253,20 @@ public class RobotContainer {
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
     coneTrigger.and(scoreConeHigh).and(m_secondaryController.rightBumper())
         .onTrue(new ScoreConeHighCommand(m_intakeSubsystem).withTimeout(0.5));
-/*
-    coneTrigger.and(scoreConeHigh).and(m_secondaryController.x())
-        .onTrue(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
-        .alongWith(new WaitCommand(1))
-        .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))));
-*/
 
   Trigger scoreCubeHigh = new Trigger(
     () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CUBE_HIGH);
 
-    m_secondaryController.x().onTrue(new ConditionalCommand(
+    Trigger floorGrab = new Trigger(
+      () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB);
+    m_secondaryController.x().and(floorGrab.negate()).onTrue(new ConditionalCommand(
       new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
         .alongWith(new WaitCommand(1))
         .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),  
       () -> (coneTrigger.and(scoreConeHigh)).or(cubeTrigger.and(scoreCubeHigh)).getAsBoolean()));
 
-  Trigger floorGrab = new Trigger(
-    () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB);
-  floorGrab.and(cubeTrigger).and(m_secondaryController.x())
+  floorGrab.and(m_secondaryController.x())
       .onTrue(new InstantCommand( () -> m_armSubsystem
         .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW))
         .andThen(new WaitCommand(3.0))
