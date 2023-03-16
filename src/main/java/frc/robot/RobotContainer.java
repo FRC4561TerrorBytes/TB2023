@@ -87,20 +87,26 @@ public class RobotContainer {
     m_autoChooser.addOption("ScoreCubeBalance",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem,
             m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH).andThen(
-              new BalanceAuto(m_driveSubsystem).withTimeout(5.0)).andThen(
-                new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))
-              ));
+                new BalanceAuto(m_driveSubsystem, -2, -1).withTimeout(5.0))
+            .andThen(
+                new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
+    m_autoChooser.addOption("ScoreCubeLeaveCommBalance", () -> new ScoreCube(m_driveSubsystem,
+        m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH).andThen(
+          new DriveUntilCommand(m_driveSubsystem, -1.5, 0, () -> false).withTimeout(3.0)
+        ).andThen(new WaitCommand(1.0)).andThen(new BalanceAuto(m_driveSubsystem, 2, 1).withTimeout(0.5)).andThen(
+          new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))
+        ));
     m_autoChooser.addOption("ScoreCubeStop",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem,
             m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH));
-    m_autoChooser.addOption("ScoreCubeLeaveCommRight", () -> 
-       new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH).andThen(
-        new DriveUntilCommand(m_driveSubsystem, -1, 0.1, () -> false).withTimeout(5)
-       ));
-       m_autoChooser.addOption("ScoreCubeLeaveCommLeft", () -> 
-       new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH).andThen(
-        new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)
-       ));
+    m_autoChooser.addOption("ScoreCubeLeaveCommRight",
+        () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
+            .andThen(
+                new DriveUntilCommand(m_driveSubsystem, -1, 0.1, () -> false).withTimeout(5)));
+    m_autoChooser.addOption("ScoreCubeLeaveCommLeft",
+        () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
+            .andThen(
+                new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
@@ -232,7 +238,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(
             () -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
 
-    //Score on driver/operator right bumper press
+    // Score on driver/operator right bumper press
     Trigger rightBumper = new Trigger(
         (m_primaryController.rightBumper().or(m_secondaryController.rightBumper())));
 
