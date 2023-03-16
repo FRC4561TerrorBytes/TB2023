@@ -16,18 +16,17 @@ public class IntakeCommand extends CommandBase {
   /** Creates a new IntakeCommand. */
   public IntakeCommand(IntakeSubsystem intakeSubsystem) {
     m_intakeSubsystem = intakeSubsystem;
-
-    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_intakeSubsystem);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     timeout.reset();
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
+  /**
+   * Run Intake at speed until motors stall (game piece acquired)
+   */
   @Override
   public void execute() {
     m_intakeSubsystem.intake();
@@ -36,9 +35,12 @@ public class IntakeCommand extends CommandBase {
     }
   }
 
-  // Called once the command ends or is interrupted.
+  /**
+   * Set Game State to Held when IntakeCommand interrupted
+   */
   @Override
   public void end(boolean interrupted) {
+    
     if (!interrupted) {
       GameState.getInstance().setGamePieceHeld(true);
     }
@@ -46,7 +48,9 @@ public class IntakeCommand extends CommandBase {
     timeout.stop();
   }
 
-  // Returns true when the command should end.
+  /**
+   *  Returns true when motor stall timeout reaches 0.5 seconds.
+   */ 
   @Override
   public boolean isFinished() {
     return timeout.hasElapsed(0.5);
