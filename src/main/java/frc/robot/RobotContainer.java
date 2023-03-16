@@ -221,8 +221,8 @@ public class RobotContainer {
         .onTrue(new InstantCommand(
             () -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
 
-    // Cube scoring
-    Trigger cubeTrigger = new Trigger(
+       // Cube scoring
+       Trigger cubeTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CUBE);
     cubeTrigger.and(m_secondaryController.b())
         .onTrue(new InstantCommand(() -> m_armSubsystem
@@ -234,7 +234,7 @@ public class RobotContainer {
             .andThen(new InstantCommand(
                 () -> m_armSubsystem.setKnownArmPlacement(
                     KnownArmPlacement.SCORE_CUBE_HIGH))));
-    cubeTrigger.and(m_secondaryController.rightBumper())
+    cubeTrigger.and(m_primaryController.rightBumper())
         .onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
 
     // Cone scoring
@@ -246,15 +246,15 @@ public class RobotContainer {
         .onTrue(new MoveConeHighCommand(m_armSubsystem, m_intakeSubsystem).withTimeout(1.5));
     Trigger scoreLow = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_LOW);
-    coneTrigger.and(scoreLow).and(m_secondaryController.rightBumper())
+    coneTrigger.and(scoreLow).and(m_primaryController.rightBumper())
         .onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
     Trigger scoreMiddleCone = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_MIDDLE_LOWER);
-    coneTrigger.and(scoreMiddleCone).and(m_secondaryController.rightBumper())
+    coneTrigger.and(scoreMiddleCone).and(m_primaryController.rightBumper())
         .onTrue(new ScoreConeMiddleCommand(m_intakeSubsystem).withTimeout(0.5));
     Trigger scoreConeHigh = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
-    coneTrigger.and(scoreConeHigh).and(m_secondaryController.rightBumper())
+    coneTrigger.and(scoreConeHigh).and(m_primaryController.rightBumper())
         .onTrue(new ScoreConeHighCommand(m_intakeSubsystem).withTimeout(0.5));
 /*
     coneTrigger.and(scoreConeHigh).and(m_secondaryController.x())
