@@ -41,7 +41,7 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public enum KnownArmPlacement {
     STOWED(101.0, -58.0),
-    FLOOR_GRAB(70.0, -62.5),
+    FLOOR_GRAB(65.0, -64.5),
     SUBSTATION_APPROACH(120.0, 7.2),
     SUBSTATION_GRAB_HALFWAY(108.0, 3.0),
     SUBSTATION_GRAB_FULLWAY(91.4, 0.9),
@@ -124,16 +124,16 @@ public class ArmSubsystem extends SubsystemBase {
     return m_elbowReverseLimitSwitch.isPressed();
   }
 
-  public void setArmSpeed(double shoulderSpeed, double elbowSpeed) {
-    setShoulderSpeed(shoulderSpeed);
-    setElbowSpeed(elbowSpeed);
+  public void setManualArmSpeed(double shoulderSpeed, double elbowSpeed) {
+    setManualShoulderSpeed(shoulderSpeed);
+    setManualElbowSpeed(elbowSpeed);
   }
 
-  public void setShoulderSpeed(double shoulderSpeed) {
+  public void setManualShoulderSpeed(double shoulderSpeed) {
     m_shoulderMotor.set(shoulderSpeed);
   }
 
-  public void setElbowSpeed(double elbowSpeed) {
+  public void setManualElbowSpeed(double elbowSpeed) {
     m_elbowMotor.set(elbowSpeed);
   }
 

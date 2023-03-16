@@ -36,6 +36,7 @@ import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCubeBalance;
 import frc.robot.commands.autonomous.ScoreCubeLeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCubeStop;
+//import frc.robot.commands.autonomous.ScoreLeaveCommBal;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -92,9 +93,11 @@ public class RobotContainer {
         () -> new ScoreCubeStop(m_driveSubsystem, m_armSubsystem,
             m_intakeSubsystem));
     m_autoChooser.addOption("ScoreCubeLeaveCommRight", () -> new ScoreCubeLeaveCommunity(m_driveSubsystem,
-        m_armSubsystem, m_intakeSubsystem, 0.1));
+        m_armSubsystem, m_intakeSubsystem, 0.1)); //FIXME Increase y speeds if we hit charge station on leave
     m_autoChooser.addOption("ScoreCubeLeaveCommLeft", () -> new ScoreCubeLeaveCommunity(m_driveSubsystem,
-        m_armSubsystem, m_intakeSubsystem, -0.1));
+        m_armSubsystem, m_intakeSubsystem, -0.1)); //FIXME Increase y speeds if we hit charge station on leave
+    //m_autoChooser.addOption("ScoreCubeLeaveCommBalance", () -> new ScoreLeaveCommBal(m_driveSubsystem, 
+        //m_armSubsystem, m_intakeSubsystem));
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
@@ -127,8 +130,12 @@ public class RobotContainer {
     m_primaryController.x()
         .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22),
             Units.inchesToMeters(9)));
-    m_primaryController.start().whileTrue(new ScoreAlign(m_driveSubsystem));//.andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.5)));
-
+    m_primaryController.start()
+        .whileTrue(new ScoreAlign(m_driveSubsystem));
+        //.andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.5)));
+    m_primaryController.back()
+        .whileTrue(new DriveLateral(m_driveSubsystem, m_visionSubsystem.getLateralDistance(0), 0.05));
+      //Try onTrue for command actuation, might be interesting
     // Substation grabs
     m_primaryController.leftBumper()
         .whileTrue(m_visionSubsystem
@@ -180,6 +187,9 @@ public class RobotContainer {
     m_secondaryController.a()
         .onTrue(new InstantCommand(() -> m_armSubsystem
             .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
+    /*m_secondaryController.x()
+        .onTrue(new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));*/
     m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
         .onTrue(new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
@@ -238,7 +248,7 @@ public class RobotContainer {
     Trigger coneTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CONE);
     coneTrigger.and(m_secondaryController.b())
-        .onTrue(new MoveConeMiddleCommand(m_armSubsystem).withTimeout(3.0));
+        .onTrue(new MoveConeMiddleCommand(m_armSubsystem).withTimeout(2.5));
     coneTrigger.and(m_secondaryController.y())
         .onTrue(new MoveConeHighCommand(m_armSubsystem).withTimeout(1.5));
     Trigger scoreLow = new Trigger(
@@ -253,6 +263,12 @@ public class RobotContainer {
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
     coneTrigger.and(scoreConeHigh).and(m_secondaryController.rightBumper())
         .onTrue(new ScoreConeHighCommand(m_intakeSubsystem).withTimeout(0.5));
+/*
+    coneTrigger.and(scoreConeHigh).and(m_secondaryController.x())
+        .onTrue(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        .alongWith(new WaitCommand(1))
+        .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))));
+*/
 
   Trigger scoreCubeHigh = new Trigger(
     () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CUBE_HIGH);
@@ -286,7 +302,7 @@ public class RobotContainer {
 
     // Re:Zero − Starting Life in Another World from Zero
     m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
-        .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
+        .alongWith(new RunCommand(() -> m_armSubsystem.setManualElbowSpeed(0.1)).withTimeout(1.0))
         .andThen(new ZeroElbowCommand(m_armSubsystem)));
 
     // Miscellaneous Bindings
