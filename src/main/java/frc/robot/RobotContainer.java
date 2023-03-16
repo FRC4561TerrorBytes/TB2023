@@ -273,14 +273,17 @@ public class RobotContainer {
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),  
       () -> (coneTrigger.and(scoreConeHigh)).or(cubeTrigger.and(scoreCubeHigh)).getAsBoolean()));
 
-  Trigger FloorGrab = new Trigger(
+  Trigger floorGrab = new Trigger(
     () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB);
-  FloorGrab.and(cubeTrigger).and(m_secondaryController.x())
+  floorGrab.and(cubeTrigger).and(m_secondaryController.x())
       .onTrue(new InstantCommand( () -> m_armSubsystem
         .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW))
-        .andThen(new WaitCommand(1))
+        .andThen(new WaitCommand(3.0))
         .andThen(new InstantCommand( () -> m_armSubsystem
           .setKnownArmPlacement(KnownArmPlacement.STOWED))));
+  Trigger gamePieceHeld = new Trigger(() -> GameState.getInstance().isGamePieceHeld());
+  floorGrab.and(gamePieceHeld.negate()).whileTrue(new IntakeCommand(m_intakeSubsystem));
+
 
     // Tertiary Controller Bindings
 
@@ -290,7 +293,7 @@ public class RobotContainer {
         () -> -m_tertiaryController.getLeftY(),
         () -> -m_tertiaryController.getRightY()).until(m_tertiaryController.start()));
 
-    // Re:Zero − Starting Life in Another World
+    // Re:Zero − Starting Life in Another World from Zero
     m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
         .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
         .andThen(new ZeroElbowCommand(m_armSubsystem)));

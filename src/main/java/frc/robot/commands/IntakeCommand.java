@@ -49,6 +49,6 @@ public class IntakeCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timeout.hasElapsed(0.5);
+    return timeout.hasElapsed(0.1);
   }
 }
