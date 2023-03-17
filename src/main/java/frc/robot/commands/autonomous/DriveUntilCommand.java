@@ -15,7 +15,7 @@ public class DriveUntilCommand extends CommandBase {
   private double m_ySpeed;
   private BooleanSupplier m_endCondition;
 
-  /** Creates a new DriveUntilCommand. */
+  /** Drives drivetrain with x and y speeds until passed condition ends (FOR AUTOS) */
   public DriveUntilCommand(DriveSubsystem driveSubsystem, double xSpeed, double ySpeed, BooleanSupplier endCondition) {
     m_driveSubsystem = driveSubsystem;
     m_xSpeed = xSpeed;

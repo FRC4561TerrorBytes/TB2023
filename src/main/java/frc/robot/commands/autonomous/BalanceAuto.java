@@ -9,10 +9,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class BalanceAuto extends SequentialCommandGroup {
-  /** Creates a new BalanceAuto. */
-  public BalanceAuto(DriveSubsystem driveSubsystem) {
+  /** Auto that drives forward or backwards until it sees gyro pitch change up and down following balancing on charge station
+   * WILL RUN FOREVER IF NOT CALLED WITH TIMEOUT
+  */
+  
+  public BalanceAuto(DriveSubsystem driveSubsystem, double onChargeX, double onPitchX) {
     addCommands(
-        new DriveUntilCommand(driveSubsystem, -2, 0, driveSubsystem::onChargeStation),
-        new DriveUntilCommand(driveSubsystem, -1, 0, driveSubsystem::onPitchDown));
+        new DriveUntilCommand(driveSubsystem, onChargeX, 0, driveSubsystem::onChargeStation),
+        new DriveUntilCommand(driveSubsystem, onPitchX, 0, driveSubsystem::onPitchDown));
   }
 }
