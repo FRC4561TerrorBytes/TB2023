@@ -108,12 +108,16 @@ public class VisionSubsystem extends SubsystemBase {
     PhotonTrackedTarget leftTarget = getTargetData(leftCamera);
     PhotonTrackedTarget rightTarget = getTargetData(rightCamera);
     if(leftTarget == null && rightTarget == null){
+      System.out.println("no targets seen by cameras");
+      SmartDashboard.putNumber("returning vision ", 0.0);
       return 0.0;
     }
     else if(leftTarget == null && rightTarget != null){
+      SmartDashboard.putNumber("returning vision ", (rightTarget.getBestCameraToTarget().getY() + (Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset)));
       return rightTarget.getBestCameraToTarget().getY() + (Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
     }
     else if(leftTarget != null && rightTarget == null){
+      SmartDashboard.putNumber("returning vision ", (leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset)));
       return leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
     }
     else if (rightTarget != null && leftTarget != null) {
@@ -123,11 +127,15 @@ public class VisionSubsystem extends SubsystemBase {
 
       // lower pose ambiguity means more certain
       if (leftPoseAmbiguity >= rightPoseAmbiguity) {
+        SmartDashboard.putNumber("returning vision ", (rightTarget.getBestCameraToTarget().getY() + (Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset)));
         return rightTarget.getBestCameraToTarget().getY() + (Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
       } else if (leftPoseAmbiguity < rightPoseAmbiguity) {
+        SmartDashboard.putNumber("returning vision ", (leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset)));
         return leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
       }
     }
+    System.out.println("returning 0 at end of the function");
+    SmartDashboard.putNumber("returning vision ", 0.0);
     return 0.0;
   }
 
@@ -220,6 +228,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // if we see a target with the left camera then assign offsets and transform
     // using left camera
+    
     else if (leftTargetIDValid) {
       targetTransform = leftAprilTransform3d;
       cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset;

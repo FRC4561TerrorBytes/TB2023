@@ -6,8 +6,9 @@
 package frc.robot.commands.autonomous;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DriveSubsystem;
-
+// base OnChargeX -2, OnPitchX -1
 public class BalanceAuto extends SequentialCommandGroup {
   /** Auto that drives forward or backwards until it sees gyro pitch change up and down following balancing on charge station
    * WILL RUN FOREVER IF NOT CALLED WITH TIMEOUT
