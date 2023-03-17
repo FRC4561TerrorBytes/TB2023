@@ -139,19 +139,19 @@ public class RobotContainer {
     m_primaryController.x()
         .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22),
             Units.inchesToMeters(9)));
-    m_primaryController.start().whileTrue(new ScoreAlign(m_driveSubsystem));// .andThen(new
+    //m_primaryController.start().whileTrue(new ScoreAlign(m_driveSubsystem));// .andThen(new
                                                                             // DriveLateral(m_driveSubsystem,
                                                                             // m_visionSubsystem.getLateralDistance(0),
                                                                             // 0.5)));
 
     // Substation grabs
-    m_primaryController.leftBumper()
+    m_primaryController.back()
         .whileTrue(m_visionSubsystem
             .centerAprilTagCommand(-Units.inchesToMeters(29.565),
                 Units.inchesToMeters(30))
             .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
                 1.5)));
-    m_primaryController.rightBumper()
+    m_primaryController.start()
         .whileTrue(m_visionSubsystem
             .centerAprilTagCommand(Units.inchesToMeters(29.565),
                 Units.inchesToMeters(30))
@@ -313,7 +313,7 @@ public class RobotContainer {
         () -> -m_tertiaryController.getLeftY(),
         () -> -m_tertiaryController.getRightY()).until(m_tertiaryController.start()));
 
-    // Re:Zero − Starting Life in Another World
+    // Re:Zero − Starting Life in Another World 
     m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
         .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
         .andThen(new ZeroElbowCommand(m_armSubsystem)));
