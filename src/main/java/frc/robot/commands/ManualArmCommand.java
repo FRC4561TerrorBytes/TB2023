@@ -45,7 +45,7 @@ public class ManualArmCommand extends CommandBase {
     shoulderSpeed = MathUtil.clamp(shoulderSpeed, -0.25, 0.25);
     double elbowSpeed = Math.pow(m_elbowSpeedSupplier.getAsDouble(), 3.0);
     elbowSpeed = MathUtil.clamp(elbowSpeed, -0.25, 0.25);
-    m_armSubsystem.setArmSpeed(shoulderSpeed, elbowSpeed);
+    m_armSubsystem.setManualArmSpeed(shoulderSpeed, elbowSpeed);
   }
 
   /**
@@ -53,7 +53,7 @@ public class ManualArmCommand extends CommandBase {
    */
   @Override
   public void end(boolean interrupted) {
-    m_armSubsystem.setArmSpeed(0.0, 0.0);
+    m_armSubsystem.setManualArmSpeed(0.0, 0.0);
     m_armSubsystem.setTargetsToCurrents();
   }
 }

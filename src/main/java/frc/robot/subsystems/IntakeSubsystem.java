@@ -59,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public boolean isStalled() {
     if (this.getCurrentCommand().getName().endsWith("IntakeCommand")) {
-      return m_leftEncoder.getVelocity() < 100.0 && m_rightEncoder.getVelocity() < 100.0;
+      return m_leftEncoder.getVelocity() < 100.0 || m_rightEncoder.getVelocity() < 100.0;
     }
     return false;
   }

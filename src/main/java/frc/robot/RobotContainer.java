@@ -139,11 +139,6 @@ public class RobotContainer {
     m_primaryController.x()
         .whileTrue(m_visionSubsystem.centerAprilTagCommand(Units.inchesToMeters(22),
             Units.inchesToMeters(9)));
-    //m_primaryController.start().whileTrue(new ScoreAlign(m_driveSubsystem));// .andThen(new
-                                                                            // DriveLateral(m_driveSubsystem,
-                                                                            // m_visionSubsystem.getLateralDistance(0),
-                                                                            // 0.5)));
-
     // Substation grabs
     m_primaryController.back()
         .whileTrue(m_visionSubsystem
@@ -262,9 +257,9 @@ public class RobotContainer {
     Trigger coneTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CONE);
     coneTrigger.and(m_secondaryController.b())
-        .onTrue(new MoveConeMiddleCommand(m_armSubsystem, m_intakeSubsystem).withTimeout(1.5));
+        .onTrue(new MoveConeMiddleCommand(m_armSubsystem).withTimeout(2.5));
     coneTrigger.and(m_secondaryController.y())
-        .onTrue(new MoveConeHighCommand(m_armSubsystem, m_intakeSubsystem).withTimeout(1.5));
+        .onTrue(new MoveConeHighCommand(m_armSubsystem).withTimeout(1.5));
     Trigger scoreLow = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_LOW);
     coneTrigger.and(scoreLow).and(rightBumper)
@@ -289,21 +284,24 @@ public class RobotContainer {
     Trigger scoreCubeHigh = new Trigger(
         () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CUBE_HIGH);
 
-    m_secondaryController.x().onTrue(new ConditionalCommand(
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
-            .alongWith(new WaitCommand(1))
-            .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))),
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
-        () -> (coneTrigger.and(scoreConeHigh)).or(cubeTrigger.and(scoreCubeHigh)).getAsBoolean()));
 
-    Trigger FloorGrab = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB);
-    FloorGrab.and(cubeTrigger).and(m_secondaryController.x())
-        .onTrue(new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW))
-            .andThen(new WaitCommand(1))
-            .andThen(new InstantCommand(() -> m_armSubsystem
-                .setKnownArmPlacement(KnownArmPlacement.STOWED))));
+    Trigger floorGrab = new Trigger(
+      () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB);
+    m_secondaryController.x().and(floorGrab.negate()).onTrue(new ConditionalCommand(
+      new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        .alongWith(new WaitCommand(1))
+        .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))),
+      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),  
+      () -> (coneTrigger.and(scoreConeHigh)).or(cubeTrigger.and(scoreCubeHigh)).getAsBoolean()));
+
+  floorGrab.and(m_secondaryController.x())
+      .onTrue(new InstantCommand( () -> m_armSubsystem
+        .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW))
+        .andThen(new WaitCommand(3.0))
+        .andThen(new InstantCommand( () -> m_armSubsystem
+          .setKnownArmPlacement(KnownArmPlacement.STOWED))));
+  Trigger gamePieceHeld = new Trigger(() -> GameState.getInstance().isGamePieceHeld());
+  floorGrab.and(gamePieceHeld.negate()).whileTrue(new IntakeCommand(m_intakeSubsystem));
 
     // Tertiary Controller Bindings
 
@@ -313,9 +311,9 @@ public class RobotContainer {
         () -> -m_tertiaryController.getLeftY(),
         () -> -m_tertiaryController.getRightY()).until(m_tertiaryController.start()));
 
-    // Re:Zero − Starting Life in Another World 
+    // Re:Zero − Starting Life in Another World from Zero
     m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
-        .alongWith(new RunCommand(() -> m_armSubsystem.setElbowSpeed(0.1)).withTimeout(1.0))
+        .alongWith(new RunCommand(() -> m_armSubsystem.setManualElbowSpeed(0.1)).withTimeout(1.0))
         .andThen(new ZeroElbowCommand(m_armSubsystem)));
 
     // Miscellaneous Bindings
