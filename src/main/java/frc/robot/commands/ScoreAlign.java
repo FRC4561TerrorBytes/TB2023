@@ -20,7 +20,7 @@ public class ScoreAlign extends CommandBase {
     m_driveSubsystem = driveSubsystem;
     addRequirements(m_driveSubsystem);
     m_pidController.enableContinuousInput(-180.0, 180.0);
-    m_pidController.setSetpoint(180.0);
+    m_pidController.setSetpoint(0.0);
     m_pidController.setTolerance(0.1);
   }
 
