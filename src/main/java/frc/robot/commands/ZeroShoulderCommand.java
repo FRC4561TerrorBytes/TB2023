@@ -38,7 +38,7 @@ public class ZeroShoulderCommand extends CommandBase {
     }
     m_armSubsystem.setManualShoulderSpeed(0.2);
 
-    SmartDashboard.putNumber("Shoulder Contacts", shoulderLimitContacts);
+    //SmartDashboard.putNumber("Shoulder Contacts", shoulderLimitContacts);
   }
 
   // Called once the command ends or is interrupted.

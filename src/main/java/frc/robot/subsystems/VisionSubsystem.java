@@ -381,8 +381,8 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void execute() {
       centerAprilTag(m_aprilTagOffset, m_backOffset);
-      SmartDashboard.putBoolean("driving forward", false);
-      SmartDashboard.putNumber("lost targets", lostTargetDebouceCount);
+      //SmartDashboard.putBoolean("driving forward", false);
+      //SmartDashboard.putNumber("lost targets", lostTargetDebouceCount);
     }
 
     @Override
