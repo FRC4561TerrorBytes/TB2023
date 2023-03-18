@@ -47,7 +47,7 @@ public class DriveLateral extends CommandBase {
     SmartDashboard.putNumber("Lat exe curY", currentY);
     SmartDashboard.putNumber("Lat exe pidSp", pidSpeed);
     SmartDashboard.putNumber("Lat exe speed", lateralMoveSpeed);
-    m_driveSubsystem.drive(0, lateralMoveSpeed, 0, false);
+    m_driveSubsystem.drive(0, 0.75 * Math.signum(pidSpeed), 0, false);
   }
 
   // Called once the command ends or is interrupted.

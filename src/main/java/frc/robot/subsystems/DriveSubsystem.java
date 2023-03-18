@@ -124,6 +124,10 @@ public class DriveSubsystem extends SubsystemBase {
     return Math.abs(m_pigeon.getPitch()) > 20;
   }
 
+  public boolean offPitchDown(){
+    return Math.abs(m_pigeon.getPitch()) > 14;
+  }
+
   public boolean onPitchDown() {
     // double[] angleRates = new double[3];
     // m_pigeon.getRawGyro(angleRates);
