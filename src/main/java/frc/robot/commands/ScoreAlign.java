@@ -13,14 +13,14 @@ public class ScoreAlign extends CommandBase {
   /** Creates a new AutoRotate. */
 
   final DriveSubsystem m_driveSubsystem;
-  final PIDController m_pidController = new PIDController(0.05, 0, 0);
+  final PIDController m_pidController = new PIDController(0.035, 0, 0);
 
   public ScoreAlign(DriveSubsystem driveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_driveSubsystem = driveSubsystem;
     addRequirements(m_driveSubsystem);
     m_pidController.enableContinuousInput(-180.0, 180.0);
-    m_pidController.setSetpoint(0.0);
+    //m_pidController.setSetpoint(0.0);
     m_pidController.setTolerance(0.1);
   }
 
@@ -28,6 +28,9 @@ public class ScoreAlign extends CommandBase {
   @Override
   public void initialize() {
     m_pidController.reset();
+    final double absAngle = Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees());
+    final boolean closerTo0 = (180.0 - absAngle) > absAngle;
+    m_pidController.setSetpoint(closerTo0 ? 0.0 : 180.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

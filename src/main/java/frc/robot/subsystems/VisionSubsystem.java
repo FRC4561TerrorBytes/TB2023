@@ -109,14 +109,17 @@ public class VisionSubsystem extends SubsystemBase {
     PhotonTrackedTarget rightTarget = getTargetData(rightCamera);
     if(leftTarget == null && rightTarget == null){
       System.out.println("no targets seen by cameras");
+      SmartDashboard.putBoolean("No targets", true);
       SmartDashboard.putNumber("returning vision ", 0.0);
       return 0.0;
     }
     else if(leftTarget == null && rightTarget != null){
+      SmartDashboard.putBoolean("No targets", false);
       SmartDashboard.putNumber("returning vision ", (rightTarget.getBestCameraToTarget().getY() + (Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset)));
       return rightTarget.getBestCameraToTarget().getY() + (Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
     }
     else if(leftTarget != null && rightTarget == null){
+      SmartDashboard.putBoolean("No targets", false);
       SmartDashboard.putNumber("returning vision ", (leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset)));
       return leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
     }
@@ -127,9 +130,11 @@ public class VisionSubsystem extends SubsystemBase {
 
       // lower pose ambiguity means more certain
       if (leftPoseAmbiguity >= rightPoseAmbiguity) {
+        SmartDashboard.putBoolean("No targets", false);
         SmartDashboard.putNumber("returning vision ", (rightTarget.getBestCameraToTarget().getY() + (Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset)));
         return rightTarget.getBestCameraToTarget().getY() + (Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
       } else if (leftPoseAmbiguity < rightPoseAmbiguity) {
+        SmartDashboard.putBoolean("No targets", false);
         SmartDashboard.putNumber("returning vision ", (leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset)));
         return leftTarget.getBestCameraToTarget().getY() + (Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset); 
       }

@@ -131,13 +131,13 @@ public class RobotContainer {
 
     // Scoring
     m_primaryController.b()
-        .onTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, -Units.inchesToMeters(22), 0.05)));
+        .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, -Units.inchesToMeters(22), 0.05)));
     m_primaryController.y()
-        .onTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
+        .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
     m_primaryController.a()
-        .onTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
+        .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
     m_primaryController.x()
-        .onTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(22), 0.05)));
+        .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(22), 0.05)));
       //Try onTrue for command actuation, might be interesting
     // Substation grabs
     m_primaryController.back()
@@ -352,7 +352,7 @@ public class RobotContainer {
   }
 
   public void teleopInit() {
-    //new ZeroArmCommand(m_armSubsystem).schedule();
+    new ZeroArmCommand(m_armSubsystem).schedule();
   }
 
   private static double modifyAxis(double value) {

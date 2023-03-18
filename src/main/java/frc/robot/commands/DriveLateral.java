@@ -14,7 +14,7 @@ public class DriveLateral extends CommandBase {
   private final DriveSubsystem m_driveSubsystem;
   private final VisionSubsystem m_visionSubsystem;
   private final double m_distance;
-  private final PIDController m_controller = new PIDController(5.0, 0.0, 0.0);
+  private final PIDController m_controller = new PIDController(2.0, 0.0, 0.0);
 
   /** Creates a new DriveDistance. */
   public DriveLateral(DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem, double distance, double tolerance){
@@ -47,7 +47,7 @@ public class DriveLateral extends CommandBase {
     SmartDashboard.putNumber("Lat exe curY", currentY);
     SmartDashboard.putNumber("Lat exe pidSp", pidSpeed);
     SmartDashboard.putNumber("Lat exe speed", lateralMoveSpeed);
-    m_driveSubsystem.drive(0, 1.0 * Math.signum(pidSpeed), 0, false);
+    m_driveSubsystem.drive(0, lateralMoveSpeed, 0, false);
   }
 
   // Called once the command ends or is interrupted.
