@@ -32,6 +32,7 @@ import frc.robot.commands.ScoreConeMiddleCommand;
 import frc.robot.commands.ZeroArmCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
+import frc.robot.commands.autonomous.AutoTrajectory;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.DriveUntilCommand;
 import frc.robot.commands.autonomous.ExitChargeStation;
@@ -120,6 +121,7 @@ public class RobotContainer {
     m_autoChooser.addOption("ScoreCubeLeaveCommLeft",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
+    m_autoChooser.addOption("TestPath", () -> (new AutoTrajectory(m_driveSubsystem, "New Path", 1, 1).getCommandAndStop()));
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings

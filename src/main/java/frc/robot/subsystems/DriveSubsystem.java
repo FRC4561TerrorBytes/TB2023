@@ -135,9 +135,9 @@ public class DriveSubsystem extends SubsystemBase {
     return Math.abs(m_pigeon.getPitch()) < 12;
   }
 
-  public double getPigeonYaw(){
-    return m_pigeon.getYaw();
-  }
+  // public Rotation2d getYaw(){
+  //   return Rotation2d.fromDegrees(360 - m_pigeon.getYaw());
+  // }
 
   public void stop() {
     drive(0.0, 0.0, 0.0, false);
