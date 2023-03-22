@@ -20,7 +20,7 @@ import frc.robot.GameState.CenteredState;
 
 public class VisionSubsystem extends SubsystemBase {
   private static final int OUT_OF_ROT_TOLERANCE_DEBOUNCE = 4;
-  private static final int LOST_TARGET_DEBOUNCE = 4;
+  private static final int LOST_TARGET_DEBOUNCE = 20;
 
   DriveSubsystem m_driveSubsystem;
 

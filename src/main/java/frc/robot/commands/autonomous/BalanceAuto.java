@@ -17,7 +17,6 @@ public class BalanceAuto extends SequentialCommandGroup {
   public BalanceAuto(DriveSubsystem driveSubsystem, double onChargeX, double onPitchX) {
     addCommands(
         new DriveUntilCommand(driveSubsystem, onChargeX, 0, driveSubsystem::onChargeStation),
-        new WaitCommand(0.5),
         new DriveUntilCommand(driveSubsystem, onPitchX, 0, driveSubsystem::onPitchDown)
     );
   }

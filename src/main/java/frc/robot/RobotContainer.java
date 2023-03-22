@@ -35,6 +35,7 @@ import frc.robot.commands.ZeroShoulderCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.DriveUntilCommand;
 import frc.robot.commands.autonomous.ExitChargeStation;
+import frc.robot.commands.autonomous.FlipAuto;
 import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCube;
 import frc.robot.subsystems.ArmSubsystem;
@@ -93,11 +94,12 @@ public class RobotContainer {
             .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
     m_autoChooser.addOption("ScoreCubeLeaveCommBalance", () -> new ScoreCube(m_driveSubsystem,
         m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH) 
-        .andThen(new DriveUntilCommand(m_driveSubsystem, -1.5, 0, () -> false).withTimeout(3.5)
-        .andThen(new BalanceAuto(m_driveSubsystem, 2, 1)).withTimeout(5)
-        .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false)))));
+        .andThen(new DriveUntilCommand(m_driveSubsystem, -1.0, 0, () -> false).withTimeout(3.0))
+        .andThen(new FlipAuto(m_driveSubsystem).withTimeout(2.0))
+        .andThen(new BalanceAuto(m_driveSubsystem, -2, -1).withTimeout(5))
+        .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
           /*.andThen(new BalanceAuto(m_driveSubsystem, -2.0, -1.0).withTimeout(4.0))
-          .andThen(new ExitChargeStation(m_driveSubsystem).withTimeout(4.0))
+          .andThen(new ExitChargeStation(m_driveSubsystem).withTimeout(4.0)
           .andThen(new DriveUntilCommand(m_driveSubsystem, -1, 0, () -> false).withTimeout(0.75))
           .andThen(new WaitCommand(0.75))
           .andThen(new BalanceAuto(m_driveSubsystem, 1.5, 1).withTimeout(5.0))
@@ -142,8 +144,14 @@ public class RobotContainer {
     // Scoring
     m_primaryController.b()
         .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, -Units.inchesToMeters(18), 0.05)));
-    m_primaryController.y()
-        .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
+    m_primaryController.y().onTrue(
+        new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(
+                KnownArmPlacement.SCORE_LOW))
+            .andThen(new WaitCommand(1))
+            .andThen(new InstantCommand(() -> m_armSubsystem
+                .setKnownArmPlacement(
+                    KnownArmPlacement.FLOOR_GRAB))));
     m_primaryController.a()
         .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
     m_primaryController.x()
@@ -165,27 +173,27 @@ public class RobotContainer {
 
     // Driver nudges
     m_primaryController.povUp()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.6, 0.0, 0.0, true),
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(1.0, 0.0, 0.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     m_primaryController.povDown()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-0.6, 0.0, 0.0, true),
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-1.0, 0.0, 0.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     m_primaryController.povLeft()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.4, 0.0, true),
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.8, 0.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     m_primaryController.povRight()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.4, 0.0, true),
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.8, 0.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     m_primaryController.rightTrigger()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.0, -1.0, true),
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.0, 1.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     m_primaryController.leftTrigger()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.0, 1.0, true),
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.0, -1.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
@@ -223,14 +231,6 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(
                 KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
-    m_secondaryController.rightTrigger().onTrue(
-        new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SCORE_LOW))
-            .andThen(new WaitCommand(1))
-            .andThen(new InstantCommand(() -> m_armSubsystem
-                .setKnownArmPlacement(
-                    KnownArmPlacement.FLOOR_GRAB))));
 
     // Arm nudges
     m_secondaryController.povLeft().onTrue(new InstantCommand(m_armSubsystem::nudgeShoulderBackward));
@@ -248,7 +248,7 @@ public class RobotContainer {
 
     // Score on driver/operator right bumper press
     Trigger rightBumper = new Trigger(
-        (m_primaryController.rightBumper().or(m_secondaryController.rightBumper())));
+        (m_primaryController.rightBumper()));
 
     // Cube scoring
     Trigger cubeTrigger = new Trigger(
@@ -312,7 +312,7 @@ public class RobotContainer {
   floorGrab.and(m_secondaryController.x())
       .onTrue(new InstantCommand( () -> m_armSubsystem
         .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW))
-        .andThen(new WaitCommand(3.0))
+        .andThen(new WaitCommand(0.5))
         .andThen(new InstantCommand( () -> m_armSubsystem
           .setKnownArmPlacement(KnownArmPlacement.STOWED))));
   Trigger gamePieceHeld = new Trigger(() -> GameState.getInstance().isGamePieceHeld());
