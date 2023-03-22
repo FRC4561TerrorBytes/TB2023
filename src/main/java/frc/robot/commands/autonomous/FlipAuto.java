@@ -2,20 +2,20 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.autonomous;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class ScoreAlign extends CommandBase {
-  /** Creates a new AutoRotate. */
+public class FlipAuto extends CommandBase {
+  /** Creates a new AutoFlip. */
 
   final DriveSubsystem m_driveSubsystem;
   final PIDController m_pidController = new PIDController(0.03, 0, 0);
 
-  public ScoreAlign(DriveSubsystem driveSubsystem) {
+  public FlipAuto(DriveSubsystem driveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_driveSubsystem = driveSubsystem;
     addRequirements(m_driveSubsystem);
@@ -30,7 +30,7 @@ public class ScoreAlign extends CommandBase {
     m_pidController.reset();
     final double absAngle = Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees());
     final boolean closerTo0 = (180.0 - absAngle) > absAngle;
-    m_pidController.setSetpoint(closerTo0 ? 0.0 : 180.0);
+    m_pidController.setSetpoint(closerTo0 ? 180.0 : 0.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

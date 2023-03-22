@@ -42,7 +42,7 @@ public class ArmSubsystem extends SubsystemBase {
   public enum KnownArmPlacement {
     STOWED(101.0, -58.0),
     FLOOR_GRAB(65.0, -64.5),
-    SUBSTATION_APPROACH(120.0, 7.2),
+    SUBSTATION_APPROACH(120.0, 5.7),
     SUBSTATION_GRAB_HALFWAY(108.0, 3.0),
     SUBSTATION_GRAB_FULLWAY(91.4, 0.9),
     SCORE_PREP_INITIAL(102.8, -57.2),
@@ -50,8 +50,8 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_MIDDLE(90, -1.0),
     SCORE_CUBE_HIGH(56.0, 21.0),
     SCORE_CONE_HIGH(53.0, 30.0),
-    SCORE_CONE_MIDDLE_UPPER(45.0, 35.0),
-    SCORE_CONE_MIDDLE_LOWER(75.0, -15.0);
+    SCORE_CONE_MIDDLE_UPPER(53.0, 35.0),
+    SCORE_CONE_MIDDLE_LOWER(80.0, -15.0);
 
     public final double m_shoulderAngle;
     public final double m_elbowAngle;
@@ -238,8 +238,7 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elbow voltage", m_elbowMotor.getBusVoltage() * m_elbowMotor.getAppliedOutput());
     SmartDashboard.putNumber("Elbow current", m_elbowMotor.getOutputCurrent());
     SmartDashboard.putNumber("Elbow rotation target", m_targetElbowPosition);
-    SmartDashboard.putNumber("Elbow placement", m_lastPlacement == null ? 999 :
-      m_lastPlacement.m_elbowAngle);
+    //SmartDashboard.putNumber("Elbow placement", m_lastPlacement == null ? 999 : m_lastPlacement.m_elbowAngle);
     SmartDashboard.putBoolean("Elbow LimitR", m_elbowReverseLimitSwitch.isPressed());
     SmartDashboard.putBoolean("Shoudler LimitR", m_shoulderReverseLimitSwitch.isPressed());
     SmartDashboard.putBoolean("Shoulder LimitF", m_shoulderForwardLimitSwitch.isPressed());

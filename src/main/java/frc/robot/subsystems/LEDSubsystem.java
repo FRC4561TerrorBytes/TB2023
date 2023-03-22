@@ -164,7 +164,7 @@ public class LEDSubsystem extends SubsystemBase {
         default:
           // NONE or a bug in GameState would get us here.
           if (isGamePieceHeld) {
-            setFrontHalfLED(0, 0, 0);
+            setFrontHalfLED(0, 255, 0);
           } else {
             setBackHalfLED(0, 0, 0);
           }

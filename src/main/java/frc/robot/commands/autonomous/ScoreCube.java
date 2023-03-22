@@ -20,15 +20,15 @@ public class ScoreCube extends SequentialCommandGroup {
   public ScoreCube(DriveSubsystem m_driveSubsystem, ArmSubsystem m_armSubsystem, IntakeSubsystem m_intakeSubsystem, KnownArmPlacement placement) {
     addCommands(
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
-      new WaitCommand(1.0),
+      new WaitCommand(0.75),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(placement)),
-      new WaitCommand(1.0),
+      new WaitCommand(0.75),
       new ScoreCommand(m_intakeSubsystem).withTimeout(0.5),
       new DriveUntilCommand(m_driveSubsystem, -0.5, 0, () -> false).withTimeout(0.5),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)),
-      new WaitCommand(1.0),
+      new WaitCommand(0.75),
       new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
-      new WaitCommand(1.0)
+      new WaitCommand(0.75)
     );
   }
 }
