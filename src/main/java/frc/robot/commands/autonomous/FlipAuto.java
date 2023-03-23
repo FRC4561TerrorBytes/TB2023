@@ -43,7 +43,7 @@ public class FlipAuto extends CommandBase {
     m_driveSubsystem.drive(0, 0, rotationRate, true);
 
     System.out.println("rotation from pose: 0: " + m_driveSubsystem.getPose().getRotation().getDegrees());
-    System.out.println("rotation from pigeon: " + m_driveSubsystem.getPigeonYaw());
+    // System.out.println("rotation from pigeon: " + m_driveSubsystem.getPigeonYaw());
 
     SmartDashboard.putNumber("Raw Angle", rawAngle);
     SmartDashboard.putNumber("Rotation Rate", rotationRate);
