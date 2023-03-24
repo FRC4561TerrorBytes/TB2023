@@ -60,7 +60,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveDriveOdometry m_odometry;
 
   public DriveSubsystem() {
-    m_pigeon.setYaw(180.0);
+    m_pigeon.setYaw(0.0);
     m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
       Rotation2d.fromDegrees(m_pigeon.getYaw()),
       getModulePositions());

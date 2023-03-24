@@ -73,8 +73,8 @@ public class RobotContainer {
    */
   public RobotContainer() {
     m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
-        modifyAxis(-m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
         modifyAxis(-m_primaryController.getRightX())
             * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true),
@@ -121,7 +121,7 @@ public class RobotContainer {
     m_autoChooser.addOption("ScoreCubeLeaveCommLeft",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
-    m_autoChooser.addOption("TestPath", () -> (new AutoTrajectory(m_driveSubsystem, "Sqware", 1, 1).getCommandAndStop()));
+    m_autoChooser.addOption("TestPath", () -> (new AutoTrajectory(m_driveSubsystem, "Two Cubes", 2, 2).getCommandAndStop()));
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
@@ -370,6 +370,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     //new ZeroArmCommand(m_armSubsystem).schedule();
+    //m_driveSubsystem.setYaw(180.0);
   }
 
   private static double modifyAxis(double value) {
