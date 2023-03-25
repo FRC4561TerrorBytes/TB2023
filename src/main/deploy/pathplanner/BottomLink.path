@@ -24,16 +24,16 @@
     },
     {
       "anchorPoint": {
-        "x": 6.85,
-        "y": 4.752494647846439
+        "x": 6.824467506077869,
+        "y": 4.595032475779237
       },
       "prevControl": {
-        "x": 3.9441071882143754,
-        "y": 5.539805508182446
+        "x": 3.9185746942922446,
+        "y": 5.382343336115244
       },
       "nextControl": {
-        "x": 3.9441071882143754,
-        "y": 5.539805508182446
+        "x": 3.9185746942922446,
+        "y": 5.382343336115244
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -99,31 +99,6 @@
     },
     {
       "anchorPoint": {
-        "x": 4.219184295507725,
-        "y": 4.423255560796126
-      },
-      "prevControl": {
-        "x": 4.728990722525017,
-        "y": 4.38926846566164
-      },
-      "nextControl": {
-        "x": 3.57502086432372,
-        "y": 4.466199789541726
-      },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
         "x": 1.814307485754091,
         "y": 4.337367103298741
       },
@@ -147,9 +122,45 @@
   ],
   "markers": [
     {
-      "position": 0.590909090909091,
+      "position": 0.4,
       "names": [
-        "event"
+        "eventGroundIntake1"
+      ]
+    },
+    {
+      "position": 0.01,
+      "names": [
+        "cubeScore1"
+      ]
+    },
+    {
+      "position": 1.1363636363636365,
+      "names": [
+        "scoreLow2"
+      ]
+    },
+    {
+      "position": 1.85,
+      "names": [
+        "scoreCubeMiddle"
+      ]
+    },
+    {
+      "position": 2.3,
+      "names": [
+        "eventGroundIntake2"
+      ]
+    },
+    {
+      "position": 3.4090909090909105,
+      "names": [
+        "scoreLow3"
+      ]
+    },
+    {
+      "position": 3.6,
+      "names": [
+        "scoreCubeRight"
       ]
     }
   ]

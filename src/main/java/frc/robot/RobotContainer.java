@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -26,6 +27,7 @@ import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreAlign;
+import frc.robot.commands.ScoreAutoCube;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.ScoreConeHighCommand;
 import frc.robot.commands.ScoreConeMiddleCommand;
@@ -122,7 +124,8 @@ public class RobotContainer {
     m_autoChooser.addOption("ScoreCubeLeaveCommLeft",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
-    m_autoChooser.addOption("TestPath", () -> (new AutoTrajectory(m_driveSubsystem, "Two Cubes", 2, 2).getCommandAndStop()));
+    m_autoChooser.addOption("TestPath",
+         () -> new LowLink(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "BottomLink", 3, 3).getCommandAndStop());
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
@@ -363,8 +366,8 @@ public class RobotContainer {
       return commandSupplier.get()
           .alongWith(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(),
               m_armSubsystem))
-          .alongWith(new InstantCommand(() -> m_intakeSubsystem.hold()));
-          //.beforeStarting(new ZeroArmCommand(m_armSubsystem));
+          .alongWith(new InstantCommand(() -> m_intakeSubsystem.hold()))
+          .beforeStarting(new ZeroArmCommand(m_armSubsystem));
     }
     return null;
   }
