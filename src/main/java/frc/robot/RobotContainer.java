@@ -159,7 +159,7 @@ public class RobotContainer {
     // Substation grabs
     m_primaryController.back()
         .whileTrue(new ScoreAlign(m_driveSubsystem)
-            .andThen(new ProfiledApproachDrive(m_driveSubsystem)));
+            .andThen(new ProfiledApproachDrive(m_driveSubsystem, m_visionSubsystem)));
 
     // Driver nudges
     m_primaryController.povUp()

@@ -5,29 +5,31 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.GameState;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
-public class ProfiledApproachDrive extends TrapezoidProfileCommand {
-  final DriveSubsystem m_driveSubsystem;
-  final GameState m_gameState;
+/**
+ * A {@link CalculatedTrapezoidProfileCommand} that drives forward to the
+ * substation with acceleration control to keep the arm stable.
+ */
+public class ProfiledApproachDrive extends CalculatedTrapezoidProfileCommand {
+  private static final TrapezoidProfile.Constraints CONSTRAINTS = new TrapezoidProfile.Constraints(2.0, 1.0);
+  private final DriveSubsystem m_driveSubsystem;
+  private final GameState m_gameState;
 
   /** Creates a new ProfiledApproachDrive. */
-  public ProfiledApproachDrive(final DriveSubsystem driveSubsystem) {
+  public ProfiledApproachDrive(
+      final DriveSubsystem driveSubsystem,
+      final VisionSubsystem visionSubsystem) {
     super(
-        new TrapezoidProfile(
-            // Limit the max acceleration and velocity
-            new TrapezoidProfile.Constraints(
-                2.0,
-                1.0),
-            // Arbitrary long distance. We want the smooth accel.
-            new TrapezoidProfile.State(10.0, 0)),
+        () -> calculateProfile(visionSubsystem),
         // We care about the profiled x velocity.
         setpointState -> driveSubsystem.drive(
             Math.abs(setpointState.velocity),
             0, 0, false),
-        // Require the drive
+        // Require the drive, not the vision.
         driveSubsystem);
 
     m_driveSubsystem = driveSubsystem;
@@ -44,5 +46,19 @@ public class ProfiledApproachDrive extends TrapezoidProfileCommand {
   public void end(boolean interrupted) {
     super.end(interrupted);
     m_driveSubsystem.stop();
+  }
+
+  private static TrapezoidProfile calculateProfile(final VisionSubsystem visionSubsystem) {
+    double distance = visionSubsystem.getTargetDistance();
+    SmartDashboard.putBoolean("Approach Tag", distance != -1.0);
+    if (distance == -1.0) {
+      // No good target... ramming speed!
+      distance = 10.0;
+    }
+    return new TrapezoidProfile(
+        // Limit the max acceleration and velocity
+        CONSTRAINTS,
+        // Arbitrary long distance. We want the smooth accel.
+        new TrapezoidProfile.State(distance, 0));
   }
 }

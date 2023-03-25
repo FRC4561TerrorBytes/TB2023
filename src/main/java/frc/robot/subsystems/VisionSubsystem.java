@@ -145,6 +145,35 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   /**
+   * @return the x/forward distance (always positive) to closest April tag.
+   *         Returns -1.0 if no target.
+   */
+  public double getTargetDistance() {
+    final PhotonTrackedTarget leftTarget = getTargetData(leftCamera);
+    final PhotonTrackedTarget rightTarget = getTargetData(rightCamera);
+    PhotonTrackedTarget bestTarget = null;
+    if (leftTarget == null && rightTarget != null) {
+      bestTarget = rightTarget;
+    } else if (leftTarget != null && rightTarget == null) {
+      bestTarget = leftTarget;
+    } else if (rightTarget != null && leftTarget != null) {
+      // lower pose ambiguity means more certain
+      if (rightTarget.getPoseAmbiguity() <= leftTarget.getPoseAmbiguity()) {
+        bestTarget = rightTarget;
+      } else {
+        bestTarget = leftTarget;
+      }
+    }
+    // Reject ambiguous target.
+    if ((bestTarget != null) && (bestTarget.getPoseAmbiguity() > 0.2)) {
+      bestTarget = null;
+    }
+    return bestTarget == null
+        ? -1.0
+        : Math.abs(bestTarget.getBestCameraToTarget().getX()) - Constants.LEFT_CAMERA_OFFSET_BACK;
+  }
+
+  /**
    * Obtain centering command here for consistant command tuning and safety.
    * 
    * @param aprilTagOffset the offset (in meters) of the tag to track.
