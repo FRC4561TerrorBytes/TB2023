@@ -19,12 +19,12 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
-import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveLateral;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
+import frc.robot.commands.ProfiledApproachDrive;
 import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.ScoreConeHighCommand;
@@ -34,7 +34,6 @@ import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.DriveUntilCommand;
-import frc.robot.commands.autonomous.ExitChargeStation;
 import frc.robot.commands.autonomous.FlipAuto;
 import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCube;
@@ -159,17 +158,8 @@ public class RobotContainer {
       //Try onTrue for command actuation, might be interesting
     // Substation grabs
     m_primaryController.back()
-        .whileTrue(m_visionSubsystem
-            .centerAprilTagCommand(-Units.inchesToMeters(29.565),
-                Units.inchesToMeters(30))
-            .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
-                1.5)));
-    m_primaryController.start()
-        .whileTrue(m_visionSubsystem
-            .centerAprilTagCommand(Units.inchesToMeters(29.565),
-                Units.inchesToMeters(30))
-            .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
-                1.5)));
+        .whileTrue(new ScoreAlign(m_driveSubsystem)
+            .andThen(new ProfiledApproachDrive(m_driveSubsystem)));
 
     // Driver nudges
     m_primaryController.povUp()

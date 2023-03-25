@@ -53,6 +53,6 @@ public class IntakeCommand extends CommandBase {
    */ 
   @Override
   public boolean isFinished() {
-    return timeout.hasElapsed(0.1);
+    return timeout.hasElapsed(0.01);
   }
 }
