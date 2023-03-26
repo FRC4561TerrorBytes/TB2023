@@ -170,7 +170,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
     return bestTarget == null
         ? -1.0
-        : Math.abs(bestTarget.getBestCameraToTarget().getX()) - Constants.LEFT_CAMERA_OFFSET_BACK;
+        : Math.abs(bestTarget.getBestCameraToTarget().getX()) - Constants.LEFT_CAMERA_OFFSET_BACK + 1.6;
   }
 
   /**
