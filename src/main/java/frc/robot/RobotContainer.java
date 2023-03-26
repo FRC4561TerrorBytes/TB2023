@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.autonomous.AutoTrajectory;
+import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -45,7 +46,15 @@ public class RobotContainer {
         true),
         m_driveSubsystem));
 
-    m_autoChooser.addOption("TestPath", () -> (new AutoTrajectory(m_driveSubsystem, "Sqware", 1, 1).getCommandAndStop()));
+    m_autoChooser.addOption("ScoreConeGrabBalanceLEFT", () -> (new AutoTrajectory(m_driveSubsystem, "ScoreGrabBalanceLEFT", 2, 2).getCommandAndStop()
+        .andThen(new BalanceAuto(m_driveSubsystem, 2, 1))));
+
+    m_autoChooser.addOption("ScoreConeGrabeBalanceRIGHT", () -> (new AutoTrajectory(m_driveSubsystem, "ScoreConeGrabLeaveRIGHT", 2, 2).getCommandAndStop()
+        .andThen(new BalanceAuto(m_driveSubsystem, 2, 1))));
+
+    m_autoChooser.addOption("ScoreCubeGrabScoreCubeGrabBalance", () -> (new AutoTrajectory(m_driveSubsystem, "ScoreCubeGrabScoreCubeGrabBalance", 2, 1).getCommandAndStop()
+        .andThen(new BalanceAuto(m_driveSubsystem, 2, 1))));
+    m_autoChooser.addOption("TestPath", () -> (new AutoTrajectory(m_driveSubsystem, "S thing ig", 1, 1).getCommandAndStop()));
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
