@@ -11,18 +11,14 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ScoreAutoCube;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-public class LowLink {
+public class LowLinkRIGHT {
 
   DriveSubsystem m_driveSubsystem;
   ArmSubsystem m_ArmSubsystem;
@@ -39,7 +35,7 @@ public class LowLink {
    * @param maxSpeedMetersPerSec
    * @param maxAccelerationMetersPerSecSquared
    */
-  public LowLink(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
+  public LowLinkRIGHT(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
       double maxAccelerationMetersPerSecSquared) {
     this.m_driveSubsystem = driveSubsystem;
     this.m_ArmSubsystem = armsubsystem;
@@ -48,14 +44,7 @@ public class LowLink {
     m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
         maxAccelerationMetersPerSecSquared);
 
-    m_eventMap.put("cubeScore1", new ScheduleCommand(new ScoreAutoCube(m_IntakeSubsystem).withTimeout(0.5)));
-    m_eventMap.put("eventGroundIntake1", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB)));
-    m_eventMap.put("Stow1", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_eventMap.put("scoreLow2",  new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    m_eventMap.put("scoreCubeMiddle",  new ScheduleCommand(new ScoreAutoCube(m_IntakeSubsystem).withTimeout(0.5)));
-    m_eventMap.put("eventGroundIntake2", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB)));
-    m_eventMap.put("scoreLow3",  new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    m_eventMap.put("scoreCubeRight",  new ScheduleCommand(new ScoreAutoCube(m_IntakeSubsystem).withTimeout(0.5)));
+    // m_eventMap Goes Here
 
     this.autoPathName = autoPathName;
     // Auto PID Controllers

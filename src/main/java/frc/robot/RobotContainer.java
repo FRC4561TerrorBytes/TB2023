@@ -41,6 +41,7 @@ import frc.robot.commands.autonomous.ExitChargeStation;
 import frc.robot.commands.autonomous.FlipAuto;
 import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.LowLink;
+import frc.robot.commands.autonomous.LowLinkRIGHT;
 import frc.robot.commands.autonomous.ScoreCube;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
@@ -126,6 +127,10 @@ public class RobotContainer {
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
     m_autoChooser.addOption("TestPath",
          () -> new LowLink(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "BottomLink", 3, 3).getCommandAndStop());
+
+    m_autoChooser.addOption("ScoreCubeGrabScoreCubeGrabBalance", 
+        () -> new LowLinkRIGHT(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "ScoreCubeGrabScoreCubeGrabBalance", 2, 1).getCommandAndStop());
+
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
     // Configure the trigger bindings
