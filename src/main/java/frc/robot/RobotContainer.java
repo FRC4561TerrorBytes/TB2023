@@ -129,7 +129,8 @@ public class RobotContainer {
          () -> new LowLink(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "BottomLink", 3, 3).getCommandAndStop());
 
     m_autoChooser.addOption("ScoreCubeGrabScoreCubeGrabBalance", 
-        () -> new LowLinkRIGHT(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "ScoreCubeGrabScoreCubeGrabBalance", 2, 1).getCommandAndStop());
+        () -> new LowLinkRIGHT(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "ScoreCubeGrabScoreCubeGrabBalance", 2, 1).getCommandAndStop()
+            .andThen(new BalanceAuto(m_driveSubsystem, 2, 1)));
 
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
@@ -184,19 +185,19 @@ public class RobotContainer {
 
     // Driver nudges
     m_primaryController.povUp()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(1.0, 0.0, 0.0, true),
-            m_driveSubsystem))
-        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
-    m_primaryController.povDown()
         .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-1.0, 0.0, 0.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+    m_primaryController.povDown()
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(1.0, 0.0, 0.0, true),
+            m_driveSubsystem))
+        .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     m_primaryController.povLeft()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.8, 0.0, true),
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.8, 0.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     m_primaryController.povRight()
-        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, -0.8, 0.0, true),
+        .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.8, 0.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     m_primaryController.rightTrigger()
