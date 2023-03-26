@@ -12,64 +12,39 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.GameState;
+import frc.robot.GameState.GamePiece;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private final CANSparkMax m_leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR, MotorType.kBrushless);
-  private final CANSparkMax m_rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR, MotorType.kBrushless);
-  private final RelativeEncoder m_leftEncoder = m_leftIntakeMotor.getEncoder();
-  private final RelativeEncoder m_rightEncoder = m_rightIntakeMotor.getEncoder();
+  private final CANSparkMax m_intakeMotor = new CANSparkMax(Constants.ROLLER_MOTOR, MotorType.kBrushless);
+  private final RelativeEncoder m_intakeEncoder = m_intakeMotor.getEncoder();
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
-    m_leftIntakeMotor.setInverted(false);
-    m_rightIntakeMotor.setInverted(true);
-    m_leftIntakeMotor.setIdleMode(IdleMode.kBrake);
-    m_rightIntakeMotor.setIdleMode(IdleMode.kBrake);
-
+    m_intakeMotor.setInverted(true);
+    m_intakeMotor.setIdleMode(IdleMode.kBrake);
   }
 
-  public void setIntakeSpeed(double speed) {
-    m_leftIntakeMotor.set(speed);
-    m_rightIntakeMotor.set(speed);
-  }
-
-  public void intake() {
-    setIntakeSpeed(Constants.INTAKE_SPEED);
-  }
-
-  public void hold() {
-    setIntakeSpeed(Constants.INTAKE_HOLD_SPEED);
-  }
-
-  public void score() {
-    setIntakeSpeed(Constants.INTAKE_SCORE_SPEEED);
-  }
-
-  public void scoreConeMiddle() {
-    setIntakeSpeed(Constants.INTAKE_CONE_MIDDLE_SPEED);
-  }
-
-  public void scoreConeHigh() {
-    setIntakeSpeed(Constants.INTAKE_CONE_HIGH_SPEED);
+  public void setRollerSpeed(double speed) {
+    double sign = 1.0;
+    if (GameState.getInstance().getGamePieceDesired() == GamePiece.CONE) {
+      sign = -1.0;
+    }
+    m_intakeMotor.set(sign * speed);
   }
 
   public void stop() {
-    setIntakeSpeed(0.0);
+    setRollerSpeed(0.0);
   }
 
   public boolean isStalled() {
-    if (this.getCurrentCommand().getName().endsWith("IntakeCommand")) {
-      return m_leftEncoder.getVelocity() < 100.0 || m_rightEncoder.getVelocity() < 100.0;
-    }
-    return false;
+    return Math.abs(m_intakeEncoder.getVelocity()) < 100.0;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Left intake current", m_leftIntakeMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Left intake velocity", m_leftEncoder.getVelocity());
-    SmartDashboard.putNumber("Right intake current", m_rightIntakeMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Right intake velocity", m_rightEncoder.getVelocity());
+    SmartDashboard.putNumber("Left intake current", m_intakeMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Left intake velocity", m_intakeEncoder.getVelocity());
   }
 }
