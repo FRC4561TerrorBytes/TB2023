@@ -2,8 +2,6 @@ package frc.robot;
 import java.io.IOException;
 import java.net.Socket;
 
-import javax.management.RuntimeErrorException;
-
 public class RobotCheck {
     private static boolean available (int port){
         System.out.println("----------------Testing port " + port);

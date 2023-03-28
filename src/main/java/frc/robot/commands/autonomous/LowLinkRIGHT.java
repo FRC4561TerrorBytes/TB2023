@@ -36,7 +36,7 @@ public class LowLinkRIGHT {
    * @param maxAccelerationMetersPerSecSquared
    */
   public LowLinkRIGHT(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
-      double maxAccelerationMetersPerSecSquared) {
+      double maxAccelerationMetersPerSecSquared, boolean isRedAlliance) {
     this.m_driveSubsystem = driveSubsystem;
     this.m_ArmSubsystem = armsubsystem;
     this.m_IntakeSubsystem = intakeSubsystem;
@@ -63,6 +63,7 @@ public class LowLinkRIGHT {
         yController,
         thetaController,
         m_driveSubsystem::setModuleStates,
+        isRedAlliance,
         m_driveSubsystem);
   }
 
@@ -71,7 +72,7 @@ public class LowLinkRIGHT {
   }
 
   public Command getCommandAndStop() {
-    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
+    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2, false).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
             .andThen(() -> m_driveSubsystem.stop());
   }
 }
