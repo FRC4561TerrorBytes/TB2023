@@ -29,12 +29,12 @@ public class DriveUntilCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_driveSubsystem.drive(m_xSpeed, m_ySpeed, 0, false);
   }
-
+  
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    m_driveSubsystem.drive(m_xSpeed, m_ySpeed, 0, true);
   }
 
   // Called once the command ends or is interrupted.

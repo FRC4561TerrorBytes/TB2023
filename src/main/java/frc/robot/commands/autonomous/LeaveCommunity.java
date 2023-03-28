@@ -9,7 +9,7 @@ public class LeaveCommunity extends SequentialCommandGroup {
    */
   public LeaveCommunity(DriveSubsystem m_driveSubsystem, double yDirection) {
     addCommands(
-      new DriveUntilCommand(m_driveSubsystem, -1, yDirection, () -> false).withTimeout(5)
+      new DriveUntilCommand(m_driveSubsystem, 1.0, yDirection, () -> false).withTimeout(5)
     );
   }
 }

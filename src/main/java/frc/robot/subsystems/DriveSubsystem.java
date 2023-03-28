@@ -60,10 +60,14 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveDriveOdometry m_odometry;
 
   public DriveSubsystem() {
-    m_pigeon.setYaw(0.0);
+    m_pigeon.setYaw(180.0);
     m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
       Rotation2d.fromDegrees(m_pigeon.getYaw()),
       getModulePositions());
+  }
+
+  public double getPigeonYaw() {
+    return m_pigeon.getYaw();
   }
 
   /**
@@ -94,7 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+    return Rotation2d.fromDegrees(m_pigeon.getYaw());
   }
 
   /** Updates the field relative position of the robot. */
@@ -124,15 +128,16 @@ public class DriveSubsystem extends SubsystemBase {
     return Math.abs(m_pigeon.getPitch()) > 20;
   }
 
-  public boolean offPitchDown(){
-    return Math.abs(m_pigeon.getPitch()) > 14;
+  public boolean onPitchDown() {
+    return Math.abs(m_pigeon.getPitch()) < 12;
   }
 
-  public boolean onPitchDown() {
-    // double[] angleRates = new double[3];
-    // m_pigeon.getRawGyro(angleRates);
-    // return onChargeStation() && angleRates[0] < -1;
-    return Math.abs(m_pigeon.getPitch()) < 6;
+  public boolean offPitchDown(){
+    return Math.abs(m_pigeon.getPitch()) > 10;
+  }
+
+  public boolean offChargeStation() {
+    return Math.abs(m_pigeon.getPitch()) < 5.0;
   }
 
   // public Rotation2d getYaw(){
@@ -147,6 +152,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
+    SmartDashboard.putBoolean("OffCharge", offChargeStation());
+    SmartDashboard.putBoolean("OffPitch", offPitchDown());
     SmartDashboard.putBoolean("On Charge Station", onChargeStation());
     SmartDashboard.putBoolean("On Pitch Down", onPitchDown());
   }

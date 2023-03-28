@@ -16,8 +16,8 @@ public class ExitChargeStation extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new DriveUntilCommand(m_driveSubsystem, -2.0, 0, m_driveSubsystem::offPitchDown),
-      new DriveUntilCommand(m_driveSubsystem, -1.0, 0, m_driveSubsystem::onPitchDown)
+      new DriveUntilCommand(m_driveSubsystem, 2.0, 0, m_driveSubsystem::offPitchDown),
+      new DriveUntilCommand(m_driveSubsystem, 1.0, 0, m_driveSubsystem::onPitchDown)
     );
   }
 }
