@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.GameState;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -27,14 +28,14 @@ public class ScoreAutoCube extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_intakeSubsystem.scoreAutoCubes();
+    m_intakeSubsystem.setRollerSpeed(Constants.SCORE_SPEEED);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     GameState.getInstance().setGamePieceHeld(false);
-    m_intakeSubsystem.hold();
+    m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED);
   }
 
   // Returns true when the command should end.

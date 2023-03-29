@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,14 +24,11 @@ import frc.robot.GameState.GamePiece;
 import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveLateral;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreAutoCube;
 import frc.robot.commands.ScoreCommand;
-import frc.robot.commands.ScoreConeHighCommand;
-import frc.robot.commands.ScoreConeMiddleCommand;
 import frc.robot.commands.ZeroArmCommand;
 import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
@@ -47,7 +45,6 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /**
@@ -65,12 +62,12 @@ public class RobotContainer {
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
-  private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
+
+  private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
 
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
   private final CommandXboxController m_tertiaryController = new CommandXboxController(2);
-  private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -87,7 +84,6 @@ public class RobotContainer {
     m_armSubsystem.setDefaultCommand(
         new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
 
-    m_autoChooser.setDefaultOption("Do Nothing", () -> new WaitCommand(1.0));
     m_autoChooser.addOption("LeaveCommRight",
         () -> new LeaveCommunity(m_driveSubsystem, m_armSubsystem, 0.2));
     m_autoChooser.addOption("LeaveCommLeft",
@@ -109,11 +105,11 @@ public class RobotContainer {
           .andThen(new WaitCommand(0.75))
           .andThen(new BalanceAuto(m_driveSubsystem, 1.5, 1).withTimeout(5.0))
           .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));*/
-    m_autoChooser.addOption("ScoreCubeLowLeaveCommRight", () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW)
+    m_autoChooser.addOption("ScoreCubeLowLeaveCommRight", () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW_CUBE)
           .andThen(new DriveUntilCommand(m_driveSubsystem, -1, 0.1, () -> false).withTimeout(5)));
-    m_autoChooser.addOption("ScoreCubeLowLeaveCommLeft", () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW)
+    m_autoChooser.addOption("ScoreCubeLowLeaveCommLeft", () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW_CUBE)
           .andThen(new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
-    m_autoChooser.addOption("ScoreCubeLowBalance", () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW)
+    m_autoChooser.addOption("ScoreCubeLowBalance", () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW_CUBE)
           .andThen(new BalanceAuto(m_driveSubsystem, -2, -1).withTimeout(5.0))
           .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
     m_autoChooser.addOption("ScoreCubeStop",
@@ -137,7 +133,6 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
   }
-
   /**
    * Use this method to define your trigger->command mappings. Triggers can be
    * created via the
@@ -151,24 +146,26 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Primary Controller Bindings
 
     // Scoring
     m_primaryController.b()
-        .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, -Units.inchesToMeters(18), 0.05)));
+        .whileTrue(new ScoreAlign(m_driveSubsystem)
+            .andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, -Units.inchesToMeters(18), 0.05)));
     m_primaryController.y().onTrue(
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SCORE_LOW))
+                KnownArmPlacement.SCORE_LOW_CUBE))
             .andThen(new WaitCommand(1))
             .andThen(new InstantCommand(() -> m_armSubsystem
                 .setKnownArmPlacement(
                     KnownArmPlacement.FLOOR_GRAB))));
     m_primaryController.a()
-        .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
+        .whileTrue(new ScoreAlign(m_driveSubsystem)
+            .andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
     m_primaryController.x()
-        .whileTrue(new ScoreAlign(m_driveSubsystem).andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(18), 0.05)));
-      //Try onTrue for command actuation, might be interesting
+        .whileTrue(new ScoreAlign(m_driveSubsystem)
+            .andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(18), 0.05)));
+    // Try onTrue for command actuation, might be interesting
     // Substation grabs
     m_primaryController.back()
         .whileTrue(m_visionSubsystem
@@ -210,39 +207,8 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     // Secondary Controller Bindings
-
-    // Zero button for operator
-
     m_secondaryController.leftStick().and(m_secondaryController.rightStick())
         .onTrue(new ZeroArmCommand(m_armSubsystem));
-
-    // Arm positions
-    m_secondaryController.a()
-        .onTrue(new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW)));
-    m_secondaryController.b() 
-        .onTrue(new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));  
-    /*
-     * m_secondaryController.x()
-     * .onTrue(new InstantCommand(
-     * () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-     */
-    m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
-        .onTrue(new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    m_secondaryController.axisLessThan(Axis.kLeftY.value, -0.5)
-        .onTrue(new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SUBSTATION_APPROACH)));
-    m_secondaryController.leftBumper().onTrue(
-        new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SUBSTATION_GRAB_HALFWAY)));
-    m_secondaryController.leftTrigger().onTrue(
-        new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SUBSTATION_GRAB_FULLWAY)));
 
     // Arm nudges
     m_secondaryController.povLeft().onTrue(new InstantCommand(m_armSubsystem::nudgeShoulderBackward));
@@ -258,16 +224,25 @@ public class RobotContainer {
         .onTrue(new InstantCommand(
             () -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
 
-    // Score on driver/operator right bumper press
-    Trigger rightBumper = new Trigger(
-        (m_primaryController.rightBumper()));
+    // Substation arm positions
+    m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)
+        .onTrue(new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+    m_secondaryController.axisLessThan(Axis.kLeftY.value, -0.5)
+        .onTrue(new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(
+                KnownArmPlacement.SUBSTATION_APPROACH)));
 
-    // Cube scoring
+    // Cube Positions
     Trigger cubeTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CUBE);
+
+    cubeTrigger.and(m_secondaryController.a())
+        .onTrue(new InstantCommand(() -> m_armSubsystem
+            .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW_CUBE)));
     cubeTrigger.and(m_secondaryController.b())
         .onTrue(new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE)));
+            .setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE_CUBE)));
     cubeTrigger.and(m_secondaryController.y())
         .onTrue(new InstantCommand(() -> m_armSubsystem
             .setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
@@ -275,89 +250,78 @@ public class RobotContainer {
             .andThen(new InstantCommand(
                 () -> m_armSubsystem.setKnownArmPlacement(
                     KnownArmPlacement.SCORE_CUBE_HIGH))));
-    cubeTrigger.and(rightBumper)
-        .onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
+    cubeTrigger.and(m_secondaryController.leftBumper()).onTrue(
+        new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(
+                KnownArmPlacement.SUBSTATION_GRAB_HALFWAY_CUBE)));
+    cubeTrigger.and(m_secondaryController.leftTrigger()).onTrue(
+        new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(
+                KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CUBE)));
 
-    // Cone scoring
+    // Cone positions
     Trigger coneTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CONE);
-    Trigger scoreConeMiddle = new Trigger(
-      () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_MIDDLE);
-    coneTrigger.and(scoreConeMiddle).and(m_secondaryController.b())
+
+    coneTrigger.and(m_secondaryController.a()).onTrue(new InstantCommand(() -> m_armSubsystem
+        .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW_CONE)));
+    coneTrigger.and(m_secondaryController.b())
         .onTrue(new MoveConeMiddleCommand(m_armSubsystem).withTimeout(2.5));
     coneTrigger.and(m_secondaryController.y())
         .onTrue(new MoveConeHighCommand(m_armSubsystem).withTimeout(1.5));
-    Trigger scoreLow = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_LOW);
-    coneTrigger.and(scoreLow).and(rightBumper)
-        .onTrue(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5));
-    Trigger scoreMiddleConeLower = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_MIDDLE_LOWER);
-    coneTrigger.and(scoreMiddleConeLower).and(rightBumper)
-        .onTrue(new ScoreConeMiddleCommand(m_intakeSubsystem).withTimeout(0.5));
-    Trigger scoreConeHigh = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
-    coneTrigger.and(scoreConeHigh).and(rightBumper)
-        .onTrue(new ScoreConeHighCommand(m_intakeSubsystem).withTimeout(0.5));
-    /*
-     * coneTrigger.and(scoreConeHigh).and(m_secondaryController.x())
-     * .onTrue(new InstantCommand( () ->
-     * m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
-     * .alongWith(new WaitCommand(1))
-     * .andThen(new InstantCommand( () ->
-     * m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))));
-     */
+    coneTrigger.and(m_secondaryController.leftBumper()).onTrue(
+        new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(
+                KnownArmPlacement.SUBSTATION_GRAB_HALFWAY_CONE)));
+    coneTrigger.and(m_secondaryController.leftTrigger()).onTrue(
+        new InstantCommand(
+            () -> m_armSubsystem.setKnownArmPlacement(
+                KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CONE)));
 
-    Trigger scoreCubeHigh = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CUBE_HIGH);
+    // Grabby thing control
+    m_intakeSubsystem.setDefaultCommand(
+        new RunCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED), m_intakeSubsystem));
 
+    Trigger substationGrabTrigger = new Trigger(
+        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY_CUBE
+            || m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY_CONE
+            || m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CUBE
+            || m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CONE);
 
-    Trigger floorGrab = new Trigger(
-      () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB);
-    m_secondaryController.x().and(floorGrab.negate()).onTrue(new ConditionalCommand(
-      new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
-        .alongWith(new WaitCommand(1))
-        .andThen(new InstantCommand( () -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))),
-      new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),  
-      () -> (coneTrigger.and(scoreConeHigh)).or(cubeTrigger.and(scoreCubeHigh)).getAsBoolean()));
+    substationGrabTrigger.onTrue(new IntakeCommand(m_intakeSubsystem)
+        .finallyDo(interrupted -> {
+          if (!interrupted) {
+            m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH);
+          }
+        }));
 
-  floorGrab.and(m_secondaryController.x())
-      .onTrue(new InstantCommand( () -> m_armSubsystem
-        .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW))
-        .andThen(new WaitCommand(0.5))
-        .andThen(new InstantCommand( () -> m_armSubsystem
-          .setKnownArmPlacement(KnownArmPlacement.STOWED))));
-  Trigger gamePieceHeld = new Trigger(() -> GameState.getInstance().isGamePieceHeld());
-  floorGrab.and(gamePieceHeld.negate()).whileTrue(new IntakeCommand(m_intakeSubsystem));
+    m_secondaryController.rightBumper().onTrue(new ScoreCommand(m_intakeSubsystem));
+    // Trigger floorGrab = new Trigger(
+    // () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB);
+    // m_secondaryController.x().and(floorGrab.negate()).onTrue(new
+    // ConditionalCommand(
+    // new InstantCommand(() ->
+    // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+    // .alongWith(new WaitCommand(1))
+    // .andThen(new InstantCommand(() ->
+    // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))),
+    // new InstantCommand(() ->
+    // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
+    // () ->
+    // (coneTrigger.and(scoreConeHigh)).or(cubeTrigger.and(scoreCubeHigh)).getAsBoolean()));
+
+    // floorGrab.and(m_secondaryController.x())
+    // .onTrue(new InstantCommand(() -> m_armSubsystem
+    // .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW))
+    // .andThen(new WaitCommand(0.5))
+    // .andThen(new InstantCommand(() -> m_armSubsystem
+    // .setKnownArmPlacement(KnownArmPlacement.STOWED))));
+    // Trigger gamePieceHeld = new Trigger(() ->
+    // GameState.getInstance().isGamePieceHeld());
+    // floorGrab.and(gamePieceHeld.negate()).whileTrue(new
+    // IntakeCommand(m_intakeSubsystem));
 
     // Tertiary Controller Bindings
-
-    // Switch between manual arm control
-    m_tertiaryController.back().onTrue(new ManualArmCommand(
-        m_armSubsystem,
-        () -> -m_tertiaryController.getLeftY(),
-        () -> -m_tertiaryController.getRightY()).until(m_tertiaryController.start()));
-
-    // Re:Zero − Starting Life in Another World from Zero
-    m_tertiaryController.x().and(m_tertiaryController.y()).onTrue(new ZeroShoulderCommand(m_armSubsystem)
-        .alongWith(new RunCommand(() -> m_armSubsystem.setManualElbowSpeed(0.1)).withTimeout(1.0))
-        .andThen(new ZeroElbowCommand(m_armSubsystem)));
-
-    // Miscellaneous Bindings
-
-    // Always run intake at hold when not intaking or scoring.
-    m_intakeSubsystem.setDefaultCommand(new RunCommand(m_intakeSubsystem::hold, m_intakeSubsystem));
-    // Run intake when arm in substation position
-    Trigger substationHalfway = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_HALFWAY);
-    Trigger substationFullway = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SUBSTATION_GRAB_FULLWAY);
-    substationHalfway.or(substationFullway)
-        .whileTrue(new IntakeCommand(m_intakeSubsystem).finallyDo(interrupted -> {
-          if (!interrupted)
-            m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SUBSTATION_APPROACH);
-        }));
   }
 
   /**
@@ -367,20 +331,11 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    var commandSupplier = m_autoChooser.getSelected();
-    if (commandSupplier != null) {
-      return commandSupplier.get()
-          .alongWith(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(),
-              m_armSubsystem))
-          .alongWith(new InstantCommand(() -> m_intakeSubsystem.hold()))
-          .beforeStarting(new ZeroArmCommand(m_armSubsystem));
-    }
     return null;
   }
 
   public void teleopInit() {
-    //new ZeroArmCommand(m_armSubsystem).schedule();
-    //m_driveSubsystem.setYaw(180.0);
+    // new ZeroArmCommand(m_armSubsystem).schedule();
   }
 
   private static double modifyAxis(double value) {

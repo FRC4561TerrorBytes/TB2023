@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.GameState;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -29,7 +30,7 @@ public class IntakeCommand extends CommandBase {
    */
   @Override
   public void execute() {
-    m_intakeSubsystem.intake();
+    m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_SPEED);
     if (m_intakeSubsystem.isStalled()) {
       timeout.start();
     }
@@ -40,11 +41,10 @@ public class IntakeCommand extends CommandBase {
    */
   @Override
   public void end(boolean interrupted) {
-    
     if (!interrupted) {
       GameState.getInstance().setGamePieceHeld(true);
     }
-    m_intakeSubsystem.hold();
+    m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED);
     timeout.stop();
   }
 

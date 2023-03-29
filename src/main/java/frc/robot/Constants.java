@@ -145,6 +145,7 @@ public final class Constants {
 
   public static final int ELBOW_MOTOR = 11;
   public static final int SHOULDER_MOTOR = 10;
+  public static final int WRIST_MOTOR = 12;
 
   public static final double ELBOW_ROTATIONS_PER_DEGREE = 5.0 / 12.0;
   public static final double ELBOW_MAX_VOLTAGE_FF = 1.25;
@@ -153,14 +154,6 @@ public final class Constants {
   public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
   public static final double ELBOW_INTEGRAL_GAIN = 0.000015;
   public static final double ELBOW_IZONE = 5.0;
-  public static final double ELBOW_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
-  /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
-  public static final double ELBOW_CRUISE_VELOCITY_RPM = ELBOW_CRUISE_VELOCITY_DEG_PER_SEC * 60.0
-      * ELBOW_ROTATIONS_PER_DEGREE;
-  public static final double ELBOW_SECONDS_TO_CRUISE_RPM = 1.25;
-  /** RPM/sec */
-  public static final double ELBOW_PEAK_ACCELERATION = ELBOW_CRUISE_VELOCITY_RPM
-      / ELBOW_SECONDS_TO_CRUISE_RPM;
   public static final double ELBOW_TOLERANCE = ELBOW_ROTATIONS_PER_DEGREE / 2.0;
   public static final double ELBOW_NUDGE_DEGREES = 3.0;
 
@@ -170,34 +163,29 @@ public final class Constants {
   public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.015; // Backwards
   public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.012; // Forwards
   public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
-  public static final double SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC = 20.0;
-  /** deg/sec * sec/min = deg/min ... deg/min * rot/deg = rot/min = RPM */
-  public static final double SHOULDER_CRUISE_VELOCITY_RPM = SHOULDER_CRUISE_VELOCITY_DEG_PER_SEC * 60.0
-      * SHOULDER_ROTATIONS_PER_DEGREE;
-  public static final double SHOULDER_SECONDS_TO_CRUISE_RPM = 1.25;
-  /** RPM/sec */
-  public static final double SHOULDER_PEAK_ACCELERATION = SHOULDER_CRUISE_VELOCITY_RPM
-      / SHOULDER_SECONDS_TO_CRUISE_RPM;
   public static final double SHOULDER_TOLERANCE = SHOULDER_ROTATIONS_PER_DEGREE / 2.0;
   public static final double SHOULDER_NUDGE_DEGREES = 3.0;
-
-  public static final double ARM_MOTORS_NEUTRAL_DEADBAND = 0.0001;
-  public static final double ARM_MOTORS_INTERGRAL_ZONE = 10000.0;
-  public static final double ARM_MOTORS_CLOSED_LOOP_PEAK_OUTPUT = 0.5;
+  
+  public static final double WRIST_ROTATIONS_PER_DEGREE = 1.0 / 6.0;
+  //TODO maybe tune this?
+  public static final double WRIST_MAX_VOLTAGE_FF = 0.0;
+  //TODO this is really snappy, but it might be too high.
+  public static final double WRIST_PROPORTIONAL_GAIN = 0.01;
+  public static final double WRIST_TOLERANCE = WRIST_ROTATIONS_PER_DEGREE / 2.0;
 
   public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 120.0;
   public static final double ELBOW_ZERO_OFFSET = /* measure this */ -36.5 - SHOULDER_ZERO_OFFSET + 90.0;
 
-  public static final int LEFT_INTAKE_MOTOR = 12;
-  public static final int RIGHT_INTAKE_MOTOR = 13;
+  public static final int ROLLER_MOTOR = 13;
 
-  public static final double INTAKE_SPEED = 0.2;
+  public static final double INTAKE_SPEED = 0.15;
   public static final double INTAKE_HOLD_SPEED = 0.05;
   public static final double INTAKE_SCORE_SPEEED = -0.1;
   public static final double INTAKE_SCORE_AUTO_CUBE = -0.2;
 
   public static final double INTAKE_CONE_MIDDLE_SPEED = -0.05;
   public static final double INTAKE_CONE_HIGH_SPEED = -0.1;
+  public static final double SCORE_SPEEED = -0.15;
 
   public static final double AUTO_X_KP = 1.0;
   public static final double AUTO_X_KI = 0.0;
@@ -210,4 +198,5 @@ public final class Constants {
   public static final double AUTO_THETA_KP = 1.0;
   public static final double AUTO_THETA_KI = 0.0;
   public static final double AUTO_THETA_KD = 0.0;
+
 }
