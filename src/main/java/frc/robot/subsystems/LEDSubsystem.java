@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -32,6 +34,9 @@ public class LEDSubsystem extends SubsystemBase {
 
   /** Used to create onTrue and onFalse edges for enum change. */
   private GamePiece m_lastGamePieceDesiredApplied = null;
+
+  private LEDCycleFront m_cubeCycle = new LEDCycleFront(62, 13, 155);
+  private LEDCycleFront m_coneCycle = new LEDCycleFront(140, 40, 0);
 
   /**
    * Creates a new {@link LEDSubsystem}.
@@ -84,10 +89,10 @@ public class LEDSubsystem extends SubsystemBase {
   private void setFrontToGamePiece(final GamePiece gamePiece) {
     switch (gamePiece) {
       case CONE:
-        setFrontHalfLED(140, 40, 0);
+        m_coneCycle.schedule();
         break;
       case CUBE:
-        setFrontHalfLED(62, 13, 115);
+        m_cubeCycle.schedule();
         break;
       default:
         // Bug in GameState if we get here.
@@ -123,5 +128,61 @@ public class LEDSubsystem extends SubsystemBase {
       m_ledBuffer.setRGB(i, r, g, b);
     }
     m_led.setData(m_ledBuffer);
+  }
+
+  public class LEDCycleFront extends CommandBase {
+    private final int m_r;
+    private final int m_g;
+    private final int m_b;
+    private final Timer m_timer = new Timer();
+    private int m_lightsOn = 65;
+    /** Creates a new LEDCycleFront. */
+    public LEDCycleFront(int r, int g, int b) {
+      // Use addRequirements() here to declare subsystem dependencies.
+      m_r = r;
+      m_g = g;
+      m_b = b;
+      addRequirements(LEDSubsystem.this);
+    }
+  
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+      m_timer.reset();
+      m_timer.start();
+      m_lightsOn = 65;
+    }
+  
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+      for (var i = 65; i < m_ledBuffer.getLength(); i++) {
+        if(i <= m_lightsOn){
+          m_ledBuffer.setRGB(i, m_r, m_g, m_b);
+        }
+        else{
+          m_ledBuffer.setRGB(i, 0, 0, 0);
+        }
+      }
+      m_led.setData(m_ledBuffer);
+
+      m_lightsOn++;
+      if(m_lightsOn >= m_ledBuffer.getLength()){
+        m_lightsOn = 65;
+      }
+    }
+  
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+      LEDSubsystem.this.setFrontHalfLED(m_r, m_g, m_b);
+      m_timer.stop();
+    }
+  
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+      return m_timer.hasElapsed(7.0);
+    }
   }
 }
