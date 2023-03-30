@@ -134,6 +134,7 @@ public class RobotContainer {
     configureBindings();
   }
   /**
+   * 
    * Use this method to define your trigger->command mappings. Triggers can be
    * created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
@@ -268,7 +269,7 @@ public class RobotContainer {
     coneTrigger.and(m_secondaryController.b())
         .onTrue(new MoveConeMiddleCommand(m_armSubsystem).withTimeout(2.5));
     coneTrigger.and(m_secondaryController.y())
-        .onTrue(new MoveConeHighCommand(m_armSubsystem).withTimeout(1.5));
+        .onTrue(new MoveConeHighCommand(m_armSubsystem));
     coneTrigger.and(m_secondaryController.leftBumper()).onTrue(
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(

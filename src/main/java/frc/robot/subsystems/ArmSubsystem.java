@@ -48,8 +48,8 @@ public class ArmSubsystem extends SubsystemBase {
     STOWED(101.0, -58.0, 0.0),
     FLOOR_GRAB(65.0, -64.5, 0.0),
     SUBSTATION_APPROACH(120.0, 5.7, 0.0),
-    SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 3.0, 60.0),
-    SUBSTATION_GRAB_HALFWAY_CONE(108.0, 3.0, 150.0),
+    SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 8.0, 80.0),
+    SUBSTATION_GRAB_HALFWAY_CONE(108.0, 25.0, 150.0),
     SUBSTATION_GRAB_FULLWAY_CUBE(91.4, 0.9, 60.0),
     SUBSTATION_GRAB_FULLWAY_CONE(91.4, 0.9, 150.0),
     SCORE_LOW_CUBE(90.0, -53.0, 0.0),
@@ -58,7 +58,8 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_CONE_MIDDLE_UPPER(53.0, 35.0, 150.0),
     SCORE_CONE_MIDDLE_LOWER(80.0, -15.0, 150.0),
     SCORE_CUBE_HIGH(56.0, 21.0, 40.0),
-    SCORE_CONE_HIGH(53.0, 30.0, 150.0);
+    SCORE_CONE_HIGH_PRE(55.0, 30.0, 0.0),
+    SCORE_CONE_HIGH(55.0, 30.0, 150.0);
 
     public final double m_shoulderAngle;
     public final double m_elbowAngle;
@@ -120,7 +121,10 @@ public class ArmSubsystem extends SubsystemBase {
     //m_wristMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
     //m_wristMotor.setSoftLimit(SoftLimitDirection.kReverse, 0f);
     //m_wristMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    m_wristMotor.setClosedLoopRampRate(0.5);
+    m_wristMotor.setClosedLoopRampRate(0.5);
     m_wristEncoder.setPositionConversionFactor(1.0 / Constants.WRIST_ROTATIONS_PER_DEGREE);
+
 
     //NEED THESE
     resetElbowPosition();
