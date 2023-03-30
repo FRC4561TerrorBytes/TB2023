@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
 
-public class ZeroElbowCommand extends CommandBase {
-  /** Creates a new ZeroElbowCommand. */
+public class ZeroWristCommand extends CommandBase {
   private ArmSubsystem m_armSubsystem;
-  private int elbowLimitContacts;
+  private int isZeroed;
 
-  public ZeroElbowCommand(ArmSubsystem armSubsystem) {
+  /** Creates a new ZeroWristCommand. */
+  public ZeroWristCommand(ArmSubsystem armSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_armSubsystem = armSubsystem;
     addRequirements(m_armSubsystem);
@@ -22,34 +22,36 @@ public class ZeroElbowCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elbowLimitContacts = 0;
+    isZeroed = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_armSubsystem.elbowLimitReached() == true) {
-      elbowLimitContacts++;
-      if (elbowLimitContacts == 4) {
-        m_armSubsystem.resetElbowPosition();
+    if(m_armSubsystem.isWristStalled()) {
+      isZeroed++;
+      if (isZeroed >= 4){
+        m_armSubsystem.resetWristPosition();
+        m_armSubsystem.setManualWristSpeed(0.0);
       }
-    } else {
-      elbowLimitContacts = 0;
     }
-    m_armSubsystem.setManualElbowSpeed(-0.15);
+    else{
+      //isZeroed = 0;
+    }
+    m_armSubsystem.setManualWristSpeed(-0.1);
 
-    //SmartDashboard.putNumber("Elbow Contacts", elbowLimitContacts);
+    SmartDashboard.putNumber("Wrist Stalls", isZeroed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_armSubsystem.setManualElbowSpeed(0);
+    m_armSubsystem.setManualWristSpeed(0.0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return elbowLimitContacts >= 4;
+    return isZeroed >= 4;
   }
 }

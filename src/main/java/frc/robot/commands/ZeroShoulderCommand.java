@@ -34,7 +34,7 @@ public class ZeroShoulderCommand extends CommandBase {
         m_armSubsystem.resetShoulderPosition();
       }
     } else {
-      // shoulderLimitContacts = 0;
+      shoulderLimitContacts = 0;
     }
     m_armSubsystem.setManualShoulderSpeed(0.2);
 

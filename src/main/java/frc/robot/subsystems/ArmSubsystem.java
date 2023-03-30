@@ -116,15 +116,15 @@ public class ArmSubsystem extends SubsystemBase {
     m_wristMotor.setInverted(false);
     m_wristMotor.setIdleMode(IdleMode.kBrake);
     m_wristController.setP(Constants.WRIST_PROPORTIONAL_GAIN);
-    m_wristMotor.setSoftLimit(SoftLimitDirection.kForward, 160f);
-    m_wristMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    m_wristMotor.setSoftLimit(SoftLimitDirection.kReverse, 0f);
-    m_wristMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    //m_wristMotor.setSoftLimit(SoftLimitDirection.kForward, 160f);
+    //m_wristMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    //m_wristMotor.setSoftLimit(SoftLimitDirection.kReverse, 0f);
+    //m_wristMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_wristEncoder.setPositionConversionFactor(1.0 / Constants.WRIST_ROTATIONS_PER_DEGREE);
-    
-    // NOTE: these are NEEDED
-    resetShoulderPosition();
+
+    //NEED THESE
     resetElbowPosition();
+    resetShoulderPosition();
     resetWristPosition();
   }
 
@@ -139,7 +139,6 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void resetWristPosition() {
-    // TODO there will be a throughbore encoder to read here.
     setWristPosition(0.0);
     m_wristEncoder.setPosition(0.0);
   }
@@ -163,6 +162,14 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void setManualElbowSpeed(double elbowSpeed) {
     m_elbowMotor.set(elbowSpeed);
+  }
+
+  public void setManualWristSpeed(double wristSpeed) {
+    m_wristMotor.set(wristSpeed);
+  }
+
+  public boolean isWristStalled() {
+    return Math.abs(m_wristEncoder.getVelocity()) < 15.0;
   }
 
   /**
@@ -300,6 +307,7 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("wrist rotation target", m_targetWristPosition);
     SmartDashboard.putBoolean("Game Piece Held", GameState.getInstance().isGamePieceHeld());
     SmartDashboard.putNumber("Elbow Temp (C)", m_elbowMotor.getMotorTemperature());
+    SmartDashboard.putNumber("Wrist Velocity", m_wristEncoder.getVelocity());
     // SmartDashboard.putNumber("Shoulder placement", m_lastPlacement == null ? 999
     // : m_lastPlacement.m_shoulderAngle);
     /*
