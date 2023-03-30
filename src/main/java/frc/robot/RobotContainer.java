@@ -34,7 +34,6 @@ import frc.robot.commands.ZeroElbowCommand;
 import frc.robot.commands.ZeroShoulderCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.DriveUntilCommand;
-import frc.robot.commands.autonomous.ExitChargeStation;
 import frc.robot.commands.autonomous.FlipAuto;
 import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.ScoreCube;
@@ -368,6 +367,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     //new ZeroArmCommand(m_armSubsystem).schedule();
+    m_LEDSubsystem.init();
   }
 
   private static double modifyAxis(double value) {

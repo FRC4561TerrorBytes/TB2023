@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState;
 import frc.robot.GameState.GamePiece;
@@ -36,8 +38,12 @@ public class LEDSubsystem extends SubsystemBase {
   /** Used to create onTrue and onFalse edges for enum change. */
   private GamePiece m_lastGamePieceDesiredApplied = GamePiece.CUBE;
 
-  private LEDCycleFront m_cubeCycle = new LEDCycleFront(62, 13, 155);
-  private LEDCycleFront m_coneCycle = new LEDCycleFront(140, 40, 0);
+  private Command m_cubeCycle = new LEDCycleFront(62, 13, 155)
+      .andThen(new WaitCommand(0.25))
+      .andThen(new ScheduleCommand(new InstantCommand(() -> setFrontHalfLED(62, 13, 155))));
+  private Command m_coneCycle = new LEDCycleFront(140, 40, 0)
+      .andThen(new WaitCommand(0.25))
+      .andThen(new ScheduleCommand(new InstantCommand(() -> setFrontHalfLED(140, 40, 0))));
 
   /**
    * Creates a new {@link LEDSubsystem}.
@@ -48,11 +54,17 @@ public class LEDSubsystem extends SubsystemBase {
     m_led.setData(m_ledBuffer);
     m_led.start();
     createGameStateBindings();
-    // Initialize LEDs to starting game state.
-    setFrontToGamePiece(m_gameState.getGamePieceDesired());
-    if (m_gameState.isGamePieceHeld()) {
-      setBackHalfLED(0, 0, 255);
-    }
+  }
+
+  // Initialize LEDs to starting game state.
+  public void init() {
+    final Command initCmd = new ScheduleCommand(new InstantCommand(() -> {
+      setFrontToGamePiece(m_gameState.getGamePieceDesired());
+      if (m_gameState.isGamePieceHeld()) {
+        setBackHalfLED(0, 0, 255);
+      }
+    }));
+    initCmd.schedule();
   }
 
   /**
@@ -72,14 +84,13 @@ public class LEDSubsystem extends SubsystemBase {
 
     // Change the game piece indication of the front of the arm
     // anytime it changes in game state.
-    Trigger gamePieceDesiredTrigger = new Trigger(
+    final Trigger gamePieceDesiredTrigger = new Trigger(
         () -> (m_gameState.getGamePieceDesired() != m_lastGamePieceDesiredApplied));
     gamePieceDesiredTrigger
         .onTrue(new InstantCommand(() -> {
           final GamePiece gamePiece = m_gameState.getGamePieceDesired();
           setFrontToGamePiece(gamePiece);
           m_lastGamePieceDesiredApplied = gamePiece;
-          System.out.println("running the trigger");
         }));
   }
 
@@ -92,11 +103,9 @@ public class LEDSubsystem extends SubsystemBase {
     switch (gamePiece) {
       case CONE:
         m_coneCycle.schedule();
-        System.out.println("we want a cone");
         break;
       case CUBE:
         m_cubeCycle.schedule();
-        System.out.println("we want a cube");
         break;
       default:
         // Bug in GameState if we get here.
@@ -134,21 +143,24 @@ public class LEDSubsystem extends SubsystemBase {
     m_led.setData(m_ledBuffer);
   }
 
+  /**
+   * A nested command class used to cycle the game piece lights.
+   */
   public class LEDCycleFront extends CommandBase {
-    private int m_r;
-    private int m_g;
-    private int m_b;
+    private final int m_r;
+    private final int m_g;
+    private final int m_b;
     private final Timer m_timer = new Timer();
     private int m_lightsOn = 65;
+
     /** Creates a new LEDCycleFront. */
     public LEDCycleFront(int r, int g, int b) {
-      // Use addRequirements() here to declare subsystem dependencies.
       m_r = r;
       m_g = g;
       m_b = b;
       addRequirements(LEDSubsystem.this);
     }
-  
+
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
@@ -156,35 +168,31 @@ public class LEDSubsystem extends SubsystemBase {
       m_timer.start();
       m_lightsOn = 65;
     }
-  
+
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-      SmartDashboard.putBoolean("GamePieceCube", GameState.getInstance().getGamePieceDesired() == GamePiece.CUBE);
       for (var i = 65; i < m_ledBuffer.getLength(); i++) {
-        if(i <= m_lightsOn){
+        if (i <= m_lightsOn) {
           m_ledBuffer.setRGB(i, m_r, m_g, m_b);
-        }
-        else{
+        } else {
           m_ledBuffer.setRGB(i, 0, 0, 0);
         }
       }
       m_led.setData(m_ledBuffer);
 
       m_lightsOn++;
-      if(m_lightsOn >= m_ledBuffer.getLength()){
+      if (m_lightsOn >= m_ledBuffer.getLength()) {
         m_lightsOn = 65;
       }
     }
-    
-  
+
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-      LEDSubsystem.this.setFrontHalfLED(m_r, m_g, m_b);
       m_timer.stop();
     }
-  
+
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
