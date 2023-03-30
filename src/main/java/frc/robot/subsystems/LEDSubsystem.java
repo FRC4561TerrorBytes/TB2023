@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,7 +34,7 @@ public class LEDSubsystem extends SubsystemBase {
   private final GameState m_gameState;
 
   /** Used to create onTrue and onFalse edges for enum change. */
-  private GamePiece m_lastGamePieceDesiredApplied = null;
+  private GamePiece m_lastGamePieceDesiredApplied = GamePiece.CUBE;
 
   private LEDCycleFront m_cubeCycle = new LEDCycleFront(62, 13, 155);
   private LEDCycleFront m_coneCycle = new LEDCycleFront(140, 40, 0);
@@ -71,13 +72,14 @@ public class LEDSubsystem extends SubsystemBase {
 
     // Change the game piece indication of the front of the arm
     // anytime it changes in game state.
-    final Trigger gamePieceDesiredTrigger = new Trigger(
+    Trigger gamePieceDesiredTrigger = new Trigger(
         () -> (m_gameState.getGamePieceDesired() != m_lastGamePieceDesiredApplied));
     gamePieceDesiredTrigger
         .onTrue(new InstantCommand(() -> {
           final GamePiece gamePiece = m_gameState.getGamePieceDesired();
           setFrontToGamePiece(gamePiece);
           m_lastGamePieceDesiredApplied = gamePiece;
+          System.out.println("running the trigger");
         }));
   }
 
@@ -90,13 +92,15 @@ public class LEDSubsystem extends SubsystemBase {
     switch (gamePiece) {
       case CONE:
         m_coneCycle.schedule();
+        System.out.println("we want a cone");
         break;
       case CUBE:
         m_cubeCycle.schedule();
+        System.out.println("we want a cube");
         break;
       default:
         // Bug in GameState if we get here.
-        setFrontHalfLED(0, 0, 0);
+        setFrontHalfLED(0, 255, 0);
         break;
     }
   }
@@ -131,9 +135,9 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public class LEDCycleFront extends CommandBase {
-    private final int m_r;
-    private final int m_g;
-    private final int m_b;
+    private int m_r;
+    private int m_g;
+    private int m_b;
     private final Timer m_timer = new Timer();
     private int m_lightsOn = 65;
     /** Creates a new LEDCycleFront. */
@@ -156,6 +160,7 @@ public class LEDSubsystem extends SubsystemBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+      SmartDashboard.putBoolean("GamePieceCube", GameState.getInstance().getGamePieceDesired() == GamePiece.CUBE);
       for (var i = 65; i < m_ledBuffer.getLength(); i++) {
         if(i <= m_lightsOn){
           m_ledBuffer.setRGB(i, m_r, m_g, m_b);
@@ -171,6 +176,7 @@ public class LEDSubsystem extends SubsystemBase {
         m_lightsOn = 65;
       }
     }
+    
   
     // Called once the command ends or is interrupted.
     @Override
