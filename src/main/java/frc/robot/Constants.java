@@ -174,7 +174,7 @@ public final class Constants {
   public static final double WRIST_TOLERANCE = WRIST_ROTATIONS_PER_DEGREE / 2.0;
 
   public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 111.0;
-  public static final double ELBOW_ZERO_OFFSET = /* measure this */ -36.5 - SHOULDER_ZERO_OFFSET + 90.0;
+  public static final double ELBOW_ZERO_OFFSET = /* measure this */ -43.0 - SHOULDER_ZERO_OFFSET + 90.0;
 
   public static final int ROLLER_MOTOR = 12;
 
