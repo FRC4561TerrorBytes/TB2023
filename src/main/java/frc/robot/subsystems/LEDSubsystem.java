@@ -62,6 +62,8 @@ public class LEDSubsystem extends SubsystemBase {
       setFrontToGamePiece(m_gameState.getGamePieceDesired());
       if (m_gameState.isGamePieceHeld()) {
         setBackHalfLED(0, 0, 255);
+      } else {
+        setBackHalfLED(0, 0, 0);
       }
     }));
     initCmd.schedule();
