@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.GameState;
+import frc.robot.commands.ZeroArmCommand;
 
 public class ArmSubsystem extends SubsystemBase {
   // private WPI_TalonFX m_elbowMotor = new WPI_TalonFX(4);
@@ -47,7 +48,7 @@ public class ArmSubsystem extends SubsystemBase {
   public enum KnownArmPlacement {
     STOWED(101.0, -58.0, 0.0),
     FLOOR_GRAB(65.0, -64.5, 0.0),
-    SUBSTATION_APPROACH(120.0, 5.7, 0.0),
+    SUBSTATION_APPROACH(108.0, 5.7, 0.0),
     SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 8.0, 80.0),
     SUBSTATION_GRAB_HALFWAY_CONE(108.0, 25.0, 150.0),
     SUBSTATION_GRAB_FULLWAY_CUBE(91.4, 0.9, 60.0),
@@ -55,11 +56,12 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_LOW_CUBE(90.0, -53.0, 0.0),
     SCORE_LOW_CONE(90.0, -53.0, 40.0),
     SCORE_MIDDLE_CUBE(90, -1.0, 40.0),
-    SCORE_CONE_MIDDLE_UPPER(53.0, 35.0, 150.0),
-    SCORE_CONE_MIDDLE_LOWER(80.0, -15.0, 150.0),
+    //SCORE_CONE_MIDDLE_UPPER(63.0, 35.0, 150.0),
+    SCORE_CONE_MIDDLE(92.5, 0.0, 140.0),
     SCORE_CUBE_HIGH(56.0, 21.0, 40.0),
-    SCORE_CONE_HIGH_PRE(55.0, 30.0, 0.0),
-    SCORE_CONE_HIGH(55.0, 30.0, 150.0);
+    SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
+    SCORE_CONE_HIGH(55.0, 30.0, 150.0),
+    SCORE_CONE_HIGH_RETURN(92.5, 50.0, 0.0);
 
     public final double m_shoulderAngle;
     public final double m_elbowAngle;
@@ -100,6 +102,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_shoulderMotor.setIdleMode(IdleMode.kBrake);
     m_shoulderController.setP(Constants.SHOULDER_PROPORTIONAL_GAIN_SLOT_0, 0);
     m_shoulderController.setP(Constants.SHOULDER_PROPORTIONAL_GAIN_SLOT_1, 1);
+    m_shoulderController.setI(Constants.SHOULDER_INTEGRAL_GAIN_SLOT_0, 0);
     m_shoulderController.setD(Constants.SHOULDER_DERIVATIVE_GAIN);
     m_shoulderForwardLimitSwitch = m_shoulderMotor.getForwardLimitSwitch(Type.kNormallyOpen);
     m_shoulderReverseLimitSwitch = m_shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen);
@@ -216,6 +219,7 @@ public class ArmSubsystem extends SubsystemBase {
    * @param targetPosition the target position in rotations.
    */
   void setShoulderPosition(double targetPosition) {
+    m_shoulderController.setIAccum(0.0);
     m_targetShoulderPosition = targetPosition;
   }
 
@@ -264,7 +268,7 @@ public class ArmSubsystem extends SubsystemBase {
     double cosineScalar = Math.cos(Math.toRadians(currentRotation));
 
     int pidSlot = 0;
-    if (currentRotation > m_targetShoulderPosition) {
+    if (currentRotation < m_targetShoulderPosition) {
       pidSlot = 1;
     }
 
