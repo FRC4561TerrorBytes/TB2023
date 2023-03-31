@@ -179,7 +179,7 @@ public final class Constants {
 
   public static final int ROLLER_MOTOR = 12;
 
-  public static final double INTAKE_SPEED = 0.25;
+  public static final double INTAKE_SPEED = 0.3;
   public static final double INTAKE_HOLD_SPEED = 0.05;
   public static final double INTAKE_SCORE_SPEEED = -0.1;
   public static final double INTAKE_SCORE_AUTO_CUBE = -0.2;

@@ -49,7 +49,7 @@ public class IntakeCommand extends CommandBase {
   }
 
   /**
-   *  Returns true when motor stall timeout reaches 0.5 seconds.
+   *  Returns true when motor stall timeout reaches 0.1 seconds.
    */ 
   @Override
   public boolean isFinished() {

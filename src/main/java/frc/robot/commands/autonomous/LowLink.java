@@ -48,11 +48,11 @@ public class LowLink {
         maxAccelerationMetersPerSecSquared);
 
     m_eventMap.put("cubeScore1", new ScheduleCommand(new ScoreAutoCube(m_IntakeSubsystem).withTimeout(0.5)));
-    m_eventMap.put("eventGroundIntake1", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB)));
+    m_eventMap.put("eventGroundIntake1", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
     m_eventMap.put("Stow1", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
     m_eventMap.put("scoreLow2",  new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW_CUBE)));
     m_eventMap.put("scoreCubeMiddle",  new ScheduleCommand(new ScoreAutoCube(m_IntakeSubsystem).withTimeout(0.5)));
-    m_eventMap.put("eventGroundIntake2", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB)));
+    m_eventMap.put("eventGroundIntake2", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
     m_eventMap.put("scoreLow3",  new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW_CUBE)));
     m_eventMap.put("scoreCubeRight",  new ScheduleCommand(new ScoreAutoCube(m_IntakeSubsystem).withTimeout(0.5)));
 
