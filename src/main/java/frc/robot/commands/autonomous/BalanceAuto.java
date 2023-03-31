@@ -6,7 +6,6 @@
 package frc.robot.commands.autonomous;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DriveSubsystem;
 // base OnChargeX -2, OnPitchX -1
 public class BalanceAuto extends SequentialCommandGroup {

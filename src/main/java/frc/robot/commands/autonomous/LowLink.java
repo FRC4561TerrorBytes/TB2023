@@ -11,13 +11,12 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ScoreAutoCube;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.Constants;
+import frc.robot.commands.ScoreAutoCube;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -40,7 +39,7 @@ public class LowLink {
    * @param maxAccelerationMetersPerSecSquared
    */
   public LowLink(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
-      double maxAccelerationMetersPerSecSquared) {
+      double maxAccelerationMetersPerSecSquared, boolean isRedAlliance) {
     this.m_driveSubsystem = driveSubsystem;
     this.m_ArmSubsystem = armsubsystem;
     this.m_IntakeSubsystem = intakeSubsystem;
@@ -74,6 +73,7 @@ public class LowLink {
         yController,
         thetaController,
         m_driveSubsystem::setModuleStates,
+        isRedAlliance,
         m_driveSubsystem);
   }
 
@@ -82,7 +82,7 @@ public class LowLink {
   }
 
   public Command getCommandAndStop() {
-    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
+    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2, false).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
             .andThen(() -> m_driveSubsystem.stop());
   }
 }

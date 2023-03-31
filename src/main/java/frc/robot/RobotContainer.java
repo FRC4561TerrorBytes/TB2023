@@ -26,6 +26,8 @@ import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.ZeroArmCommand;
+import frc.robot.commands.ZeroElbowCommand;
+import frc.robot.commands.ZeroShoulderCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.DriveUntilCommand;
 import frc.robot.commands.autonomous.FlipAuto;
@@ -38,6 +40,7 @@ import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -56,6 +59,8 @@ public class RobotContainer {
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
 
   private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
+  private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
+  public boolean isRedAlliance;
 
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
@@ -113,12 +118,24 @@ public class RobotContainer {
     m_autoChooser.addOption("ScoreCubeLeaveCommLeft",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
+
+    if(!isRedAlliance) {
     m_autoChooser.addOption("TestPath",
-         () -> new LowLink(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "BottomLink", 3, 3).getCommandAndStop());
+         () -> new LowLink(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "BottomLink", 3, 3, false).getCommandAndStop());
 
     m_autoChooser.addOption("ScoreCubeGrabScoreCubeGrabBalance", 
-        () -> new LowLinkRIGHT(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "ScoreCubeGrabScoreCubeGrabBalance", 2, 1).getCommandAndStop()
+        () -> new LowLinkRIGHT(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "ScoreCubeGrabScoreCubeGrabBalance", 2, 1, false).getCommandAndStop()
             .andThen(new BalanceAuto(m_driveSubsystem, 2, 1)));
+    }
+    else if(isRedAlliance) {
+      m_autoChooser.addOption("TestPath",
+         () -> new LowLink(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "BottomLink", 3, 3, true).getCommandAndStop());
+
+    m_autoChooser.addOption("ScoreCubeGrabScoreCubeGrabBalance", 
+        () -> new LowLinkRIGHT(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "ScoreCubeGrabScoreCubeGrabBalance", 2, 1, true).getCommandAndStop()
+            .andThen(new BalanceAuto(m_driveSubsystem, 2, 1)));
+    }
+    
 
     SmartDashboard.putData("Auto chooser", m_autoChooser);
 
