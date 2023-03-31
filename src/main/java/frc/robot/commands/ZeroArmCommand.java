@@ -17,8 +17,9 @@ public class ZeroArmCommand extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new Zeroing(armSubsystem)
-          .alongWith(new RunCommand(() -> armSubsystem.setManualElbowSpeed(0.1))).withTimeout(1.0),
+        new ZeroWristCommand(armSubsystem),
+        new ZeroShoulderCommand(armSubsystem)
+          .alongWith((new RunCommand(() -> armSubsystem.setManualElbowSpeed(0.1))).withTimeout(1.5)),
         new ZeroElbowCommand(armSubsystem)
     );
   }

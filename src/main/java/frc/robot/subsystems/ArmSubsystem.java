@@ -47,7 +47,8 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public enum KnownArmPlacement {
     STOWED(101.0, -58.0, 0.0),
-    FLOOR_GRAB(65.0, -64.5, 0.0),
+    FLOOR_GRAB(50.0, -80.0, 25.0),
+    FLOOR_GRAB_PRE(90, -53, 25),
     SUBSTATION_APPROACH(108.0, 5.7, 0.0),
     SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 8.0, 80.0),
     SUBSTATION_GRAB_HALFWAY_CONE(108.0, 25.0, 150.0),
@@ -57,7 +58,7 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_LOW_CONE(90.0, -53.0, 40.0),
     SCORE_MIDDLE_CUBE(90, -1.0, 40.0),
     //SCORE_CONE_MIDDLE_UPPER(63.0, 35.0, 150.0),
-    SCORE_CONE_MIDDLE(92.5, 0.0, 140.0),
+    SCORE_CONE_MIDDLE(98.5, 10.0, 140.0),
     SCORE_CUBE_HIGH(56.0, 21.0, 40.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
     SCORE_CONE_HIGH(55.0, 30.0, 150.0),
