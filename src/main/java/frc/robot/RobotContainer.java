@@ -25,6 +25,7 @@ import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreCommand;
+import frc.robot.commands.SquareUpAndDrive;
 import frc.robot.commands.ZeroArmCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.DriveUntilCommand;
@@ -207,7 +208,10 @@ public class RobotContainer {
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
     // m_primaryController.rightBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
-    // m_primaryController.leftBumper().whileTrue()
+    m_primaryController.leftBumper().whileTrue(new SquareUpAndDrive(
+      m_driveSubsystem,
+      () -> modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+      () -> modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND));
 
     // Secondary Controller Bindings
     m_secondaryController.leftStick().and(m_secondaryController.rightStick())
