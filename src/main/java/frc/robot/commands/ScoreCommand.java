@@ -18,9 +18,8 @@ public class ScoreCommand extends SequentialCommandGroup {
   /** Creates a new ScoreCommand. */
   public ScoreCommand(IntakeSubsystem intakeSubsystem) {
     addCommands(
-      new RunCommand(() -> intakeSubsystem.setRollerSpeed(Constants.SCORE_SPEEED), intakeSubsystem),
-      new InstantCommand(() -> intakeSubsystem.stop()),
-      new InstantCommand(() -> GameState.getInstance().setGamePieceHeld(false))
+      new InstantCommand(() -> GameState.getInstance().setGamePieceHeld(false)),
+      new RunCommand(() -> intakeSubsystem.setRollerSpeed(Constants.SCORE_SPEEED), intakeSubsystem)
     );
   }
 }

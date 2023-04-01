@@ -36,7 +36,7 @@ public class ZeroWristCommand extends CommandBase {
       }
     }
     else{
-      //isZeroed = 0;
+      isZeroed = 0;
     }
     m_armSubsystem.setManualWristSpeed(-0.1);
 
