@@ -124,7 +124,7 @@
     {
       "position": 0.6181818181818182,
       "names": [
-        "eventGroundIntake1",
+        "goToFloor1",
         "intake1"
       ]
     },
@@ -166,7 +166,7 @@
       ]
     },
     {
-      "position": 0.8727272727272811,
+      "position": 1.3454545454545457,
       "names": [
         "Stow1"
       ]
