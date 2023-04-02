@@ -28,9 +28,31 @@ public class ScoreAlign extends CommandBase {
   @Override
   public void initialize() {
     m_pidController.reset();
-    final double absAngle = Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees());
-    final boolean closerTo0 = (180.0 - absAngle) > absAngle;
-    m_pidController.setSetpoint(closerTo0 ? 0.0 : 180.0);
+    //final double absAngle = Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees());
+    final double angle = m_driveSubsystem.getPose().getRotation().getDegrees();
+    int degreesClosestTo = 0;
+    double closest = 999.0;
+    if(Math.abs(angle - 0) < closest){
+      closest = Math.abs(angle);
+      degreesClosestTo = 0;
+    }
+    if(Math.abs(angle - 90) < closest){
+      closest = Math.abs(angle);
+      degreesClosestTo = 90;
+    }
+    if(Math.abs(angle - 180) < closest){
+      closest = Math.abs(angle);
+      degreesClosestTo = 180;
+    }
+    if(Math.abs(angle - 270) < closest){
+      closest = Math.abs(angle);
+      degreesClosestTo = 270;
+    }
+
+    m_pidController.setSetpoint(degreesClosestTo*Math.signum(angle));
+
+    //final boolean closerTo0 = (180.0 - absAngle) > absAngle;
+    //m_pidController.setSetpoint(closerTo0 ? 0.0 : 180.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
