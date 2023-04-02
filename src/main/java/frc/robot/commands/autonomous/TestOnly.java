@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.Constants;
-import frc.robot.commands.GroundIntake;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ScoreAutoCube;
 import frc.robot.commands.ScoreCommand;
@@ -24,7 +23,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-public class LowLink {
+public class TestOnly {
 
   DriveSubsystem m_driveSubsystem;
   ArmSubsystem m_armSubsystem;
@@ -41,7 +40,7 @@ public class LowLink {
    * @param maxSpeedMetersPerSec
    * @param maxAccelerationMetersPerSecSquared
    */
-  public LowLink(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
+  public TestOnly(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
       double maxAccelerationMetersPerSecSquared, boolean isRedAlliance) {
     this.m_driveSubsystem = driveSubsystem;
     this.m_armSubsystem = armsubsystem;
@@ -50,15 +49,8 @@ public class LowLink {
     m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
         maxAccelerationMetersPerSecSquared);
 
-    m_eventMap.put("cubeScore1", new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
-    m_eventMap.put("eventGroundIntake1", new ScheduleCommand(new GroundIntake(intakeSubsystem, armsubsystem)));
-    // m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(intakeSubsystem).withTimeout(10.0)));
-    //m_eventMap.put("Stow1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    //m_eventMap.put("scoreCubeMiddle",  new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
-    //m_eventMap.put("eventGroundIntake2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
-    // m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(intakeSubsystem).withTimeout(10.0)));
-    //m_eventMap.put("scoreLow3",  new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-    //m_eventMap.put("scoreCubeRight",  new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
+    m_eventMap.put("FloorGrab", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
+    m_eventMap.put("stow", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
 
     this.autoPathName = autoPathName;
     // Auto PID Controllers

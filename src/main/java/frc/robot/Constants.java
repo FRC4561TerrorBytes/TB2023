@@ -161,7 +161,7 @@ public final class Constants {
   // needs fixing; moves to fast and with to much force.
   public static final double SHOULDER_MAX_VOLTAGE_FF = 0.5;
   public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.022; // Scoring
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.03; // Returning from score
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.033; // Returning from score
   public static final double SHOULDER_INTEGRAL_GAIN_SLOT_0 = 0.000015;
   public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
   public static final double SHOULDER_TOLERANCE = SHOULDER_ROTATIONS_PER_DEGREE / 2.0;
@@ -173,6 +173,7 @@ public final class Constants {
   //TODO this is really snappy, but it might be too high.
   public static final double WRIST_PROPORTIONAL_GAIN = 0.01;
   public static final double WRIST_TOLERANCE = WRIST_ROTATIONS_PER_DEGREE / 2.0;
+  public static final double WRIST_NUDGE_DEGREES = 4.0;
 
   public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 110.0;
   public static final double ELBOW_ZERO_OFFSET = /* measure this */ -45.75 - SHOULDER_ZERO_OFFSET + 90.0;
@@ -181,12 +182,9 @@ public final class Constants {
 
   public static final double INTAKE_SPEED = 0.3;
   public static final double INTAKE_HOLD_SPEED = 0.05;
-  public static final double INTAKE_SCORE_SPEEED = -0.1;
-  public static final double INTAKE_SCORE_AUTO_CUBE = -0.2;
 
-  public static final double INTAKE_CONE_MIDDLE_SPEED = -0.05;
-  public static final double INTAKE_CONE_HIGH_SPEED = -0.1;
-  public static final double SCORE_SPEEED = -0.30;
+  public static final double SCORE_SPEED_CONE = -0.25;
+  public static final double SCORE_SPEED_CUBE = -0.15;
 
   public static final double AUTO_X_KP = 1.0;
   public static final double AUTO_X_KI = 0.0;

@@ -28,6 +28,9 @@ public class ZeroWristCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    
+    m_armSubsystem.setManualWristSpeed(-0.1);
+  
     if(m_armSubsystem.isWristStalled()) {
       isZeroed++;
       if (isZeroed >= 4){
@@ -38,7 +41,6 @@ public class ZeroWristCommand extends CommandBase {
     else{
       isZeroed = 0;
     }
-    m_armSubsystem.setManualWristSpeed(-0.1);
 
     SmartDashboard.putNumber("Wrist Stalls", isZeroed);
   }

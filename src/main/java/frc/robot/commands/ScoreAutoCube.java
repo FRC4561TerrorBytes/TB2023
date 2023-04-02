@@ -26,9 +26,10 @@ public class ScoreAutoCube extends CommandBase {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
+  //we score cubes but we are in STOWED so we outtake faster(cone outtake speed).
   @Override
   public void execute() {
-    m_intakeSubsystem.setRollerSpeed(Constants.SCORE_SPEEED);
+    m_intakeSubsystem.setRollerSpeed(Constants.SCORE_SPEED_CONE);
   }
 
   // Called once the command ends or is interrupted.

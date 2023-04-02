@@ -14,10 +14,13 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.Constants;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 public class LowLinkRIGHT {
 
   DriveSubsystem m_driveSubsystem;
@@ -45,6 +48,8 @@ public class LowLinkRIGHT {
         maxAccelerationMetersPerSecSquared);
 
     // m_eventMap Goes Here
+    m_eventMap.put("ScoreCube1", new ScheduleCommand(new IntakeCommand(intakeSubsystem).withTimeout(1)));
+    m_eventMap.put("Stow1", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
 
     this.autoPathName = autoPathName;
     // Auto PID Controllers

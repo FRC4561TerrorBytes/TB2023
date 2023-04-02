@@ -12,7 +12,9 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.GameState;
 import frc.robot.commands.ZeroArmCommand;
@@ -47,22 +49,24 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public enum KnownArmPlacement {
     STOWED(101.0, -58.0, 0.0),
-    FLOOR_GRAB_CONE(80.0, -80.0, 33.0),
-    FLOOR_GRAB_CUBE(50.0, -80.0, 25.0),
-    FLOOR_GRAB_PRE(90, -53, 25),
+    FLOOR_GRAB_CONE(80.0, -80.0, 33.0), // TODO: Change to intake knocked over cones 
+    FLOOR_GRAB_CUBE(54.0, -80.0, 30.0),
+    FLOOR_GRAB_PRE(54.0, -80.0, 0.0),
     SUBSTATION_APPROACH(108.0, 5.7, 0.0),
     SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 3.0, 85.0),
-    SUBSTATION_GRAB_HALFWAY_CONE(108.0, 25.0, 150.0),
+    SUBSTATION_GRAB_HALFWAY_CONE(108.0, 20.0, 145.0),
     SUBSTATION_GRAB_FULLWAY_CUBE(91.4, 0.9, 60.0),
     SUBSTATION_GRAB_FULLWAY_CONE(91.4, 0.9, 150.0),
+    SINGLE_SUBSTATION_CUBE(101.0, -45.0, 0.0),
+    SINGLE_SUBSTATION_CONE(91.0, -58.0, 15.0),
     SCORE_LOW_CUBE(90.0, -53.0, 0.0),
     SCORE_LOW_CONE(90.0, -53.0, 40.0),
-    SCORE_MIDDLE_CUBE(90, 4.0, 45.0),
+    SCORE_MIDDLE_CUBE(100, -1.0, 85.0),
     //SCORE_CONE_MIDDLE_UPPER(63.0, 35.0, 150.0),
-    SCORE_CONE_MIDDLE(98.5, 10.0, 140.0),
+    SCORE_CONE_MIDDLE(95.5, 10.0, 150.0),
     SCORE_CUBE_HIGH(56.0, 26.0, 60.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
-    SCORE_CONE_HIGH(55.0, 30.0, 150.0),
+    SCORE_CONE_HIGH(58.0, 36.0, 150.0),
     SCORE_CONE_HIGH_RETURN(92.5, 50.0, 0.0);
 
     public final double m_shoulderAngle;
@@ -130,7 +134,6 @@ public class ArmSubsystem extends SubsystemBase {
     m_wristMotor.setClosedLoopRampRate(0.5);
     m_wristEncoder.setPositionConversionFactor(1.0 / Constants.WRIST_ROTATIONS_PER_DEGREE);
 
-
     //NEED THESE
     resetElbowPosition();
     resetShoulderPosition();
@@ -185,12 +188,20 @@ public class ArmSubsystem extends SubsystemBase {
    * @param placement the desired updated arm placement.
    */
   public void setKnownArmPlacement(final KnownArmPlacement placement) {
+    double shoulderRotation = m_shoulderEncoder.getPosition();
     double desiredShoulderAngle = placement.m_shoulderAngle;
     double desiredElbowAngle = placement.m_elbowAngle - placement.m_shoulderAngle + 90;
     double desiredWristAngle = placement.m_wristAngle;
-    setShoulderPosition(desiredShoulderAngle);
-    setElbowPosition(desiredElbowAngle);
     setWristPosition(desiredWristAngle);
+    if(shoulderRotation < desiredShoulderAngle){
+      setShoulderPosition(desiredShoulderAngle);
+      new WaitCommand(0.25)
+      .andThen(new InstantCommand(() -> setElbowPosition(desiredElbowAngle))).schedule();
+    } else{
+      setElbowPosition(desiredElbowAngle);
+      new WaitCommand(0.25)
+      .andThen(new InstantCommand(() -> setShoulderPosition(desiredShoulderAngle))).schedule();
+    }
     m_lastPlacement = placement;
   }
 
@@ -215,6 +226,14 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void nudgeElbowDown() {
     setElbowPosition(m_targetElbowPosition - 2.0);
+  }
+
+  public void nudgeWristUp() {
+    setWristPosition(m_targetWristPosition - Constants.WRIST_NUDGE_DEGREES);
+  }
+
+  public void nudgeWristDown() {
+    setWristPosition(m_targetWristPosition + Constants.WRIST_NUDGE_DEGREES);
   }
 
   /**

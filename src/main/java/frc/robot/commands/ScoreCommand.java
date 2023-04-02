@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.GameState;
+import frc.robot.GameState.GamePiece;
 import frc.robot.subsystems.IntakeSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -17,9 +18,16 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class ScoreCommand extends SequentialCommandGroup {
   /** Creates a new ScoreCommand. */
   public ScoreCommand(IntakeSubsystem intakeSubsystem) {
+    if(GameState.getInstance().getGamePieceDesired() == GamePiece.CONE){
     addCommands(
       new InstantCommand(() -> GameState.getInstance().setGamePieceHeld(false)),
-      new RunCommand(() -> intakeSubsystem.setRollerSpeed(Constants.SCORE_SPEEED), intakeSubsystem)
+      new RunCommand(() -> intakeSubsystem.setRollerSpeed(Constants.SCORE_SPEED_CONE), intakeSubsystem)
     );
+    } else {
+      addCommands(
+      new InstantCommand(() -> GameState.getInstance().setGamePieceHeld(false)),
+      new RunCommand(() -> intakeSubsystem.setRollerSpeed(Constants.SCORE_SPEED_CUBE), intakeSubsystem)
+      );
+    };
   }
 }

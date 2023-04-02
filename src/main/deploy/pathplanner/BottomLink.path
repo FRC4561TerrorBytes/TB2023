@@ -122,9 +122,10 @@
   ],
   "markers": [
     {
-      "position": 0.4,
+      "position": 0.6181818181818182,
       "names": [
-        "eventGroundIntake1"
+        "eventGroundIntake1",
+        "intake1"
       ]
     },
     {
@@ -148,7 +149,8 @@
     {
       "position": 2.3,
       "names": [
-        "eventGroundIntake2"
+        "eventGroundIntake2",
+        "intake2"
       ]
     },
     {

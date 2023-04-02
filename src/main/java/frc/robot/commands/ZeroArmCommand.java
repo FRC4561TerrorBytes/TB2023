@@ -4,6 +4,9 @@
 
 package frc.robot.commands;
 
+import org.ejml.dense.row.MatrixFeatures_CDRM;
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.ArmSubsystem;
@@ -17,7 +20,8 @@ public class ZeroArmCommand extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new ZeroWristCommand(armSubsystem),
+        new RunCommand(() -> armSubsystem.setManualWristSpeed(-0.1), armSubsystem).withTimeout(0.5),
+        new InstantCommand(() -> armSubsystem.resetWristPosition()),
         new ZeroShoulderCommand(armSubsystem)
           .alongWith((new RunCommand(() -> armSubsystem.setManualElbowSpeed(0.1))).withTimeout(1.5)),
         new ZeroElbowCommand(armSubsystem)
