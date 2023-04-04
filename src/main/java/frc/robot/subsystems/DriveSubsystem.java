@@ -59,6 +59,14 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry
   private final SwerveDriveOdometry m_odometry;
 
+  /**
+   * The last set of ChassisSpeeds sent to or calcuated in drive(...). Note that
+   * this set of speeds is <b>NOT</b> desaturated. It should only be used when
+   * moderate and generally straight drive is expected. For example, during floor
+   * intake or substation approach.
+   */
+  private ChassisSpeeds m_lastChassisSpeeds = new ChassisSpeeds();
+
   public DriveSubsystem() {
     m_pigeon.setYaw(0.0);
     m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
@@ -76,10 +84,10 @@ public class DriveSubsystem extends SubsystemBase {
    *                      field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    var swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_pigeon.getYaw()))
-            : new ChassisSpeeds(xSpeed, ySpeed, rot));
+    m_lastChassisSpeeds = fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_pigeon.getYaw()))
+        : new ChassisSpeeds(xSpeed, ySpeed, rot);
+    final SwerveModuleState[] swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(m_lastChassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_VELOCITY_METERS_PER_SECOND);
     setModuleStates(swerveModuleStates);
   }
@@ -95,6 +103,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+  }
+
+  /**
+   * Note that this set of speeds is <b>NOT</b> desaturated. It should only be
+   * used when moderate and generally straight drive is expected. For example,
+   * during floor intake or substation approach.
+   */
+  public FieldRelativeSpeeds getFieldRelativeSpeeds() {
+    return FieldRelativeSpeeds.fromChassisSpeeds(m_lastChassisSpeeds, getRotation2d());
   }
 
   /** Updates the field relative position of the robot. */
@@ -149,5 +166,57 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
     SmartDashboard.putBoolean("On Charge Station", onChargeStation());
     SmartDashboard.putBoolean("On Pitch Down", onPitchDown());
+  }
+
+  /**
+   * A clone of {@link ChassisSpeeds} but for field relative speeds.
+   */
+  public static class FieldRelativeSpeeds {
+    /**
+     * Represents forward velocity w.r.t the field frame of reference. (Fwd is +)
+     */
+    public double vxMetersPerSecond;
+
+    /**
+     * Represents sideways velocity w.r.t the field frame of reference. (Left is +)
+     */
+    public double vyMetersPerSecond;
+
+    /** Represents the angular velocity of the robot frame. (CCW is +) */
+    public double omegaRadiansPerSecond;
+
+    /**
+     * Constructs a FieldRelativeSpeeds object.
+     *
+     * @param vxMetersPerSecond     Forward velocity.
+     * @param vyMetersPerSecond     Sideways velocity.
+     * @param omegaRadiansPerSecond Angular velocity.
+     */
+    public FieldRelativeSpeeds(
+        double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond) {
+      this.vxMetersPerSecond = vxMetersPerSecond;
+      this.vyMetersPerSecond = vyMetersPerSecond;
+      this.omegaRadiansPerSecond = omegaRadiansPerSecond;
+    }
+
+    /**
+     * Lifted from CD with slight modification.
+     */
+    public static FieldRelativeSpeeds fromChassisSpeeds(final ChassisSpeeds chassisSpeeds, final Rotation2d robotAngle) {
+      // Gets the field relative X and Y components of the robot's speed in the X axis
+      double robotXXComp = robotAngle.getCos() * chassisSpeeds.vxMetersPerSecond;
+      double robotXYComp = robotAngle.getSin() * chassisSpeeds.vxMetersPerSecond;
+
+      // Gets the field relative X and Y components of the robot's speed in the Y axis
+      double robotYXComp = robotAngle.getSin() * chassisSpeeds.vyMetersPerSecond;
+      double robotYYComp = robotAngle.getCos() * chassisSpeeds.vyMetersPerSecond;
+
+      // Adds the field relative X and Y components of the robot's X and Y speeds to
+      // get the overall field relative X and Y speeds
+      double fieldX = robotXXComp + robotYXComp;
+      double fieldY = robotXYComp + robotYYComp;
+
+      return new FieldRelativeSpeeds(fieldX, fieldY, chassisSpeeds.omegaRadiansPerSecond);
+    }
   }
 }

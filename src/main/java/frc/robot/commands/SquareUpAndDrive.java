@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DriveSubsystem.FieldRelativeSpeeds;
 
 public class SquareUpAndDrive extends CommandBase {
   private final DriveSubsystem m_driveSubsystem;
@@ -17,6 +18,7 @@ public class SquareUpAndDrive extends CommandBase {
   private final DoubleSupplier m_forwardSupplier;
   private final SlewRateLimiter m_forwardLimiter = new SlewRateLimiter(1.0);
   private final DoubleSupplier m_strafeSupplier;
+  private final SlewRateLimiter m_strafeLimiter = new SlewRateLimiter(1.0);
 
   public SquareUpAndDrive(final DriveSubsystem driveSubsystem,
       final DoubleSupplier forwardSupplier,
@@ -36,7 +38,14 @@ public class SquareUpAndDrive extends CommandBase {
     final double absAngle = Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees());
     final boolean closerTo0 = (180.0 - absAngle) > absAngle;
     m_rotationController.setSetpoint(closerTo0 ? 0.0 : 180.0);
-    m_forwardLimiter.reset(0.0);
+
+    // Initialize the SlewRateLimiters with the current speeds for
+    // smoothe transition between drive types.
+    final FieldRelativeSpeeds fieldRelSpeeds = m_driveSubsystem.getFieldRelativeSpeeds();
+    m_forwardLimiter.reset(fieldRelSpeeds.vxMetersPerSecond);
+    m_strafeLimiter.reset(fieldRelSpeeds.vyMetersPerSecond);
+    // TODO Should we attempt to start squaring rotation at current rate?
+    // Probably more trouble than it is worth.
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -47,22 +56,16 @@ public class SquareUpAndDrive extends CommandBase {
     double rotationRate = m_rotationController.calculate(rawAngle);
     rotationRate += 1.0 * Math.signum(rotationRate);
 
-    // For now, do not limit the strafe.
-    final double strafeVelocity = m_strafeSupplier.getAsDouble();
-
-    // Get the forward but limit the acceleration.
+    // Get the forward and limit the acceleration.
     final double forwardVelocity = m_forwardLimiter.calculate(m_forwardSupplier.getAsDouble());
+
+    // Get the strafe and limit the acceleration.
+    final double strafeVelocity = m_strafeLimiter.calculate(m_strafeSupplier.getAsDouble());
 
     m_driveSubsystem.drive(
         forwardVelocity,
         strafeVelocity,
         rotationRate,
         true);
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_driveSubsystem.stop();
   }
 }
