@@ -174,6 +174,8 @@ public final class Constants {
   public static final double WRIST_PROPORTIONAL_GAIN = 0.01;
   public static final double WRIST_TOLERANCE = WRIST_ROTATIONS_PER_DEGREE / 2.0;
   public static final double WRIST_NUDGE_DEGREES = 4.0;
+  public static final int WRIST_ENCODER_COUNTS_PER_REV = 8192;
+  public static final double WRIST_ENCODER_OFFSET = 41.2;
 
   public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 110.0;
   public static final double ELBOW_ZERO_OFFSET = /* measure this */ -45.75 - SHOULDER_ZERO_OFFSET + 90.0;

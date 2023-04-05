@@ -1,11 +1,13 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.SparkMaxPIDController;
@@ -33,6 +35,7 @@ public class ArmSubsystem extends SubsystemBase {
   private SparkMaxLimitSwitch m_elbowReverseLimitSwitch;
   private CANSparkMax m_wristMotor = new CANSparkMax(Constants.WRIST_MOTOR, MotorType.kBrushless);
   private RelativeEncoder m_wristEncoder;
+  private RelativeEncoder m_wristThrougboreEncoder;
   private SparkMaxPIDController m_wristController;
 
   private KnownArmPlacement m_lastPlacement = null;
@@ -132,6 +135,9 @@ public class ArmSubsystem extends SubsystemBase {
     //m_wristMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_wristMotor.setClosedLoopRampRate(0.5);
     m_wristMotor.setClosedLoopRampRate(0.5);
+    m_wristThrougboreEncoder = m_wristMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, Constants.WRIST_ENCODER_COUNTS_PER_REV);
+    m_wristThrougboreEncoder.setPositionConversionFactor(1.0 / (1.0/360.0));
+    m_wristThrougboreEncoder.setInverted(true);
     m_wristEncoder.setPositionConversionFactor(1.0 / Constants.WRIST_ROTATIONS_PER_DEGREE);
 
     //NEED THESE
@@ -337,6 +343,7 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Game Piece Held", GameState.getInstance().isGamePieceHeld());
     SmartDashboard.putNumber("Elbow Temp (C)", m_elbowMotor.getMotorTemperature());
     SmartDashboard.putNumber("Wrist Velocity", m_wristEncoder.getVelocity());
+    SmartDashboard.putNumber("Wrist Throughbore Pos", (m_wristThrougboreEncoder.getPosition() + Constants.WRIST_ENCODER_OFFSET) % 360);
     // SmartDashboard.putNumber("Shoulder placement", m_lastPlacement == null ? 999
     // : m_lastPlacement.m_shoulderAngle);
     /*
