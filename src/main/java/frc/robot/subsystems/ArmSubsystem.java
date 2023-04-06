@@ -66,7 +66,8 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_CONE_MIDDLE(95.5, 10.0, 150.0),
     SCORE_CUBE_HIGH(56.0, 26.0, 60.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
-    SCORE_CONE_HIGH(64.0, 36.0, 158.0),
+    SCORE_CONE_HIGH(64.0, 36.0, 0.0),
+    SCORE_CONE_HIGH_WRIST(64.0, 36.0, 158.0),
     SCORE_CONE_HIGH_RETURN(92.5, 50.0, 0.0);
 
     public final double m_shoulderAngle;
