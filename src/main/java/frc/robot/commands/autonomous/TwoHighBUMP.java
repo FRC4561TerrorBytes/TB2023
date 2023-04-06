@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.Constants;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.ScoreAutoCube;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -24,7 +25,7 @@ import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.commands.GroundIntake;
-public class LowLink {
+public class TwoHighBUMP {
 
   DriveSubsystem m_driveSubsystem;
   ArmSubsystem m_armSubsystem;
@@ -41,7 +42,7 @@ public class LowLink {
    * @param maxSpeedMetersPerSec
    * @param maxAccelerationMetersPerSecSquared
    */
-  public LowLink(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
+  public TwoHighBUMP(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
       double maxAccelerationMetersPerSecSquared, boolean isRedAlliance) {
     this.m_driveSubsystem = driveSubsystem;
     this.m_armSubsystem = armsubsystem;
@@ -50,14 +51,23 @@ public class LowLink {
     m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
         maxAccelerationMetersPerSecSquared);
 
-    //scoring first piece
-    m_eventMap.put("cubeScore1", new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
+    // Approach then stow
+    m_eventMap.put("Approach1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_eventMap.put("Stow1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+
     //going to floor grab and intaking
     m_eventMap.put("goToFloor1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
     m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(m_intakeSubsystem)));
     
     //going back to stow to move arm out of the way
-    m_eventMap.put("Stow1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+    m_eventMap.put("Stow2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+
+    // Approach to high for score
+    m_eventMap.put("Approach2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_eventMap.put("High1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH)));
+
+    // Score cube high
+    m_eventMap.put("ScoreCube2", new ScheduleCommand(new ScoreCommand(intakeSubsystem).withTimeout(0.5)));
     
     this.autoPathName = autoPathName;
     // Auto PID Controllers

@@ -35,6 +35,7 @@ import frc.robot.commands.autonomous.LowLink;
 import frc.robot.commands.autonomous.LowLinkRIGHT;
 import frc.robot.commands.autonomous.ScoreCube;
 import frc.robot.commands.autonomous.TestOnly;
+import frc.robot.commands.autonomous.TwoHighBUMP;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
@@ -159,7 +160,7 @@ public class RobotContainer {
       m_autoChooser.addOption("HighConeBalance",
           () -> new MoveConeHighCommand(m_armSubsystem)
               .andThen(new ScoreCommand(m_intakeSubsystem))
-              .andThen(new ConeHighBalance(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "ConeHighBalance", 3, 2, false).getCommandAndStop()
+              .andThen(new ConeHighBalance(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "ConeHighBalance", 3, 2, true).getCommandAndStop()
               .andThen(new BalanceAuto(m_driveSubsystem, 2, 1))));
     }
 
@@ -167,6 +168,12 @@ public class RobotContainer {
         () -> new TestOnly(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "Test Only", 1, 1, false)
             .getCommandAndStop());
     SmartDashboard.putData("Auto chooser", m_autoChooser);
+
+    m_autoChooser.addOption("TwoHighTEST",
+        () -> new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH)))
+        .andThen(new ScoreCommand(m_intakeSubsystem))
+        .andThen(new TwoHighBUMP(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "TwoHighAuto", 1, 1, true).getCommandAndStop()));
 
     // Configure the trigger bindings
     configureBindings();
@@ -198,9 +205,7 @@ public class RobotContainer {
     m_primaryController.b()
         .whileTrue(new ScoreAlign(m_driveSubsystem)
             .andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, -Units.inchesToMeters(18), 0.05)));
-    m_primaryController.a()
-        .whileTrue(new ScoreAlign(m_driveSubsystem)
-            .andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
+    m_primaryController.a().whileTrue(new ScoreAlign(m_driveSubsystem));
     // m_primaryController.x().onTrue(new InstantCommand(() ->
     // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SINGLE_SUBSTATION)));
     m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));

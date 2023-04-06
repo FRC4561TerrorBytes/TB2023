@@ -150,7 +150,7 @@ public final class Constants {
   public static final double ELBOW_ROTATIONS_PER_DEGREE = 225.0 / 360.0;
   public static final double ELBOW_MAX_VOLTAGE_FF = 1.25;
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 1.0; //UP
-  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.045; //DOWN
+  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.025; //DOWN
   public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
   public static final double ELBOW_INTEGRAL_GAIN = 0.000015;
   public static final double ELBOW_IZONE = 5.0;
@@ -160,8 +160,8 @@ public final class Constants {
   public static final double SHOULDER_ROTATIONS_PER_DEGREE = 500.0 / 360.0;
   // needs fixing; moves to fast and with to much force.
   public static final double SHOULDER_MAX_VOLTAGE_FF = 0.5;
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.022; // Scoring
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.033; // Returning from score
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.015; // Scoring
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.025; // Returning from score
   public static final double SHOULDER_INTEGRAL_GAIN_SLOT_0 = 0.000015;
   public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
   public static final double SHOULDER_TOLERANCE = SHOULDER_ROTATIONS_PER_DEGREE / 2.0;
@@ -180,7 +180,7 @@ public final class Constants {
 
   public static final int ROLLER_MOTOR = 12;
 
-  public static final double INTAKE_SPEED = 0.3;
+  public static final double INTAKE_SPEED = 0.4;
   public static final double INTAKE_HOLD_SPEED = 0.05;
 
   public static final double SCORE_SPEED_CONE = -0.25;
