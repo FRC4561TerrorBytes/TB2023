@@ -165,7 +165,7 @@ public final class Constants {
   public static final double SHOULDER_INTEGRAL_GAIN_SLOT_0 = 0.000015;
   public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
   public static final double SHOULDER_TOLERANCE = SHOULDER_ROTATIONS_PER_DEGREE / 2.0;
-  public static final double SHOULDER_NUDGE_DEGREES = 3.0;
+  public static final double SHOULDER_NUDGE_DEGREES = 3.0; //Placeholder value, this will change
   
   public static final double WRIST_ROTATIONS_PER_DEGREE = 60.0 / 360.0;
   //TODO maybe tune this?
@@ -176,6 +176,7 @@ public final class Constants {
   public static final double WRIST_NUDGE_DEGREES = 4.0;
   public static final int WRIST_ENCODER_COUNTS_PER_REV = 8192;
   public static final double WRIST_ENCODER_OFFSET = 41.2;
+  public static final double WRIST_ENCODER_ZERO_THRESHOLD = 3.0; // random test value
 
   public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 110.0;
   public static final double ELBOW_ZERO_OFFSET = /* measure this */ -45.75 - SHOULDER_ZERO_OFFSET + 90.0;

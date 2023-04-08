@@ -320,6 +320,14 @@ public class ArmSubsystem extends SubsystemBase {
     m_lastPlacement = null;
   }
 
+  /**
+   * Get scaled and offsetted position from wrist throughbore encoder
+   * @return
+   */
+  public double getWristThroughboreEncPosition() {
+    return (m_wristThrougboreEncoder.getPosition() + Constants.WRIST_ENCODER_OFFSET) % 360;
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elbow rotations", m_elbowEncoder.getPosition());
