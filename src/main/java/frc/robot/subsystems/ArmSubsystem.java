@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -11,13 +10,15 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.GameState;
-import frc.robot.commands.ZeroArmCommand;
+import edu.wpi.first.wpilibj.Timer;
+
 
 public class ArmSubsystem extends SubsystemBase {
   // private WPI_TalonFX m_elbowMotor = new WPI_TalonFX(4);
@@ -39,6 +40,10 @@ public class ArmSubsystem extends SubsystemBase {
   private double m_targetShoulderPosition = 0.0;
   private double m_targetElbowPosition = 0.0;
   private double m_targetWristPosition = 0.0;
+  
+
+  private TrapezoidProfile m_shoulderMotionProfile;
+  private TrapezoidProfile m_elbowMotionProfile;
 
   /**
    * An enumeration of known arm placements, e.g. stowed or score cone high). The
@@ -74,12 +79,19 @@ public class ArmSubsystem extends SubsystemBase {
     public final double m_elbowAngle;
     public final double m_wristAngle;
 
+    
     private KnownArmPlacement(double shoulderAngle, double elbowAngle, double wristAngle) {
       m_shoulderAngle = shoulderAngle;
       m_elbowAngle = elbowAngle;
       m_wristAngle = wristAngle;
     }
   }
+
+  private final TrapezoidProfile.Constraints shoulderConstraints = new TrapezoidProfile.Constraints(0.02, 0.02);
+  private final TrapezoidProfile.Constraints elbowConstraints = new TrapezoidProfile.Constraints(0.02, 0.02);
+
+  private Timer m_shoulderTimer = new Timer();
+  private Timer m_elbowTimer = new Timer();
 
   public ArmSubsystem() {
     m_elbowMotor.restoreFactoryDefaults();
@@ -185,6 +197,7 @@ public class ArmSubsystem extends SubsystemBase {
     return Math.abs(m_wristEncoder.getVelocity()) < 15.0;
   }
 
+
   /**
    * @param placement the desired updated arm placement.
    */
@@ -193,6 +206,22 @@ public class ArmSubsystem extends SubsystemBase {
     double desiredShoulderAngle = placement.m_shoulderAngle;
     double desiredElbowAngle = placement.m_elbowAngle - placement.m_shoulderAngle + 90;
     double desiredWristAngle = placement.m_wristAngle;
+
+    TrapezoidProfile.State desiredShoulderState = new TrapezoidProfile.State();
+    TrapezoidProfile.State currentShoulderState = new TrapezoidProfile.State();
+    TrapezoidProfile.State desiredElbowState = new TrapezoidProfile.State();
+    TrapezoidProfile.State currentElbowState = new TrapezoidProfile.State();
+
+
+    m_shoulderMotionProfile = new TrapezoidProfile(shoulderConstraints, desiredShoulderState, currentShoulderState);
+    m_elbowMotionProfile = new TrapezoidProfile(elbowConstraints, desiredElbowState, currentElbowState);
+
+    m_elbowTimer.reset();
+    m_elbowTimer.start();
+    m_shoulderTimer.reset();
+    m_shoulderTimer.start();
+
+
     setWristPosition(desiredWristAngle);
     if(shoulderRotation < desiredShoulderAngle){
       setShoulderPosition(desiredShoulderAngle);
@@ -204,6 +233,7 @@ public class ArmSubsystem extends SubsystemBase {
       .andThen(new InstantCommand(() -> setShoulderPosition(desiredShoulderAngle))).schedule();
     }
     m_lastPlacement = placement;
+
   }
 
   /**
@@ -280,6 +310,9 @@ public class ArmSubsystem extends SubsystemBase {
       cosineScalar = 0;
     }
 
+
+    // First Parameter (target elbow pos) should be the Trapezoid Profile, with the target elbow at the end
+    // this still needs to be implemented, its a TODO
     m_elbowController.setReference(
         m_targetElbowPosition, ControlType.kPosition, pidSlot,
         Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
@@ -294,6 +327,8 @@ public class ArmSubsystem extends SubsystemBase {
       pidSlot = 1;
     }
 
+
+    
     m_shoulderController.setReference(
         m_targetShoulderPosition, ControlType.kPosition, pidSlot,
         Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
