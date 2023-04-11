@@ -35,9 +35,15 @@ public class SquareUpAndDrive extends CommandBase {
   @Override
   public void initialize() {
     m_rotationController.reset();
-    final double absAngle = Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees());
+    final double angle = m_driveSubsystem.getPose().getRotation().getDegrees();
+    final double absAngle = Math.abs(angle);
     final boolean closerTo0 = (180.0 - absAngle) > absAngle;
-    m_rotationController.setSetpoint(closerTo0 ? 0.0 : 180.0);
+    final boolean closerTo90 = absAngle > 45.0 && absAngle < 135.0;
+    if (closerTo90) {
+      m_rotationController.setSetpoint(90.0 * Math.signum(angle));
+    } else {
+      m_rotationController.setSetpoint(closerTo0 ? 0.0 : 180.0);
+    }
 
     // Initialize the SlewRateLimiters with the current speeds for
     // smoothe transition between drive types.
