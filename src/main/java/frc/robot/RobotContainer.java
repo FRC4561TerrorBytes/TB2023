@@ -25,7 +25,6 @@ import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreCommand;
-import frc.robot.commands.ZeroArmCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.ConeHighBalance;
 import frc.robot.commands.autonomous.DriveUntilCommand;
@@ -247,8 +246,8 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     // Secondary Controller Bindings
-    m_secondaryController.leftStick().and(m_secondaryController.rightStick())
-        .onTrue(new ZeroArmCommand(m_armSubsystem));
+    // m_secondaryController.leftStick().and(m_secondaryController.rightStick())
+    //     .onTrue(new ZeroArmCommand(m_armSubsystem));
     // scoringPosTrigger.and(m_secondaryController.x().or(m_secondaryController.axisLessThan(Axis.kLeftY.value,
     // -0.5)))
     // .onTrue(new InstantCommand(() ->
@@ -433,8 +432,8 @@ public class RobotContainer {
     if (autoCommandSupplier != null) {
       return autoCommandSupplier.get()
           .alongWith(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem))
-          .alongWith(new InstantCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED)))
-          .beforeStarting(new ZeroArmCommand(m_armSubsystem));
+          .alongWith(new InstantCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED)));
+          //.beforeStarting(new ZeroArmCommand(m_armSubsystem));
     }
     return null;
   }
