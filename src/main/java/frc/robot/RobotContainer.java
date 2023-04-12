@@ -432,7 +432,8 @@ public class RobotContainer {
     if (autoCommandSupplier != null) {
       return autoCommandSupplier.get()
           .alongWith(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem))
-          .alongWith(new InstantCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED)));
+          .alongWith(new InstantCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED)))
+          .beforeStarting(new RunCommand(() -> m_armSubsystem.setManualWristSpeed(-0.1), m_armSubsystem)).withTimeout(0.25);
           //.beforeStarting(new ZeroArmCommand(m_armSubsystem));
     }
     return null;
