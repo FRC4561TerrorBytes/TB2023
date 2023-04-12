@@ -203,23 +203,22 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void setKnownArmPlacement(final KnownArmPlacement placement) {
     double shoulderRotation = m_shoulderEncoder.getPosition();
+    double elbowRotation = m_elbowEncoder.getPosition();
     double desiredShoulderAngle = placement.m_shoulderAngle;
     double desiredElbowAngle = placement.m_elbowAngle - placement.m_shoulderAngle + 90;
     double desiredWristAngle = placement.m_wristAngle;
 
-    TrapezoidProfile.State desiredShoulderState = new TrapezoidProfile.State();
-    TrapezoidProfile.State currentShoulderState = new TrapezoidProfile.State();
-    TrapezoidProfile.State desiredElbowState = new TrapezoidProfile.State();
-    TrapezoidProfile.State currentElbowState = new TrapezoidProfile.State();
+    TrapezoidProfile.State desiredShoulderState = new TrapezoidProfile.State(desiredShoulderAngle, 0.0);
+    TrapezoidProfile.State currentShoulderState = new TrapezoidProfile.State(shoulderRotation, m_shoulderEncoder.getVelocity()/60);
+    TrapezoidProfile.State desiredElbowState = new TrapezoidProfile.State(desiredElbowAngle, 0.0);
+    TrapezoidProfile.State currentElbowState = new TrapezoidProfile.State(elbowRotation, m_elbowEncoder.getVelocity()/60);
 
 
     m_shoulderMotionProfile = new TrapezoidProfile(shoulderConstraints, desiredShoulderState, currentShoulderState);
     m_elbowMotionProfile = new TrapezoidProfile(elbowConstraints, desiredElbowState, currentElbowState);
 
-    m_elbowTimer.reset();
-    m_elbowTimer.start();
-    m_shoulderTimer.reset();
-    m_shoulderTimer.start();
+    m_elbowTimer.restart();
+    m_shoulderTimer.restart();
 
 
     setWristPosition(desiredWristAngle);
@@ -291,16 +290,12 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void proceedToArmPosition() {
-    proceedToShoulderPosition();
+    // proceedToShoulderPosition();
     proceedToElbowPosition();
-    proceedToWristPosition();
+    //proceedToWristPosition();
   }
 
-  /**
-   * Drives the elbow toward the last postion set via
-   * {@link} {@link #setElbowPosition(double)}}.
-   */
-  void proceedToElbowPosition() {
+  private void proceedToElbowPosition() {
     double currentRotation = m_elbowEncoder.getPosition();
     double cosineScalar = Math.cos(Math.toRadians(currentRotation + m_shoulderEncoder.getPosition() - 90.0));
 
@@ -310,15 +305,19 @@ public class ArmSubsystem extends SubsystemBase {
       cosineScalar = 0;
     }
 
-
-    // First Parameter (target elbow pos) should be the Trapezoid Profile, with the target elbow at the end
-    // this still needs to be implemented, its a TODO
-    m_elbowController.setReference(
+    if(m_elbowMotionProfile.isFinished(m_elbowTimer.get()) ) {
+      m_elbowController.setReference(
         m_targetElbowPosition, ControlType.kPosition, pidSlot,
         Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+    }
+    else {
+      m_elbowController.setReference(
+        m_elbowMotionProfile.calculate(m_elbowTimer.get()).position, ControlType.kPosition, pidSlot,
+        Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+    }
   }
 
-  void proceedToShoulderPosition() {
+  private void proceedToShoulderPosition() {
     double currentRotation = m_shoulderEncoder.getPosition();
     double cosineScalar = Math.cos(Math.toRadians(currentRotation));
 
@@ -327,11 +326,16 @@ public class ArmSubsystem extends SubsystemBase {
       pidSlot = 1;
     }
 
-
-    
-    m_shoulderController.setReference(
+    if(m_shoulderMotionProfile.isFinished(m_elbowTimer.get())) {
+      m_shoulderController.setReference(
         m_targetShoulderPosition, ControlType.kPosition, pidSlot,
         Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+    }
+    else {
+      m_shoulderController.setReference(
+        m_shoulderMotionProfile.calculate(m_shoulderTimer.get()).position, ControlType.kPosition, pidSlot,
+        Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+    }
   }
 
   void proceedToWristPosition() {
