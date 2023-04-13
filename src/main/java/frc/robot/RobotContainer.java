@@ -39,7 +39,6 @@ import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -55,7 +54,6 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
 
   private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
   private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
@@ -194,31 +192,12 @@ public class RobotContainer {
     Trigger highCone = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
 
     // Scoring
-    m_primaryController.b()
-        .whileTrue(new ScoreAlign(m_driveSubsystem)
-            .andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, -Units.inchesToMeters(18), 0.05)));
-    m_primaryController.a()
-        .whileTrue(new ScoreAlign(m_driveSubsystem)
-            .andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, Units.inchesToMeters(0), 0.05)));
     // m_primaryController.x().onTrue(new InstantCommand(() ->
     // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SINGLE_SUBSTATION)));
     m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
     m_primaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
     // Try onTrue for command actuation, might be interesting
     // Substation grabs
-    m_primaryController.back()
-        .whileTrue(m_visionSubsystem
-            .centerAprilTagCommand(-Units.inchesToMeters(29.565),
-                Units.inchesToMeters(30))
-            .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
-                1.5)));
-    m_primaryController.start()
-        .whileTrue(m_visionSubsystem
-            .centerAprilTagCommand(Units.inchesToMeters(29.565),
-                Units.inchesToMeters(30))
-            .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
-                1.5)));
-
     // Driver nudges
     m_primaryController.povUp()
         .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-1.0, 0.0, 0.0, true),

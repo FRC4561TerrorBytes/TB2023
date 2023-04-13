@@ -170,7 +170,7 @@ public final class Constants {
   public static final double SHOULDER_NUDGE_DEGREES = 3.0; //Placeholder value, this will 
   public static final int SHOULDER_ENCODER_COUNT_PER_REV = 8192;
   public static final double SHOULDER_ENCODER_OFFSET = -180.2;
-  public static final double SHOULDER_ENCODER_ROTATIONS_PER_DEGREE = 1.868;
+  public static final double SHOULDER_ENCODER_ROTATIONS_PER_DEGREE = 1.89;
   
   public static final double WRIST_ROTATIONS_PER_DEGREE = 60.0 / 360.0;
   //TODO maybe tune this?
