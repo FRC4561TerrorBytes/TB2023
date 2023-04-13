@@ -4,9 +4,12 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class ScoreAlign extends CommandBase {
@@ -14,6 +17,8 @@ public class ScoreAlign extends CommandBase {
 
   final DriveSubsystem m_driveSubsystem;
   final PIDController m_pidController = new PIDController(0.03, 0, 0);
+  
+  private final CommandXboxController m_primaryController = new CommandXboxController(0);
 
   public ScoreAlign(DriveSubsystem driveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -40,7 +45,9 @@ public class ScoreAlign extends CommandBase {
     double rotationRate = m_pidController.calculate(rawAngle);
     rotationRate += 1.0 * Math.signum(rotationRate);
 
-    m_driveSubsystem.drive(0, 0, rotationRate, true);
+    m_driveSubsystem.drive(
+                            modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+                            modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND, rotationRate, true);
 
     System.out.println("rotation from pose: 0: " + m_driveSubsystem.getPose().getRotation().getDegrees());
     // System.out.println("rotation from pigeon: " + m_driveSubsystem.getPigeonYaw());
@@ -60,5 +67,15 @@ public class ScoreAlign extends CommandBase {
   @Override
   public boolean isFinished() {
     return m_pidController.atSetpoint();
+  }
+
+  private static double modifyAxis(double value) {
+    // Deadband
+    value = MathUtil.applyDeadband(value, 0.05);
+
+    // Square the axis
+    value = Math.copySign(value * value, value);
+
+    return value;
   }
 }
