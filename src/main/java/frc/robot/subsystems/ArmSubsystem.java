@@ -160,9 +160,9 @@ public class ArmSubsystem extends SubsystemBase {
     m_wristEncoder.setPositionConversionFactor(1.0 / Constants.WRIST_ROTATIONS_PER_DEGREE);
     
     //NEED THESE
-    // resetElbowPosition();
-    // resetShoulderPosition();
-    // resetWristPosition();
+     resetElbowPosition();
+     resetShoulderPosition();
+     resetWristPosition();
   }
 
   private void resetElbowPosition() {
@@ -391,9 +391,8 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Game Piece Held", GameState.getInstance().isGamePieceHeld());
     SmartDashboard.putNumber("Elbow Temp (C)", m_elbowMotor.getMotorTemperature());
     SmartDashboard.putNumber("Wrist Velocity", m_wristEncoder.getVelocity());
-    SmartDashboard.putNumber("Wrist Throughbore Pos",
-        -(m_wristThrougboreEncoder.getPosition() + Constants.WRIST_ENCODER_OFFSET) % 360);
-    SmartDashboard.putNumber(("Elbow Throughbore Encoder"), m_elbowThroughboreEncoder.getPosition());
+    SmartDashboard.putNumber("Wrist Throughbore Pos", getCalculatedWristPosition());
+    SmartDashboard.putNumber(("Elbow Throughbore Encoder"), getCalculatedElbowPosition());
     SmartDashboard.putNumber(("Shoulder Throughbore Encoder"),m_shoulderThroughboreEncoder.getPosition());
     SmartDashboard.putNumber(("Shoulder Calculated Angle"),getCalculatedShoulderPosition());
 
