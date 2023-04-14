@@ -157,19 +157,17 @@ public final class Constants {
   public static final double ELBOW_TOLERANCE = ELBOW_ROTATIONS_PER_DEGREE / 2.0;
   public static final double ELBOW_NUDGE_DEGREES = 3.0;
   public static final int ELBOW_ENCODER_COUNT_PER_REV = 8192;
-  public static final double ELBOW_ENCODER_OFFSET = 73.0;
 
   public static final double SHOULDER_ROTATIONS_PER_DEGREE = 500.0 / 360.0;
   // needs fixing; moves to fast and with to much force.
   public static final double SHOULDER_MAX_VOLTAGE_FF = 0.5;
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.022; // Scoring
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.033; // Returning from score
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.022; // Scoring is 0.022
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.033; // Returning from score is 0.033
   public static final double SHOULDER_INTEGRAL_GAIN_SLOT_0 = 0.000015;
   public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
   public static final double SHOULDER_TOLERANCE = SHOULDER_ROTATIONS_PER_DEGREE / 2.0;
   public static final double SHOULDER_NUDGE_DEGREES = 3.0; //Placeholder value, this will 
   public static final int SHOULDER_ENCODER_COUNT_PER_REV = 8192;
-  public static final double SHOULDER_ENCODER_OFFSET = -180.2;
   public static final double SHOULDER_ENCODER_ROTATIONS_PER_DEGREE = 1.89;
   
   public static final double WRIST_ROTATIONS_PER_DEGREE = 60.0 / 360.0;
@@ -182,9 +180,6 @@ public final class Constants {
   public static final int WRIST_ENCODER_COUNTS_PER_REV = 8192;
   public static final double WRIST_ENCODER_OFFSET = -7.5;
   public static final double WRIST_ENCODER_ZERO_THRESHOLD = 3.0; // random test value
-
-  public static final double SHOULDER_ZERO_OFFSET = /* measure this */ 110.0;
-  public static final double ELBOW_ZERO_OFFSET = /* measure this */ -45.75 - SHOULDER_ZERO_OFFSET + 90.0;
 
   public static final int ROLLER_MOTOR = 12;
 

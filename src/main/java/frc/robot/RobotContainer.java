@@ -7,7 +7,6 @@ package frc.robot;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,12 +17,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
-import frc.robot.commands.DriveDistance;
-import frc.robot.commands.DriveLateral;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
-import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.ConeHighBalance;
@@ -225,8 +221,8 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     // Secondary Controller Bindings
-    // m_secondaryController.leftStick().and(m_secondaryController.rightStick())
-    //     .onTrue(new ZeroArmCommand(m_armSubsystem));
+    m_secondaryController.leftStick().and(m_secondaryController.rightStick())
+         .onTrue(new InstantCommand(() -> m_armSubsystem.seedRelativeEncoders(), m_armSubsystem));
     // scoringPosTrigger.and(m_secondaryController.x().or(m_secondaryController.axisLessThan(Axis.kLeftY.value,
     // -0.5)))
     // .onTrue(new InstantCommand(() ->
@@ -419,6 +415,8 @@ public class RobotContainer {
   }
 
   public void teleopInit() {
+    m_armSubsystem.seedRelativeEncoders();
+    m_armSubsystem.setTargetsToCurrents();
     // new ZeroArmCommand(m_armSubsystem).schedule();
   }
 

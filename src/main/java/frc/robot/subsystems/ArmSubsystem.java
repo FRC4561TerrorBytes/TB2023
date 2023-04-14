@@ -1,17 +1,13 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
@@ -20,11 +16,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.GameState;
 
 public class ArmSubsystem extends SubsystemBase {
-  // private WPI_TalonFX m_elbowMotor = new WPI_TalonFX(4);
-  // private WPI_TalonFX m_shoulderMotor = new WPI_TalonFX(12);
   private CANSparkMax m_shoulderMotor = new CANSparkMax(Constants.SHOULDER_MOTOR, MotorType.kBrushless);
   private RelativeEncoder m_shoulderEncoder;
   private SparkMaxPIDController m_shoulderController;
@@ -89,10 +82,14 @@ public class ArmSubsystem extends SubsystemBase {
 
   public ArmSubsystem() {
     m_elbowMotor.restoreFactoryDefaults();
-    m_elbowController = m_elbowMotor.getPIDController();
-    m_elbowEncoder = m_elbowMotor.getEncoder();
-    m_elbowMotor.setInverted(false);
     m_elbowMotor.setIdleMode(IdleMode.kBrake);
+    m_elbowMotor.setSmartCurrentLimit(60);
+    m_elbowMotor.enableVoltageCompensation(12.0);
+    m_elbowMotor.setInverted(false);
+    m_elbowEncoder = m_elbowMotor.getEncoder();
+    m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
+    m_elbowController = m_elbowMotor.getPIDController();
+    m_elbowController.setOutputRange(-0.15, 0.25);
     m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_0, 0);
     m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_1, 1);
     m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN, 0);
@@ -101,11 +98,6 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowController.setIMaxAccum(0.1, 0);
     m_elbowReverseLimitSwitch = m_elbowMotor.getReverseLimitSwitch(Type.kNormallyOpen);
     m_elbowReverseLimitSwitch.enableLimitSwitch(true);
-    m_elbowEncoder.setPositionConversionFactor(1.0 / Constants.ELBOW_ROTATIONS_PER_DEGREE);
-    m_elbowMotor.setSmartCurrentLimit(60);
-    m_elbowMotor.enableVoltageCompensation(12.0);
-    m_elbowController.setOutputRange(-0.15, 0.25);
-
     // m_elbowMotor.setClosedLoopRampRate(1.0);
     // m_elbowMotor.setOpenLoopRampRate(1.0);
     m_elbowThroughboreEncoder = m_elbowMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
@@ -114,11 +106,15 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowThroughboreEncoder.setZeroOffset(220.0);
 
     m_shoulderMotor.restoreFactoryDefaults();
-    m_shoulderController = m_shoulderMotor.getPIDController();
-    m_shoulderEncoder = m_shoulderMotor.getEncoder();
-    m_shoulderMotor.setInverted(true);
     m_shoulderMotor.setIdleMode(IdleMode.kBrake);
-
+    m_shoulderMotor.setSmartCurrentLimit(30);
+    m_shoulderMotor.enableVoltageCompensation(12.0);
+    m_shoulderMotor.setClosedLoopRampRate(0.3);
+    m_shoulderMotor.setOpenLoopRampRate(0.3);
+    m_shoulderMotor.setInverted(true);
+    m_shoulderEncoder = m_shoulderMotor.getEncoder();
+    m_shoulderEncoder.setPositionConversionFactor(1.0 / Constants.SHOULDER_ROTATIONS_PER_DEGREE);
+    m_shoulderController = m_shoulderMotor.getPIDController();
     m_shoulderController.setP(Constants.SHOULDER_PROPORTIONAL_GAIN_SLOT_0, 0);
     m_shoulderController.setP(Constants.SHOULDER_PROPORTIONAL_GAIN_SLOT_1, 1);
     m_shoulderController.setI(Constants.SHOULDER_INTEGRAL_GAIN_SLOT_0, 0);
@@ -127,17 +123,11 @@ public class ArmSubsystem extends SubsystemBase {
     m_shoulderReverseLimitSwitch = m_shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen);
     m_shoulderForwardLimitSwitch.enableLimitSwitch(true);
     m_shoulderReverseLimitSwitch.enableLimitSwitch(true);
-    m_shoulderEncoder.setPositionConversionFactor(1.0 / Constants.SHOULDER_ROTATIONS_PER_DEGREE);
-    m_shoulderMotor.setSmartCurrentLimit(30);
-    m_shoulderMotor.enableVoltageCompensation(12.0);
-    m_shoulderMotor.setClosedLoopRampRate(0.3);
-    m_shoulderMotor.setOpenLoopRampRate(0.3);
     m_shoulderThroughboreEncoder = m_shoulderMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     m_shoulderThroughboreEncoder.setInverted(true);
     m_shoulderThroughboreEncoder.setPositionConversionFactor(360.0);
     m_shoulderThroughboreEncoder.setZeroOffset(0.0);
-
-    m_shoulderController.setFeedbackDevice(m_shoulderThroughboreEncoder);
+    //m_shoulderController.setFeedbackDevice(m_shoulderThroughboreEncoder);
 
     m_wristMotor.restoreFactoryDefaults();
     m_wristController = m_wristMotor.getPIDController();
@@ -145,10 +135,6 @@ public class ArmSubsystem extends SubsystemBase {
     m_wristMotor.setInverted(false);
     m_wristMotor.setIdleMode(IdleMode.kBrake);
     m_wristController.setP(Constants.WRIST_PROPORTIONAL_GAIN);
-    // m_wristMotor.setSoftLimit(SoftLimitDirection.kForward, 160f);
-    // m_wristMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    // m_wristMotor.setSoftLimit(SoftLimitDirection.kReverse, 0f);
-    // m_wristMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_wristMotor.setClosedLoopRampRate(0.5);
     m_wristMotor.setClosedLoopRampRate(0.5);
     m_wristThrougboreEncoder = m_wristMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
@@ -156,36 +142,25 @@ public class ArmSubsystem extends SubsystemBase {
     m_wristThrougboreEncoder.setInverted(false);
     m_wristThrougboreEncoder.setZeroOffset(95.0);
     m_wristMotor.setSmartCurrentLimit(20);
-    // m_wristMotor.setSoftLimit(null, 0)
-
     m_wristEncoder.setPositionConversionFactor(1.0 / Constants.WRIST_ROTATIONS_PER_DEGREE);
-    // NEED THESE
-    resetElbowPosition();
-    resetShoulderPosition();
-    resetWristPosition();
-  }
+    // m_wristMotor.setSoftLimit(null, 0)
+     // m_wristMotor.setSoftLimit(SoftLimitDirection.kForward, 160f);
+    // m_wristMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    // m_wristMotor.setSoftLimit(SoftLimitDirection.kReverse, 0f);
+    // m_wristMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
-  private void resetElbowPosition() {
-
-    setElbowPosition(getCalculatedElbowPosition());
-  }
-
-  private void resetShoulderPosition() {
-    setShoulderPosition(getCalculatedShoulderPosition()-5);
-  }
-
-  private void resetWristPosition() {
-    setWristPosition(getCalculatedWristPosition());
+    seedRelativeEncoders();
+    setTargetsToCurrents();
 
   }
 
-  // public boolean shoulderLimitReached() {
-  // return m_shoulderForwardLimitSwitch.isPressed();
-  // }
+  public boolean shoulderLimitReached() {
+  return m_shoulderForwardLimitSwitch.isPressed();
+  }
 
-  // public boolean elbowLimitReached() {
-  // return m_elbowReverseLimitSwitch.isPressed();
-  // }
+  public boolean elbowLimitReached() {
+  return m_elbowReverseLimitSwitch.isPressed();
+  }
 
   public void setManualArmSpeed(double shoulderSpeed, double elbowSpeed) {
     setManualShoulderSpeed(shoulderSpeed);
@@ -204,15 +179,11 @@ public class ArmSubsystem extends SubsystemBase {
     m_wristMotor.set(wristSpeed);
   }
 
-  public boolean isWristStalled() {
-    return Math.abs(m_wristEncoder.getVelocity()) < 15.0;
-  }
-
   /**
    * @param placement the desired updated arm placement.
    */
   public void setKnownArmPlacement(final KnownArmPlacement placement) {
-    double shoulderRotation = getCalculatedShoulderPosition();
+    double shoulderRotation = m_shoulderEncoder.getPosition();
     double desiredShoulderAngle = placement.m_shoulderAngle;
     double desiredElbowAngle = placement.m_elbowAngle - placement.m_shoulderAngle + 90;
     double desiredWristAngle = placement.m_wristAngle;
@@ -292,10 +263,10 @@ public class ArmSubsystem extends SubsystemBase {
   /**
    * @return Elbow Position in Degrees
    */
-  private double getCalculatedElbowPosition() {
+  private double getCalculatedElbowAngle() {
     double elbowAngle = m_elbowThroughboreEncoder.getPosition();
 
-    if (elbowAngle > 200) { // Safety factor to invert sign of elbow angle in position that elbow can't
+    if (elbowAngle > 180) { // Safety factor to invert sign of elbow angle in position that elbow can't
                             // reach
       return elbowAngle - 360;
     } else {
@@ -306,15 +277,25 @@ public class ArmSubsystem extends SubsystemBase {
   /**
    * @return Shoulder Position in Degrees
    */
-  private double getCalculatedShoulderPosition() {
+  private double getCalculatedShoulderAngle() {
     return (m_shoulderThroughboreEncoder.getPosition() + 25) / Constants.SHOULDER_ENCODER_ROTATIONS_PER_DEGREE;
   }
 
   /**
    * @return Wrist Position in Degrees
    */
-  private double getCalculatedWristPosition() {
+  private double getCalculatedWristAngle() {
     return -(m_wristThrougboreEncoder.getPosition() + Constants.WRIST_ENCODER_OFFSET) % 360;
+  }
+
+  /**
+   * Scales the relative encoder positions to match the degrees read from absolue encoders
+   * (Shoulder, Elbow, and Wrist) 
+   */
+  public void seedRelativeEncoders() {
+    m_elbowEncoder.setPosition(getCalculatedElbowAngle());
+    m_shoulderEncoder.setPosition(getCalculatedShoulderAngle());
+    m_wristEncoder.setPosition(getCalculatedWristAngle());
   }
 
   /**
@@ -322,8 +303,8 @@ public class ArmSubsystem extends SubsystemBase {
    * {@link} {@link #setElbowPosition(double)}}.
    */
   void proceedToElbowPosition() {
-    double currentDegrees = getCalculatedElbowPosition();
-    double cosineScalar = Math.cos(Math.toRadians(currentDegrees + getCalculatedShoulderPosition() - 90.0));
+    double currentDegrees = m_elbowEncoder.getPosition();
+    double cosineScalar = Math.cos(Math.toRadians(currentDegrees + m_shoulderEncoder.getPosition() - 90.0));
 
     int pidSlot = 0;
     if (currentDegrees > m_targetElbowPosition) {
@@ -337,7 +318,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   void proceedToShoulderPosition() {
-    double currentDegrees = getCalculatedShoulderPosition();
+    double currentDegrees = m_shoulderEncoder.getPosition();
     double cosineScalar = Math.cos(Math.toRadians(currentDegrees));
 
     int pidSlot = 0;
@@ -346,12 +327,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     m_shoulderController.setReference(
-        m_targetShoulderPosition, ControlType.kPosition, pidSlot,
+        m_targetShoulderPosition , ControlType.kPosition, pidSlot,
         Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
   }
 
   void proceedToWristPosition() {
-    double currentDegrees = getCalculatedWristPosition();
+    double currentDegrees = m_wristEncoder.getPosition();
     double cosineScalar = Math.cos(Math.toRadians(currentDegrees));
 
     m_wristController.setReference(
@@ -360,19 +341,19 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void setTargetsToCurrents() {
-    m_targetShoulderPosition = getCalculatedShoulderPosition();
-    m_targetElbowPosition = getCalculatedElbowPosition();
-    m_targetWristPosition = getCalculatedWristPosition();
+    m_targetShoulderPosition = getCalculatedShoulderAngle();
+    m_targetElbowPosition = getCalculatedElbowAngle();
+    m_targetWristPosition = getCalculatedWristAngle();
     m_lastPlacement = null;
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elbow rotations", m_elbowEncoder.getPosition());
-    SmartDashboard.putNumber("Elbow rotations to ground",
-        m_elbowEncoder.getPosition() + m_shoulderEncoder.getPosition() - 90.0);
-    SmartDashboard.putNumber("Elbow voltage", m_elbowMotor.getBusVoltage() * m_elbowMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Elbow current", m_elbowMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Elbow rotations to ground",
+    //     m_elbowEncoder.getPosition() + m_shoulderEncoder.getPosition() - 90.0);
+    // SmartDashboard.putNumber("Elbow voltage", m_elbowMotor.getBusVoltage() * m_elbowMotor.getAppliedOutput());
+    // SmartDashboard.putNumber("Elbow current", m_elbowMotor.getOutputCurrent());
     SmartDashboard.putNumber("Elbow rotation target", m_targetElbowPosition);
     // SmartDashboard.putNumber("Elbow placement", m_lastPlacement == null ? 999 :
     // m_lastPlacement.m_elbowAngle);
@@ -383,20 +364,22 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Shoulder LimitF",
         m_shoulderForwardLimitSwitch.isPressed());
     SmartDashboard.putNumber("Shoulder rotations", m_shoulderEncoder.getPosition());
-    SmartDashboard.putNumber("Shoulder voltage", m_shoulderMotor.getBusVoltage() * m_shoulderMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Shoulder current", m_shoulderMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Shoulder voltage", m_shoulderMotor.getBusVoltage() * m_shoulderMotor.getAppliedOutput());
+    // SmartDashboard.putNumber("Shoulder current", m_shoulderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Shoulder rotation target", m_targetShoulderPosition);
     SmartDashboard.putNumber("wrist rotations", m_wristEncoder.getPosition());
-    SmartDashboard.putNumber("wrist voltage", m_wristMotor.getBusVoltage() * m_wristMotor.getAppliedOutput());
-    SmartDashboard.putNumber("wrist current", m_wristMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("wrist voltage", m_wristMotor.getBusVoltage() * m_wristMotor.getAppliedOutput());
+    // SmartDashboard.putNumber("wrist current", m_wristMotor.getOutputCurrent());
     SmartDashboard.putNumber("wrist rotation target", m_targetWristPosition);
-    SmartDashboard.putBoolean("Game Piece Held", GameState.getInstance().isGamePieceHeld());
-    SmartDashboard.putNumber("Elbow Temp (C)", m_elbowMotor.getMotorTemperature());
-    SmartDashboard.putNumber("Wrist Velocity", m_wristEncoder.getVelocity());
-    SmartDashboard.putNumber("Wrist Throughbore Pos", getCalculatedWristPosition());
-    SmartDashboard.putNumber(("Elbow Throughbore Encoder"), getCalculatedElbowPosition());
+    // SmartDashboard.putBoolean("Game Piece Held", GameState.getInstance().isGamePieceHeld());
+    // SmartDashboard.putNumber("Elbow Temp (C)", m_elbowMotor.getMotorTemperature());
+    // SmartDashboard.putNumber("Wrist Velocity", m_wristEncoder.getVelocity());
+    SmartDashboard.putNumber("Wrist Throughbore Pos", getCalculatedWristAngle());
+    SmartDashboard.putNumber("Wrist Throubore Encoder", m_wristThrougboreEncoder.getPosition());
+    SmartDashboard.putNumber(("Elbow Calculated Angle"), getCalculatedElbowAngle());
     SmartDashboard.putNumber(("Shoulder Throughbore Encoder"), m_shoulderThroughboreEncoder.getPosition());
-    SmartDashboard.putNumber(("Shoulder Calculated Angle"), getCalculatedShoulderPosition());
+    SmartDashboard.putNumber("Elbow Througbore Encoder", m_elbowThroughboreEncoder.getPosition());
+    SmartDashboard.putNumber(("Shoulder Calculated Angle"), getCalculatedShoulderAngle());
 
     // SmartDashboard.putNumber("Shoulder placement", m_lastPlacement == null ? 999
     // : m_lastPlacement.m_shoulderAngle);
