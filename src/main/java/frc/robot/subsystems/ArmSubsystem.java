@@ -52,7 +52,7 @@ public class ArmSubsystem extends SubsystemBase {
     FLOOR_GRAB_CONE(80.0, -80.0, 33.0), // TODO: Change to intake knocked over cones
     FLOOR_GRAB_CUBE(54.0, -80.0, 30.0),
     FLOOR_GRAB_PRE(54.0, -80.0, 0.0),
-    SUBSTATION_APPROACH(108.0, 5.7, 0.0),
+    SUBSTATION_APPROACH(108.0, 5.7, 5.0),
     SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 3.0, 85.0),
     SUBSTATION_GRAB_HALFWAY_CONE(108.0, 20.0, 145.0),
     SUBSTATION_GRAB_FULLWAY_CUBE(91.4, 0.9, 60.0),
@@ -61,9 +61,9 @@ public class ArmSubsystem extends SubsystemBase {
     SINGLE_SUBSTATION_CONE(108.0, -42.5, 24.0),
     SCORE_LOW_CUBE(90.0, -53.0, 0.0),
     SCORE_LOW_CONE(90.0, -53.0, 40.0),
-    SCORE_MIDDLE_CUBE(100, -1.0, 85.0),
+    SCORE_MIDDLE_CUBE(100.0, -1.0, 85.0),
     // SCORE_CONE_MIDDLE_UPPER(63.0, 35.0, 150.0),
-    SCORE_CONE_MIDDLE(95.5, 10.0, 150.0),
+    SCORE_CONE_MIDDLE(95.5, 16.0, 162.0),
     SCORE_CUBE_HIGH(56.0, 26.0, 60.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
     SCORE_CONE_HIGH(64.0, 36.0, 0.0),
@@ -185,8 +185,8 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void setKnownArmPlacement(final KnownArmPlacement placement) {
     double shoulderRotation = m_shoulderEncoder.getPosition();
-    double desiredShoulderAngle = placement.m_shoulderAngle;
-    double desiredElbowAngle = placement.m_elbowAngle - placement.m_shoulderAngle + 90;
+    double desiredShoulderAngle = placement.m_shoulderAngle + Constants.SHOULDER_POSITION_OFFSET;
+    double desiredElbowAngle = placement.m_elbowAngle + Constants.ELBOW_POSITION_OFFSET - placement.m_shoulderAngle + 90;
     double desiredWristAngle = placement.m_wristAngle;
     setWristPosition(desiredWristAngle);
     if (shoulderRotation < desiredShoulderAngle) {
@@ -296,7 +296,7 @@ public class ArmSubsystem extends SubsystemBase {
   public void seedRelativeEncoders() {
     m_elbowEncoder.setPosition(getCalculatedElbowAngle());
     m_shoulderEncoder.setPosition(getCalculatedShoulderAngle());
-    m_wristEncoder.setPosition(getCalculatedWristAngle());
+    m_wristEncoder.setPosition(m_wristThrougboreEncoder.getPosition());
   }
 
   /**
@@ -344,7 +344,7 @@ public class ArmSubsystem extends SubsystemBase {
   public void setTargetsToCurrents() {
     m_targetShoulderPosition = getCalculatedShoulderAngle();
     m_targetElbowPosition = getCalculatedElbowAngle();
-    m_targetWristPosition = getCalculatedWristAngle();
+    m_targetWristPosition = m_wristThrougboreEncoder.getPosition();
     m_lastPlacement = null;
   }
 

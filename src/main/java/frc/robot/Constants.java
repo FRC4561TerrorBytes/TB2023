@@ -157,6 +157,7 @@ public final class Constants {
   public static final double ELBOW_TOLERANCE = ELBOW_ROTATIONS_PER_DEGREE / 2.0;
   public static final double ELBOW_NUDGE_DEGREES = 3.0;
   public static final int ELBOW_ENCODER_COUNT_PER_REV = 8192;
+  public static final double ELBOW_POSITION_OFFSET = 9;
 
   public static final double SHOULDER_ROTATIONS_PER_DEGREE = 500.0 / 360.0;
   // needs fixing; moves to fast and with to much force.
@@ -169,6 +170,7 @@ public final class Constants {
   public static final double SHOULDER_NUDGE_DEGREES = 3.0; //Placeholder value, this will 
   public static final int SHOULDER_ENCODER_COUNT_PER_REV = 8192;
   public static final double SHOULDER_ENCODER_ROTATIONS_PER_DEGREE = 1.89;
+  public static final double SHOULDER_POSITION_OFFSET = 3.5;
   
   public static final double WRIST_ROTATIONS_PER_DEGREE = 60.0 / 360.0;
   //TODO maybe tune this?
