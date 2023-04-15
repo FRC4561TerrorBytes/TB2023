@@ -1,0 +1,108 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.6425305707754276,
+        "y": 0.5439602307776044
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.6425305707754276,
+        "y": 0.5439602307776044
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.75289379150187,
+        "y": 0.9161435465728075
+      },
+      "prevControl": {
+        "x": 5.865379730759461,
+        "y": 0.9018288036576078
+      },
+      "nextControl": {
+        "x": 5.865379730759461,
+        "y": 0.9018288036576078
+      },
+      "holonomicAngle": 0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.6282158278602277,
+        "y": 1.1022352044704096
+      },
+      "prevControl": {
+        "x": 3.6609093218186435,
+        "y": 0.47238651620160466
+      },
+      "nextControl": null,
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 0.15,
+      "names": [
+        "Approach1",
+        "Stow1"
+      ]
+    },
+    {
+      "position": 0.6545454545454547,
+      "names": [
+        "goToFloor1",
+        "intake1"
+      ]
+    },
+    {
+      "position": 1.88,
+      "names": [
+        "Aprroach2",
+        "High1"
+      ]
+    },
+    {
+      "position": 1.99,
+      "names": [
+        "ScoreCube2"
+      ]
+    },
+    {
+      "position": 1.35,
+      "names": [
+        "Stow2"
+      ]
+    }
+  ]
+}

@@ -58,7 +58,7 @@ public class ArmSubsystem extends SubsystemBase {
     SUBSTATION_GRAB_FULLWAY_CUBE(91.4, 0.9, 60.0),
     SUBSTATION_GRAB_FULLWAY_CONE(91.4, 0.9, 150.0),
     SINGLE_SUBSTATION_CUBE(101.0, -45.0, 0.0),
-    SINGLE_SUBSTATION_CONE(91.0, -58.0, 15.0),
+    SINGLE_SUBSTATION_CONE(108.0, -42.5, 24.0),
     SCORE_LOW_CUBE(90.0, -53.0, 0.0),
     SCORE_LOW_CONE(90.0, -53.0, 40.0),
     SCORE_MIDDLE_CUBE(100, -1.0, 85.0),
@@ -66,7 +66,8 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_CONE_MIDDLE(95.5, 10.0, 150.0),
     SCORE_CUBE_HIGH(56.0, 26.0, 60.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
-    SCORE_CONE_HIGH(58.0, 36.0, 150.0),
+    SCORE_CONE_HIGH(64.0, 36.0, 0.0),
+    SCORE_CONE_HIGH_WRIST(64.0, 36.0, 158.0),
     SCORE_CONE_HIGH_RETURN(92.5, 50.0, 0.0);
 
     public final double m_shoulderAngle;

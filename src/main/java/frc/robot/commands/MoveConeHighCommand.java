@@ -22,8 +22,10 @@ public class MoveConeHighCommand extends SequentialCommandGroup {
         // new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH_RETURN)),
         // // new WaitCommand(.5),
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH_PRE)),
-        new WaitCommand(.5),
-        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH))
+        new WaitCommand(0.5),
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH)),
+        new WaitCommand(1.5), //FIXME: Change after testings
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH_WRIST))
     );
   }
 }

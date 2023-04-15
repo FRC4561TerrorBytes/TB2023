@@ -21,7 +21,7 @@ public class ScoreAlign extends CommandBase {
     addRequirements(m_driveSubsystem);
     m_pidController.enableContinuousInput(-180.0, 180.0);
     //m_pidController.setSetpoint(0.0);
-    m_pidController.setTolerance(0.05);
+    m_pidController.setTolerance(0.1);
   }
 
   // Called when the command is initially scheduled.
@@ -29,27 +29,37 @@ public class ScoreAlign extends CommandBase {
   public void initialize() {
     m_pidController.reset();
     //final double absAngle = Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees());
-    final double angle = m_driveSubsystem.getPose().getRotation().getDegrees();
+    final double angle = m_driveSubsystem.getPose().getRotation().getDegrees() + 180;
     int degreesClosestTo = 0;
     double closest = 999.0;
-    if(Math.abs(angle - 0) < closest){
-      closest = Math.abs(angle);
-      degreesClosestTo = 0;
-    }
-    if(Math.abs(angle - 90) < closest){
-      closest = Math.abs(angle);
-      degreesClosestTo = 90;
-    }
-    if(Math.abs(angle - 180) < closest){
-      closest = Math.abs(angle);
-      degreesClosestTo = 180;
+    
+    if(Math.abs(angle - 360) < closest){
+      closest = Math.abs(angle - 360);
+      degreesClosestTo = 360;
     }
     if(Math.abs(angle - 270) < closest){
-      closest = Math.abs(angle);
+      closest = Math.abs(angle - 270);
       degreesClosestTo = 270;
     }
-
-    m_pidController.setSetpoint(degreesClosestTo*Math.signum(angle));
+    if(Math.abs(angle - 180) < closest){
+      closest = Math.abs(angle - 180);
+      degreesClosestTo = 180;
+    }
+    if(Math.abs(angle - 90) < closest){
+      closest = Math.abs(angle - 90);
+      degreesClosestTo = 90;
+    }
+    if(Math.abs(angle + 0) < closest){
+      closest = Math.abs(angle + 0);
+      degreesClosestTo = 0;
+    }
+    // if(Math.abs(angle - 180) < closest){
+    //   closest = Math.abs(angle - 180);
+    //   degreesClosestTo = 180;
+    // }
+    SmartDashboard.putNumber("Angle", angle);
+    SmartDashboard.putNumber("rotating to", degreesClosestTo);
+    m_pidController.setSetpoint(degreesClosestTo);
 
     //final boolean closerTo0 = (180.0 - absAngle) > absAngle;
     //m_pidController.setSetpoint(closerTo0 ? 0.0 : 180.0);
@@ -59,12 +69,13 @@ public class ScoreAlign extends CommandBase {
   @Override
   public void execute() {
     double rawAngle = m_driveSubsystem.getPose().getRotation().getDegrees();
-    double rotationRate = m_pidController.calculate(rawAngle);
-    rotationRate += 1.0 * Math.signum(rotationRate);
+    double rotationRate = m_pidController.calculate(rawAngle + 180);    
+    rotationRate += 1.2 * Math.signum(rotationRate);
+    System.out.println(m_driveSubsystem.getPose().getRotation().getDegrees() + 180);
 
     m_driveSubsystem.drive(0, 0, rotationRate, true);
 
-    System.out.println("rotation from pose: 0: " + m_driveSubsystem.getPose().getRotation().getDegrees());
+    System.out.println("rotation from pose: " + (m_driveSubsystem.getPose().getRotation().getDegrees() + 180));
     // System.out.println("rotation from pigeon: " + m_driveSubsystem.getPigeonYaw());
 
     SmartDashboard.putNumber("Raw Angle", rawAngle);
