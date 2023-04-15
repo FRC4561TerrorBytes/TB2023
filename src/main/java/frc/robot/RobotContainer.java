@@ -7,7 +7,6 @@ package frc.robot;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,14 +17,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
-import frc.robot.commands.DriveDistance;
-import frc.robot.commands.DriveLateral;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
-import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreCommand;
-import frc.robot.commands.ZeroArmCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.ConeHighBalance;
 import frc.robot.commands.autonomous.DriveUntilCommand;
@@ -41,7 +36,6 @@ import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -57,7 +51,6 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_driveSubsystem);
 
   private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
   private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
@@ -202,29 +195,12 @@ public class RobotContainer {
     Trigger highCone = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
 
     // Scoring
-    m_primaryController.b()
-        .whileTrue(new ScoreAlign(m_driveSubsystem)
-            .andThen(new DriveLateral(m_driveSubsystem, m_visionSubsystem, -Units.inchesToMeters(18), 0.05)));
-    m_primaryController.a().whileTrue(new ScoreAlign(m_driveSubsystem));
     // m_primaryController.x().onTrue(new InstantCommand(() ->
     // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SINGLE_SUBSTATION)));
     m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
     m_primaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
     // Try onTrue for command actuation, might be interesting
     // Substation grabs
-    m_primaryController.back()
-        .whileTrue(m_visionSubsystem
-            .centerAprilTagCommand(-Units.inchesToMeters(29.565),
-                Units.inchesToMeters(30))
-            .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
-                1.5)));
-    m_primaryController.start()
-        .whileTrue(m_visionSubsystem
-            .centerAprilTagCommand(Units.inchesToMeters(29.565),
-                Units.inchesToMeters(30))
-            .andThen(new DriveDistance(m_driveSubsystem, Units.inchesToMeters(26.5),
-                1.5)));
-
     // Driver nudges
     m_primaryController.povUp()
         .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-1.0, 0.0, 0.0, true),
@@ -253,7 +229,7 @@ public class RobotContainer {
 
     // Secondary Controller Bindings
     m_secondaryController.leftStick().and(m_secondaryController.rightStick())
-        .onTrue(new ZeroArmCommand(m_armSubsystem));
+         .onTrue(new InstantCommand(() -> m_armSubsystem.seedRelativeEncoders(), m_armSubsystem));
     // scoringPosTrigger.and(m_secondaryController.x().or(m_secondaryController.axisLessThan(Axis.kLeftY.value,
     // -0.5)))
     // .onTrue(new InstantCommand(() ->
@@ -439,12 +415,15 @@ public class RobotContainer {
       return autoCommandSupplier.get()
           .alongWith(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem))
           .alongWith(new InstantCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED)))
-          .beforeStarting(new ZeroArmCommand(m_armSubsystem));
+          .beforeStarting(new RunCommand(() -> m_armSubsystem.setManualWristSpeed(-0.1), m_armSubsystem)).withTimeout(0.25);
+          //.beforeStarting(new ZeroArmCommand(m_armSubsystem));
     }
     return null;
   }
 
   public void teleopInit() {
+    m_armSubsystem.seedRelativeEncoders();
+    m_armSubsystem.setTargetsToCurrents();
     // new ZeroArmCommand(m_armSubsystem).schedule();
   }
 
