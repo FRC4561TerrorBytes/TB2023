@@ -87,11 +87,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
   }
 
-  double elbowMaxVelocity = 120.0; //prev 75
-  double elbowMaxAcceleration = 40; //prev 360
+  double elbowMaxVelocity = 120.0; // degrees per second
+  double elbowMaxAcceleration = 40; //degrees per second^2
 
-  double shoulderMaxVelocity = 150.0;
-  double shoulderMaxAcceleration = 240.0;
+  double shoulderMaxVelocity = 150.0;// degrees per second
+  double shoulderMaxAcceleration = 240.0;//degrees per second^2
 
   private TrapezoidProfile.Constraints shoulderConstraints = new TrapezoidProfile.Constraints(shoulderMaxVelocity,
       shoulderMaxAcceleration);
@@ -327,7 +327,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   /**
-   * Scales the relative encoder positions to match the degrees read from absolue
+   * Scales the relative encoder positions to match the degrees read from absolute
    * encoders
    * (Shoulder, Elbow, and Wrist)
    */
