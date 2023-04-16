@@ -427,6 +427,11 @@ public class RobotContainer {
     // new ZeroArmCommand(m_armSubsystem).schedule();
   }
 
+  public void autoInit(){
+    m_armSubsystem.seedRelativeEncoders();
+    m_armSubsystem.setTargetsToCurrents();
+  }
+
   private static double modifyAxis(double value) {
     // Deadband
     value = MathUtil.applyDeadband(value, 0.05);

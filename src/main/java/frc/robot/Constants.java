@@ -149,10 +149,10 @@ public final class Constants {
 
   public static final double ELBOW_ROTATIONS_PER_DEGREE = 225.0 / 360.0;
   public static final double ELBOW_MAX_VOLTAGE_FF = 1.25;
-  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 16.0; //UP
+  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 1.0; //UP
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.025; //DOWN
-  public static final double ELBOW_DERIVATIVE_GAIN = 0.5;
-  public static final double ELBOW_INTEGRAL_GAIN = 0.01;
+  public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
+  public static final double ELBOW_INTEGRAL_GAIN = 0.000015;
   public static final double ELBOW_IZONE = 5.0;
   public static final double ELBOW_TOLERANCE = ELBOW_ROTATIONS_PER_DEGREE / 2.0;
   public static final double ELBOW_NUDGE_DEGREES = 3.0;

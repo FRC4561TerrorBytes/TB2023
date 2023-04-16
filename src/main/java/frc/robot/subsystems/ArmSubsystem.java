@@ -56,7 +56,7 @@ public class ArmSubsystem extends SubsystemBase {
   public enum KnownArmPlacement {
     STOWED(101.0, -58.0, 0.0),
     FLOOR_GRAB_CONE(80.0, -80.0, 33.0), // TODO: Change to intake knocked over cones
-    FLOOR_GRAB_CUBE(54.0, -80.0, 30.0),
+    FLOOR_GRAB_CUBE(54.0, -80.0, 35.0),
     FLOOR_GRAB_PRE(54.0, -80.0, 0.0),
     SUBSTATION_APPROACH(108.0, 5.7, 5.0),
     SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 3.0, 85.0),
@@ -87,8 +87,8 @@ public class ArmSubsystem extends SubsystemBase {
     }
   }
 
-  double elbowMaxVelocity = 120.0; // degrees per second
-  double elbowMaxAcceleration = 40; //degrees per second^2
+  double elbowMaxVelocity = 75.0; // degrees per second
+  double elbowMaxAcceleration = 360; //degrees per second^2
 
   double shoulderMaxVelocity = 150.0;// degrees per second
   double shoulderMaxAcceleration = 240.0;//degrees per second^2
@@ -293,9 +293,9 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void proceedToArmPosition() {
-    // proceedToShoulderPosition();
+    proceedToShoulderPosition();
     proceedToElbowPosition();
-    // proceedToWristPosition();
+    proceedToWristPosition();
   }
 
   /**
