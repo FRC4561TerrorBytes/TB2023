@@ -21,6 +21,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreCommand;
+import frc.robot.commands.SquareUpAndDrive;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.ConeHighBalance;
 import frc.robot.commands.autonomous.DriveUntilCommand;
@@ -199,8 +200,13 @@ public class RobotContainer {
     // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SINGLE_SUBSTATION)));
     m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
     m_primaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
-    // Try onTrue for command actuation, might be interesting
-    // Substation grabs
+
+    // Substation (maybe score) approach driving
+    m_primaryController.a().whileTrue(new SquareUpAndDrive(
+        m_driveSubsystem,
+        () -> modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND));
+
     // Driver nudges
     m_primaryController.povUp()
         .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-1.0, 0.0, 0.0, true),
