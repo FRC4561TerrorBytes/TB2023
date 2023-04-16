@@ -87,8 +87,8 @@ public class ArmSubsystem extends SubsystemBase {
     }
   }
 
-  double elbowMaxVelocity = 75.0;
-  double elbowMaxAcceleration = 360.0;
+  double elbowMaxVelocity = 120.0; //prev 75
+  double elbowMaxAcceleration = 40; //prev 360
 
   double shoulderMaxVelocity = 150.0;
   double shoulderMaxAcceleration = 240.0;
@@ -293,9 +293,9 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void proceedToArmPosition() {
-    proceedToShoulderPosition();
+    // proceedToShoulderPosition();
     proceedToElbowPosition();
-    proceedToWristPosition();
+    // proceedToWristPosition();
   }
 
   /**
