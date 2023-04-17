@@ -457,4 +457,8 @@ public class RobotContainer {
 
     return value;
   }
+
+  public void endAutoScore() {
+    new ScheduleCommand(new ScoreCommand(m_intakeSubsystem)).schedule();
+  }
 }
