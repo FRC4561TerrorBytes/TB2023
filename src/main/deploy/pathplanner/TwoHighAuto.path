@@ -25,15 +25,15 @@
     {
       "anchorPoint": {
         "x": 6.728668841953069,
-        "y": 0.57
+        "y": 0.55
       },
       "prevControl": {
         "x": 5.279402214606254,
-        "y": 0.2869401118463253
+        "y": 0.2669401118463254
       },
       "nextControl": {
         "x": 5.279402214606254,
-        "y": 0.2869401118463253
+        "y": 0.2669401118463254
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -49,12 +49,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.6357198526362868,
-        "y": 1.0
+        "x": 1.68,
+        "y": 1.2
       },
       "prevControl": {
-        "x": 1.0076656050747999,
-        "y": 0.8564376103111184
+        "x": 2.502157462947405,
+        "y": 1.0906951147235624
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -75,7 +75,7 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.35,
+      "position": 0.25,
       "names": [
         "goToFloor1",
         "intake1"
@@ -89,15 +89,9 @@
       ]
     },
     {
-      "position": 1.3963636363636434,
+      "position": 0.95,
       "names": [
         "High1"
-      ]
-    },
-    {
-      "position": 1.99,
-      "names": [
-        "ScoreCube2"
       ]
     },
     {
@@ -107,9 +101,16 @@
       ]
     },
     {
-      "position": 1.0909090909090948,
+      "position": 0.8,
       "names": [
-        "Approach1"
+        "Approach2",
+        "Print1"
+      ]
+    },
+    {
+      "position": 1.9,
+      "names": [
+        "ScoreCube2"
       ]
     }
   ]

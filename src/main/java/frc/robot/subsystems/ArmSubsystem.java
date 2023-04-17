@@ -56,7 +56,7 @@ public class ArmSubsystem extends SubsystemBase {
   public enum KnownArmPlacement {
     STOWED(101.0, -58.0, 0.0),
     FLOOR_GRAB_CONE(86.0, -74.0, 69.0), // TODO: Change to intake knocked over cones
-    FLOOR_GRAB_CUBE(54.0, -80.0, 40.0),
+    FLOOR_GRAB_CUBE(54.0, -80.0, 45.0),
     FLOOR_GRAB_PRE(54.0, -80.0, 0.0),
     SUBSTATION_APPROACH(108.0, 5.7, 5.0),
     SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 3.0, 85.0),

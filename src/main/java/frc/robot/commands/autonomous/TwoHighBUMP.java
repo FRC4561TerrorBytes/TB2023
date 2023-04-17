@@ -14,6 +14,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -65,7 +66,8 @@ public class TwoHighBUMP {
     m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(m_intakeSubsystem)));
     
     //going back to stow to move arm out of the way
-    m_eventMap.put("Approach", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_eventMap.put("Approach2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_eventMap.put("Print1", new InstantCommand(() -> System.out.println("OIDUABGAYGDWVBI \n \n \n")));
 
     // Approach to high for score
     m_eventMap.put("High1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH)));
