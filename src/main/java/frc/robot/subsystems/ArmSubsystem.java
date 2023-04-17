@@ -55,25 +55,25 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public enum KnownArmPlacement {
     STOWED(101.0, -58.0, 0.0),
-    FLOOR_GRAB_CONE(80.0, -80.0, 33.0), // TODO: Change to intake knocked over cones
-    FLOOR_GRAB_CUBE(54.0, -80.0, 30.0),
+    FLOOR_GRAB_CONE(86.0, -74.0, 69.0), // TODO: Change to intake knocked over cones
+    FLOOR_GRAB_CUBE(54.0, -80.0, 45.0),
     FLOOR_GRAB_PRE(54.0, -80.0, 0.0),
     SUBSTATION_APPROACH(108.0, 5.7, 5.0),
     SUBSTATION_GRAB_HALFWAY_CUBE(108.0, 3.0, 85.0),
-    SUBSTATION_GRAB_HALFWAY_CONE(108.0, 20.0, 145.0),
+    SUBSTATION_GRAB_HALFWAY_CONE(108.0, 23.0, 161.0),
     SUBSTATION_GRAB_FULLWAY_CUBE(91.4, 0.9, 60.0),
     SUBSTATION_GRAB_FULLWAY_CONE(91.4, 0.9, 150.0),
     SINGLE_SUBSTATION_CUBE(101.0, -45.0, 0.0),
-    SINGLE_SUBSTATION_CONE(108.0, -42.5, 24.0),
+    SINGLE_SUBSTATION_CONE(111.0, -55.5, 8.0),
     SCORE_LOW_CUBE(90.0, -53.0, 0.0),
     SCORE_LOW_CONE(90.0, -53.0, 40.0),
-    SCORE_MIDDLE_CUBE(100.0, -1.0, 85.0),
+    SCORE_MIDDLE_CUBE(91.0, -1.0, 73.0),
     // SCORE_CONE_MIDDLE_UPPER(63.0, 35.0, 150.0),
-    SCORE_CONE_MIDDLE(95.5, 16.0, 162.0),
+    SCORE_CONE_MIDDLE(92.5, 11.5, 162.0),
     SCORE_CUBE_HIGH(56.0, 26.0, 68.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
     SCORE_CONE_HIGH(64.0, 36.0, 70.0),
-    SCORE_CONE_HIGH_WRIST(64.0, 36.0, 158.0),
+    SCORE_CONE_HIGH_WRIST(61.0, 33.0, 162.0),
     SCORE_CONE_HIGH_RETURN(92.5, 50.0, 0.0);
 
     public final double m_shoulderAngle;
@@ -87,8 +87,8 @@ public class ArmSubsystem extends SubsystemBase {
     }
   }
 
-  double elbowMaxVelocity = 120.0; // degrees per second
-  double elbowMaxAcceleration = 40; //degrees per second^2
+  double elbowMaxVelocity = 75.0; // degrees per second
+  double elbowMaxAcceleration = 360; //degrees per second^2
 
   double shoulderMaxVelocity = 150.0;// degrees per second
   double shoulderMaxAcceleration = 240.0;//degrees per second^2
@@ -293,9 +293,9 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void proceedToArmPosition() {
-    // proceedToShoulderPosition();
+    proceedToShoulderPosition();
     proceedToElbowPosition();
-    // proceedToWristPosition();
+    proceedToWristPosition();
   }
 
   /**

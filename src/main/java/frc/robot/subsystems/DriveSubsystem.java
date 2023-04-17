@@ -132,7 +132,7 @@ public class DriveSubsystem extends SubsystemBase {
     // double[] angleRates = new double[3];
     // m_pigeon.getRawGyro(angleRates);
     // return onChargeStation() && angleRates[0] < -1;
-    return Math.abs(m_pigeon.getPitch()) < 12;
+    return Math.abs(m_pigeon.getPitch()) < 5;
   }
 
   // public Rotation2d getYaw(){
