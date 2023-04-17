@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.6585581889112497,
-        "y": 0.548120070599115
+        "x": 1.6425305707754276,
+        "y": 0.5439602307776044
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6504809112554835,
-        "y": 0.8175930841214145
+        "x": 2.6425305707754276,
+        "y": 0.5439602307776044
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -24,16 +24,16 @@
     },
     {
       "anchorPoint": {
-        "x": 6.728668841953069,
-        "y": 0.57
+        "x": 6.75289379150187,
+        "y": 0.9161435465728075
       },
       "prevControl": {
-        "x": 5.279402214606254,
-        "y": 0.2869401118463253
+        "x": 5.865379730759461,
+        "y": 0.9018288036576078
       },
       "nextControl": {
-        "x": 5.279402214606254,
-        "y": 0.2869401118463253
+        "x": 5.865379730759461,
+        "y": 0.9018288036576078
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -49,12 +49,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.6357198526362868,
-        "y": 1.0
+        "x": 1.6282158278602277,
+        "y": 1.1022352044704096
       },
       "prevControl": {
-        "x": 1.0076656050747999,
-        "y": 0.8564376103111184
+        "x": 3.6609093218186435,
+        "y": 0.47238651620160466
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -64,33 +64,31 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "maxVelocity": 2.0,
-  "maxAcceleration": 2.0,
-  "isReversed": null,
   "markers": [
     {
-      "position": 0.35,
-      "names": [
-        "goToFloor1",
-        "intake1"
-      ]
-    },
-    {
-      "position": 0.05,
+      "position": 0.15,
       "names": [
         "Approach1",
         "Stow1"
       ]
     },
     {
-      "position": 1.3963636363636434,
+      "position": 0.6545454545454547,
       "names": [
+        "goToFloor1",
+        "intake1"
+      ]
+    },
+    {
+      "position": 1.88,
+      "names": [
+        "Aprroach2",
         "High1"
       ]
     },
@@ -101,15 +99,9 @@
       ]
     },
     {
-      "position": 0.2,
+      "position": 1.35,
       "names": [
-        "GameStateChange1"
-      ]
-    },
-    {
-      "position": 1.0909090909090948,
-      "names": [
-        "Approach1"
+        "Stow2"
       ]
     }
   ]

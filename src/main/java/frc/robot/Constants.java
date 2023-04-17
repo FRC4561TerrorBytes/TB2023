@@ -188,8 +188,8 @@ public final class Constants {
   public static final double INTAKE_SPEED = 0.4;
   public static final double INTAKE_HOLD_SPEED = 0.05;
 
-  public static final double SCORE_SPEED_CONE = -0.25;
-  public static final double SCORE_SPEED_CUBE = -0.15;
+  public static final double SCORE_SPEED_CONE = -0.35;
+  public static final double SCORE_SPEED_CUBE = -0.25;
 
   public static final double AUTO_X_KP = 1.0;
   public static final double AUTO_X_KI = 0.0;
