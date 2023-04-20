@@ -30,6 +30,7 @@ public class LowLinkRIGHT {
   PPSwerveControllerCommand m_swerveControllerCommand;
   HashMap<String, Command> m_eventMap = new HashMap<>();
   String autoPathName = "";
+  boolean isRedAlliance;
 
     /**
    * Creates a new PathPlanner trajectory for swerve modules to follow in autonomous
@@ -52,24 +53,8 @@ public class LowLinkRIGHT {
     m_eventMap.put("Stow1", new InstantCommand(() -> m_ArmSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
 
     this.autoPathName = autoPathName;
-    // Auto PID Controllers
-    PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
-    PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
-    PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
-        Constants.AUTO_THETA_KD);
-    //FIXME: TRY WITHOUT CONTINUOUS INPUT
-    //thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    m_swerveControllerCommand = new PPSwerveControllerCommand(
-        m_pathPlannerTrajectory,
-        m_driveSubsystem::getPose,
-        Constants.DRIVE_KINEMATICS,
-        xController,
-        yController,
-        thetaController,
-        m_driveSubsystem::setModuleStates,
-        isRedAlliance,
-        m_driveSubsystem);
+    this.isRedAlliance = isRedAlliance;
+  
   }
 
   public void resetOdometry() {
@@ -77,7 +62,7 @@ public class LowLinkRIGHT {
   }
 
   public Command getCommandAndStop() {
-    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2, false).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
+    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2, isRedAlliance).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
             .andThen(() -> m_driveSubsystem.stop());
   }
 }
