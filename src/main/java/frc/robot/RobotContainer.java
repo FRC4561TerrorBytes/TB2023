@@ -168,6 +168,8 @@ public class RobotContainer {
         .andThen(new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.3)))
         .andThen(new TwoHighBUMP(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "TwoHighAuto", 1, 1, isRedAlliance).getCommandAndStop()));
 
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
+
     // Configure the trigger bindings
     configureBindings();
   }
