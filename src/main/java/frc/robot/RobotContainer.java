@@ -123,7 +123,7 @@ public class RobotContainer {
     m_autoChooser.addOption("Score1CubeLowLeaveCommRight",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW_CUBE)
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1, 0.1, () -> false).withTimeout(5)));
-            
+
     m_autoChooser.addOption("Score1CubeLowLeaveCommLeft",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW_CUBE)
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
@@ -312,10 +312,10 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(
                 KnownArmPlacement.SUBSTATION_GRAB_HALFWAY_CONE)));
-    coneTrigger.and(m_secondaryController.leftTrigger()).onTrue(
-        new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CONE)));
+    // coneTrigger.and(m_secondaryController.leftTrigger()).onTrue(
+    //     new InstantCommand(
+    //         () -> m_armSubsystem.setKnownArmPlacement(
+    //             KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CONE)));
     (m_secondaryController.axisGreaterThan(Axis.kLeftY.value, 0.5)).or(m_secondaryController.x())
         .onTrue(new InstantCommand(() -> m_armSubsystem
             .setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
