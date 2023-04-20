@@ -57,7 +57,7 @@ public class AutoTrajectory {
   }
 
   public void resetOdometry() {
-    m_driveSubsystem.resetOdometry(m_pathPlannerTrajectory.getInitialHolonomicPose());
+    m_driveSubsystem.resetOdometry(m_pathPlannerTrajectory.getInitialHolonomicPose() );
   }
 
   public Command getCommandAndStop() {
