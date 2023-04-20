@@ -52,13 +52,20 @@ public class LowLink {
         maxAccelerationMetersPerSecSquared);
 
     //scoring first piece
-    m_eventMap.put("cubeScore1", new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
+    m_eventMap.put("score1", new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
     //going to floor grab and intaking
     m_eventMap.put("goToFloor1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
-    m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(m_intakeSubsystem)));
+    m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(m_intakeSubsystem).withTimeout(0.5)));
     
     //going back to stow to move arm out of the way
     m_eventMap.put("Stow1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+    m_eventMap.put("score2", new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
+
+    m_eventMap.put("goToFloor2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
+    m_eventMap.put("intake2",  new ScheduleCommand(new IntakeCommand(m_intakeSubsystem).withTimeout(0.5)));
+    m_eventMap.put("Stow2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+
+    m_eventMap.put("score3", new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
     
     this.autoPathName = autoPathName;
     this.isRedAlliance = isRedAlliance;

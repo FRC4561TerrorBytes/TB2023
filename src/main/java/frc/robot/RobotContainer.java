@@ -88,11 +88,11 @@ public class RobotContainer {
         () -> new LeaveCommunity(m_driveSubsystem, m_armSubsystem, 0.2));
     m_autoChooser.addOption("LeaveCommLeft",
         () -> new LeaveCommunity(m_driveSubsystem, m_armSubsystem, -0.2));
-    m_autoChooser.addOption("Score1CubeBalance",
-        () -> new ScoreCube(m_driveSubsystem, m_armSubsystem,
-            m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
-            .andThen(new BalanceAuto(m_driveSubsystem, -2, -1).withTimeout(5.0))
-            .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
+    // m_autoChooser.addOption("Score1CubeBalance",
+    //     () -> new ScoreCube(m_driveSubsystem, m_armSubsystem,
+    //         m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
+    //         .andThen(new BalanceAuto(m_driveSubsystem, -2, -1).withTimeout(5.0))
+    //         .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
     m_autoChooser.addOption("ScoreHighCubeLeaveCommBalance", () -> new ScoreCube(m_driveSubsystem,
         m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
         .andThen(new BalanceAuto(m_driveSubsystem, -3, -1))
