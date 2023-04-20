@@ -308,7 +308,7 @@ public class RobotContainer {
     cubeTrigger.and(m_primaryController.y()).onTrue(
         new InstantCommand(() -> m_armSubsystem
             .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE))
-            .andThen(new WaitCommand(1.5))
+            .andThen(new WaitCommand(1.0))
             .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE))));
 
     // Cone positions
