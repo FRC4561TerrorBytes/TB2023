@@ -26,6 +26,7 @@ import frc.robot.commands.MoveConeHighCommand;
 import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
+import frc.robot.commands.autonomous.BalanceAutoNoStop;
 import frc.robot.commands.autonomous.ConeHighBalance;
 import frc.robot.commands.autonomous.DriveUntilCommand;
 import frc.robot.commands.autonomous.ExitChargeStation;
@@ -104,7 +105,7 @@ public class RobotContainer {
     // false))));
     m_autoChooser.addOption("ScoreHighCubeLeaveCommBalance", () -> new ScoreCube(m_driveSubsystem,
         m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
-        .andThen(new BalanceAuto(m_driveSubsystem, -3, -1))
+        .andThen(new BalanceAutoNoStop(m_driveSubsystem, -3, -1))
         .andThen(new ExitChargeStation(m_driveSubsystem))
         .andThen(new DriveUntilCommand(m_driveSubsystem, -1.0, 0, () -> false).withTimeout(0.5))
         // .andThen(new FlipAuto(m_driveSubsystem).withTimeout(2.0))
@@ -114,7 +115,7 @@ public class RobotContainer {
         () -> new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))
             .andThen(new WaitCommand(0.1))
             .andThen(new ScoreCommand(m_intakeSubsystem).withTimeout(.5))
-            .andThen(new BalanceAuto(m_driveSubsystem, -3, -1))
+            .andThen(new BalanceAutoNoStop(m_driveSubsystem, -3, -1))
             .andThen(new ExitChargeStation(m_driveSubsystem))
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1.0, 0, () -> false).withTimeout(0.5))
             // .andThen(new FlipAuto(m_driveSubsystem).withTimeout(2.0))
@@ -317,9 +318,10 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(
                 KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CUBE)));
-    cubeTrigger.and(m_primaryController.y()).onTrue(
-        new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE))
+    (m_primaryController.y()).onTrue(
+        new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE))
+        .andThen(new InstantCommand(() -> m_armSubsystem
+            .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE)))
             .andThen(new WaitCommand(1.0))
             .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE))));
 
@@ -367,9 +369,10 @@ public class RobotContainer {
     coneTrigger.and(stowedTrigger).and(m_secondaryController.y())
         .onTrue(new MoveConeHighCommand(m_armSubsystem));
 
-    coneTrigger.and(m_primaryController.y()).onTrue(
-        new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE))
+    (m_primaryController.b()).onTrue(
+        new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE))
+        .andThen(new InstantCommand(() -> m_armSubsystem
+            .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE)))
             .andThen(new WaitCommand(0.5))
             .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CONE))));
 

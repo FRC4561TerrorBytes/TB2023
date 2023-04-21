@@ -135,6 +135,10 @@ public class DriveSubsystem extends SubsystemBase {
     return Math.abs(m_pigeon.getPitch()) < 12;
   }
 
+  public boolean onFlat(){
+    return Math.abs(m_pigeon.getPitch()) < 5;
+  }
+
   // public Rotation2d getYaw(){
   //   return Rotation2d.fromDegrees(360 - m_pigeon.getYaw());
   // }

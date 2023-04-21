@@ -8,16 +8,15 @@ package frc.robot.commands.autonomous;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveSubsystem;
 // base OnChargeX -2, OnPitchX -1
-public class BalanceAuto extends SequentialCommandGroup {
+public class BalanceAutoNoStop extends SequentialCommandGroup {
   /** Auto that drives forward or backwards until it sees gyro pitch change up and down following balancing on charge station
    * WILL RUN FOREVER IF NOT CALLED WITH TIMEOUT
   */
 
-  public BalanceAuto(DriveSubsystem driveSubsystem, double onChargeX, double onPitchX) {
+  public BalanceAutoNoStop(DriveSubsystem driveSubsystem, double onChargeX, double onPitchX) {
     addCommands(
         new DriveUntilCommand(driveSubsystem, onChargeX, 0, driveSubsystem::onChargeStation),
-        new DriveUntilCommand(driveSubsystem, onPitchX, 0, driveSubsystem::onPitchDown),
-        new DriveUntilCommand(driveSubsystem, 1.0, 0.0, () -> false).withTimeout(0.125)
+        new DriveUntilCommand(driveSubsystem, onPitchX, 0, driveSubsystem::onPitchDown)
     );
   }
 }
