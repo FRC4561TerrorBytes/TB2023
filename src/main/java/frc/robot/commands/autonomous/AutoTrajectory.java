@@ -4,11 +4,14 @@
 
 package frc.robot.commands.autonomous;
 
+import org.apache.commons.math3.util.TransformerMap;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
@@ -19,6 +22,7 @@ public class AutoTrajectory {
   DriveSubsystem m_driveSubsystem;
   PathPlannerTrajectory m_pathPlannerTrajectory;
   PPSwerveControllerCommand m_swerveControllerCommand;
+  PathPlannerTrajectory transformedTrajectory;
 
   /**
    * Creates a new PathPlanner trajectory for swerve modules to follow in
@@ -36,6 +40,8 @@ public class AutoTrajectory {
     m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
         maxAccelerationMetersPerSecSquared);
 
+    transformedTrajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(m_pathPlannerTrajectory, DriverStation.getAlliance());
+
     // Auto PID Controllers
     PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
     PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
@@ -45,7 +51,7 @@ public class AutoTrajectory {
     // thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     m_swerveControllerCommand = new PPSwerveControllerCommand(
-        m_pathPlannerTrajectory,
+        transformedTrajectory,
         m_driveSubsystem::getPose,
         Constants.DRIVE_KINEMATICS,
         xController,
@@ -57,12 +63,12 @@ public class AutoTrajectory {
   }
 
   public void resetOdometry() {
-    m_driveSubsystem.resetOdometry(m_pathPlannerTrajectory.getInitialHolonomicPose() );
+    m_driveSubsystem.resetOdometry(transformedTrajectory.getInitialHolonomicPose());
   }
 
   public Command getCommandAndStop() {
     return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(
-        m_swerveControllerCommand.withTimeout(m_pathPlannerTrajectory.getTotalTimeSeconds())
+        m_swerveControllerCommand.withTimeout(transformedTrajectory.getTotalTimeSeconds())
             .andThen(() -> m_driveSubsystem.stop()));
   }
 }

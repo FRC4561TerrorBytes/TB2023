@@ -36,7 +36,7 @@ public class ScoreCubeBalance extends SequentialCommandGroup {
         new WaitCommand(1.0),
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)),
         new WaitCommand(1.0),
-        new BalanceAuto(m_driveSubsystem, -2, -1).withTimeout(5.0),
+        new BalanceAuto(m_driveSubsystem, -2, -1,-1).withTimeout(5.0),
         new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false)));
   }
 }

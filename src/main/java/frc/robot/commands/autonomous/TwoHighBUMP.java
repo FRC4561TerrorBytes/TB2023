@@ -12,6 +12,7 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -38,6 +39,7 @@ public class TwoHighBUMP {
   PPSwerveControllerCommand m_swerveControllerCommand;
   HashMap<String, Command> m_eventMap = new HashMap<>();
   String autoPathName = "";
+  PathPlannerTrajectory transformedTrajectory;
   boolean isRedAlliance;
 
     /**
@@ -55,6 +57,8 @@ public class TwoHighBUMP {
 
     m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
         maxAccelerationMetersPerSecSquared);
+
+    transformedTrajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(m_pathPlannerTrajectory, DriverStation.getAlliance());
 
     // Approach then stow
     m_eventMap.put("Approach1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
@@ -83,10 +87,11 @@ public class TwoHighBUMP {
 
   public void resetOdometry() {
     m_driveSubsystem.resetOdometry(m_pathPlannerTrajectory.getInitialHolonomicPose());
+    m_driveSubsystem.resetOdometry(m_pathPlannerTrajectory.getInitialHolonomicPose());
   }
 
   public Command getCommandAndStop() {
-    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName, 2, 2, isRedAlliance).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
+    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName, 2, 2, isRedAlliance).getCommandAndStop(), transformedTrajectory.getMarkers(), m_eventMap))
             .andThen(() -> m_driveSubsystem.stop());
   }
 }

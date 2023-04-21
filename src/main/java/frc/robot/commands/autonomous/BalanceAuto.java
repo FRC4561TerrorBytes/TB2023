@@ -13,11 +13,11 @@ public class BalanceAuto extends SequentialCommandGroup {
    * WILL RUN FOREVER IF NOT CALLED WITH TIMEOUT
   */
 
-  public BalanceAuto(DriveSubsystem driveSubsystem, double onChargeX, double onPitchX) {
+  public BalanceAuto(DriveSubsystem driveSubsystem, double onChargeX, double onPitchX, double driveSpeed) {
     addCommands(
         new DriveUntilCommand(driveSubsystem, onChargeX, 0, driveSubsystem::onChargeStation),
         new DriveUntilCommand(driveSubsystem, onPitchX, 0, driveSubsystem::onPitchDown),
-        new DriveUntilCommand(driveSubsystem, 1.0, 0.0, () -> false).withTimeout(0.125)
+        new DriveUntilCommand(driveSubsystem, driveSpeed, 0.0, () -> false).withTimeout(0.125)
     );
   }
 }

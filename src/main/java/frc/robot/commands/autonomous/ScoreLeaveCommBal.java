@@ -34,7 +34,7 @@ public class ScoreLeaveCommBal extends SequentialCommandGroup {
       new WaitCommand(1.0),
       new DriveUntilCommand(m_driveSubsystem, -1.5, 0, () -> false).withTimeout(3.75),
       new WaitCommand(1.0),
-      new BalanceAuto(m_driveSubsystem, 2, 1).withTimeout(5.0),
+      new BalanceAuto(m_driveSubsystem, 2, 1,-1).withTimeout(5.0),
       new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))
       //FIXME Add Cube/Cone pickup when design implements
     );

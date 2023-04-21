@@ -84,11 +84,12 @@ public class RobotContainer {
     m_armSubsystem.setDefaultCommand(
         new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
 
-    if (DriverStation.getAlliance() == Alliance.Red) {
-      twoHighBump = "REDTwoHighAuto";
-    } else {
-      twoHighBump = "BLUETwoHighAuto";
-    }
+    // if (DriverStation.getAlliance() == Alliance.Red) {
+    //   twoHighBump = "REDTwoHighAuto";
+    // } else {
+    //   twoHighBump = "BLUETwoHighAuto";
+    // }
+    twoHighBump = "BLUETwoHighAuto";
 
     m_autoChooser.setDefaultOption("Do Nothing", () -> new DriveUntilCommand(m_driveSubsystem, 0.0, 0.0, () -> true));
     m_autoChooser.addOption("Score1CubeHigh",
@@ -105,21 +106,21 @@ public class RobotContainer {
     // false))));
     m_autoChooser.addOption("ScoreHighCubeLeaveCommBalance", () -> new ScoreCube(m_driveSubsystem,
         m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
-        .andThen(new BalanceAutoNoStop(m_driveSubsystem, -3, -1))
+        .andThen(new BalanceAutoNoStop(m_driveSubsystem, -2, -1))
         .andThen(new ExitChargeStation(m_driveSubsystem))
-        .andThen(new DriveUntilCommand(m_driveSubsystem, -1.0, 0, () -> false).withTimeout(0.5))
+        .andThen(new DriveUntilCommand(m_driveSubsystem, -1.0, 0, () -> false).withTimeout(0.75))
         // .andThen(new FlipAuto(m_driveSubsystem).withTimeout(2.0))
-        .andThen(new BalanceAuto(m_driveSubsystem, 2, 1))
+        .andThen(new BalanceAuto(m_driveSubsystem, 2, 1, -1))
         .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
     m_autoChooser.addOption("ScoreLowCubeLeaveCommBalance",
         () -> new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))
             .andThen(new WaitCommand(0.1))
             .andThen(new ScoreCommand(m_intakeSubsystem).withTimeout(.5))
-            .andThen(new BalanceAutoNoStop(m_driveSubsystem, -3, -1))
+            .andThen(new BalanceAutoNoStop(m_driveSubsystem, -2, -1))
             .andThen(new ExitChargeStation(m_driveSubsystem))
-            .andThen(new DriveUntilCommand(m_driveSubsystem, -1.0, 0, () -> false).withTimeout(0.5))
+            .andThen(new DriveUntilCommand(m_driveSubsystem, -1.0, 0, () -> false).withTimeout(0.75))
             // .andThen(new FlipAuto(m_driveSubsystem).withTimeout(2.0))
-            .andThen(new BalanceAuto(m_driveSubsystem, 2, 1))
+            .andThen(new BalanceAuto(m_driveSubsystem, 2, 1, -1))
             .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
     /*
      * .andThen(new BalanceAuto(m_driveSubsystem, -2.0, -1.0).withTimeout(4.0))
@@ -141,12 +142,12 @@ public class RobotContainer {
 
     m_autoChooser.addOption("Score1CubeLowBalance",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW_CUBE)
-            .andThen(new BalanceAuto(m_driveSubsystem, -2, -1).withTimeout(5.0))
+            .andThen(new BalanceAuto(m_driveSubsystem, -2, -1, 1).withTimeout(5.0))
             .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
 
     m_autoChooser.addOption("Score1CubeHighBalance",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
-            .andThen(new BalanceAuto(m_driveSubsystem, -2, -1).withTimeout(5.0))
+            .andThen(new BalanceAuto(m_driveSubsystem, -2, -1, 1).withTimeout(5.0))
             .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
 
     m_autoChooser.addOption("Score1CubeHighStop",
@@ -168,12 +169,12 @@ public class RobotContainer {
     m_autoChooser.addOption("Score2CubeLowBalanceRight",
         () -> new LowLinkRIGHT(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem,
             "ScoreCubeGrabScoreCubeGrabBalance", 2, 1, isRedAlliance).getCommandAndStop()
-            .andThen(new BalanceAuto(m_driveSubsystem, 2, 1)));
+            .andThen(new BalanceAuto(m_driveSubsystem, 2, 1, -1)));
 
     m_autoChooser.addOption("Score2CubeLowBalanceRight",
         () -> new LowLinkRIGHT(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem,
             "ScoreCubeGrabScoreCubeGrabBalance", 2, 1, isRedAlliance).getCommandAndStop()
-            .andThen(new BalanceAuto(m_driveSubsystem, 2, 1)));
+            .andThen(new BalanceAuto(m_driveSubsystem, 2, 1, -1)));
 
     m_autoChooser.addOption("Score2HighBump",
         () -> (new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE)))
@@ -224,6 +225,8 @@ public class RobotContainer {
     // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SINGLE_SUBSTATION)));
     m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
     m_primaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
+    // TEST ONLY8: m_secondaryController.leftStick().whileTrue(new IntakeCommand(m_intakeSubsystem));
+    // TEST ONLY:m_secondaryController.rightStick().whileTrue(new ScoreCommand(m_intakeSubsystem));
     // Try onTrue for command actuation, might be interesting
     // Substation grabs
     // Driver nudges
