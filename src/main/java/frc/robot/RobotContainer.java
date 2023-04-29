@@ -69,9 +69,9 @@ public class RobotContainer {
    */
   public RobotContainer() {
     m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
-        modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(-m_primaryController.getRightX())
+        modifyAxis(m_tertiaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(m_tertiaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(-m_tertiaryController.getRightX())
             * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true),
         m_driveSubsystem));
@@ -210,6 +210,36 @@ public class RobotContainer {
 
     Trigger highCone = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.SCORE_CONE_HIGH);
 
+    Trigger stowedTrigger = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.STOWED);
+
+    //TERTIARY CONTROLLER FOR STRAWBERRY FEST ONLY
+    m_tertiaryController.a().and(stowedTrigger)
+      .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_LOW_CONE)));
+
+    m_tertiaryController.b().and(stowedTrigger)
+      .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        .andThen(new WaitCommand(2.0))
+        .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_MIDDLE))));
+
+    m_tertiaryController.y().and(stowedTrigger)
+      .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        .andThen(new WaitCommand(2.0))
+        .andThen(new MoveConeHighCommand(m_armSubsystem)));
+
+    m_tertiaryController.x()
+      .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        .andThen(new WaitCommand(1.5))
+        .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED))));
+
+    m_tertiaryController.povDown().and(stowedTrigger)
+      .onTrue(new InstantCommand(() -> m_armSubsystem
+        .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE))
+        .andThen(new WaitCommand(0.5))
+        .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CONE))));
+
+    m_tertiaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
+    m_tertiaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
+
     // Scoring
     // m_primaryController.x().onTrue(new InstantCommand(() ->
     // m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SINGLE_SUBSTATION)));
@@ -315,8 +345,6 @@ public class RobotContainer {
     // Cone positions
     Trigger coneTrigger = new Trigger(
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CONE);
-
-    Trigger stowedTrigger = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.STOWED);
 
     coneTrigger.and(m_secondaryController.a()).onTrue(new InstantCommand(() -> m_armSubsystem
         .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW_CONE)));
@@ -440,6 +468,7 @@ public class RobotContainer {
   public void teleopInit() {
     m_armSubsystem.seedRelativeEncoders();
     m_armSubsystem.setTargetsToCurrents();
+    GameState.getInstance().setGamePieceDesired(GamePiece.CONE);
     // new ZeroArmCommand(m_armSubsystem).schedule();
   }
 
@@ -455,7 +484,7 @@ public class RobotContainer {
     // Square the axis
     value = Math.copySign(value * value, value);
 
-    return value;
+    return value * 0.1;
   }
 
   public void endAutoScore() {

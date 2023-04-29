@@ -67,6 +67,7 @@ public class ArmSubsystem extends SubsystemBase {
     SINGLE_SUBSTATION_CONE(111.0, -55.5, 8.0),
     SCORE_LOW_CUBE(90.0, -53.0, 0.0),
     SCORE_LOW_CONE(90.0, -53.0, 40.0),
+
     SCORE_MIDDLE_CUBE(91.0, -1.0, 73.0),
     // SCORE_CONE_MIDDLE_UPPER(63.0, 35.0, 150.0),
     SCORE_CONE_MIDDLE(92.5, 11.5, 162.0),
@@ -87,11 +88,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
   }
 
-  double elbowMaxVelocity = 75.0; // degrees per second
-  double elbowMaxAcceleration = 360; //degrees per second^2
+  double elbowMaxVelocity = 30.0; // degrees per second
+  double elbowMaxAcceleration = 180.0; //degrees per second^2
 
-  double shoulderMaxVelocity = 150.0;// degrees per second
-  double shoulderMaxAcceleration = 240.0;//degrees per second^2
+  double shoulderMaxVelocity = 30.0;// degrees per second
+  double shoulderMaxAcceleration = 120.0;//degrees per second^2
 
   private TrapezoidProfile.Constraints shoulderConstraints = new TrapezoidProfile.Constraints(shoulderMaxVelocity,
       shoulderMaxAcceleration);
