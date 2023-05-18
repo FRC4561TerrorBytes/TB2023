@@ -176,6 +176,28 @@ public class ArmSubsystem extends SubsystemBase {
 
   }
 
+  public void incrementArmSpeed(){
+    shoulderMaxVelocity += 10;
+    shoulderMaxAcceleration += 30;
+    elbowMaxVelocity += 10;
+    elbowMaxAcceleration += 30;
+
+    shoulderConstraints = new TrapezoidProfile.Constraints(shoulderMaxVelocity, shoulderMaxAcceleration);
+    elbowConstraints = new TrapezoidProfile.Constraints(elbowMaxVelocity, elbowMaxAcceleration);
+    System.out.println("Arm speed up");
+  }
+
+  public void decrementArmSpeed(){
+    shoulderMaxVelocity -= 10;
+    shoulderMaxAcceleration -= 10;
+    elbowMaxVelocity -= 10;
+    elbowMaxAcceleration -= 10;
+
+    shoulderConstraints = new TrapezoidProfile.Constraints(shoulderMaxVelocity, shoulderMaxAcceleration);
+    elbowConstraints = new TrapezoidProfile.Constraints(elbowMaxVelocity, elbowMaxAcceleration);
+    System.out.println("Arm speed down");
+  }
+
   public boolean shoulderLimitReached() {
     return m_shoulderForwardLimitSwitch.isPressed();
   }
