@@ -63,7 +63,7 @@ public class RobotContainer {
   private boolean isAuto;
   private String twoHighBump;
   // public boolean isRedAlliance = (DriverStation.getAlliance() == Alliance.Red);
-  public boolean isRedAlliance = false;
+  public boolean isRedAlliance = true;
 
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
@@ -178,16 +178,16 @@ public class RobotContainer {
 
     m_autoChooser.addOption("Score2HighBump",
         () -> (new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE)))
-            .andThen(
-                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
-                    .andThen(new WaitCommand(1.5)))
-            .andThen(
-                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH_PRE)))
-            .andThen(new WaitCommand(1.5))
-            .andThen(
-                new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH_WRIST)))
-            .andThen(new WaitCommand(1.5))
-            .andThen(new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.3)))
+            // .andThen(
+            //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+            //         .andThen(new WaitCommand(1.5)))
+            // .andThen(
+            //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH_PRE)))
+            // .andThen(new WaitCommand(1.5))
+            // .andThen(
+            //     new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_HIGH_WRIST)))
+            // .andThen(new WaitCommand(1.5))
+            // .andThen(new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.3)))
             .andThen(
                 new TwoHighBUMP(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, twoHighBump, 1, 1, isRedAlliance)
                     .getCommandAndStop()));
