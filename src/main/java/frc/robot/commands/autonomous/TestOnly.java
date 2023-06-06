@@ -78,7 +78,8 @@ public class TestOnly {
   }
 
   public Command getCommandAndStop() {
-    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2, false).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
-            .andThen(() -> m_driveSubsystem.stop());
+    return new FollowPathWithEvents(m_driveSubsystem.followTrajectoryCommand(transformedTrajectory, true), 
+      transformedTrajectory.getMarkers(), 
+      m_eventMap);
   }
 }

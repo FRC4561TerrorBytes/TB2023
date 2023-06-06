@@ -71,7 +71,8 @@ public class TestMirroring {
   }
 
   public Command getCommandAndStop() {
-    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName, maxSpeed, maxAccel, isRedAlliance).getCommandAndStop(), transformedTrajectory.getMarkers(), m_eventMap))
-            .andThen(() -> m_driveSubsystem.stop());
+    return new FollowPathWithEvents(m_driveSubsystem.followTrajectoryCommand(transformedTrajectory, true), 
+      transformedTrajectory.getMarkers(), 
+      m_eventMap);
   }
 }
