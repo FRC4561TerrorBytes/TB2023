@@ -4,64 +4,66 @@
 
 package frc.robot.commands.autonomous;
 
-import org.apache.commons.math3.util.TransformerMap;
+import java.util.HashMap;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.GameState;
+import frc.robot.GameState.GamePiece;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.MoveConeHighCommand;
+import frc.robot.commands.ScoreAutoCube;
+import frc.robot.commands.ScoreCommand;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
-
-public class AutoTrajectory {
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.commands.GroundIntake;
+public class TestMirroring {
 
   DriveSubsystem m_driveSubsystem;
   PathPlannerTrajectory m_pathPlannerTrajectory;
   PPSwerveControllerCommand m_swerveControllerCommand;
+  HashMap<String, Command> m_eventMap = new HashMap<>();
+  String autoPathName = "";
   PathPlannerTrajectory transformedTrajectory;
+  boolean isRedAlliance;
 
-  /**
-   * Creates a new PathPlanner trajectory for swerve modules to follow in
-   * autonomous
-   * 
+  double maxSpeed;
+  double maxAccel;
+
+    /**
+   * Creates a new PathPlanner trajectory for swerve modules to follow in autonomous
    * @param driveSubsystem
    * @param autoPathName
    * @param maxSpeedMetersPerSec
    * @param maxAccelerationMetersPerSecSquared
    */
-  public AutoTrajectory(DriveSubsystem driveSubsystem, String autoPathName, double maxSpeedMetersPerSec,
+  public TestMirroring(DriveSubsystem driveSubsystem, String autoPathName, double maxSpeedMetersPerSec,
       double maxAccelerationMetersPerSecSquared, boolean isRedAlliance) {
     this.m_driveSubsystem = driveSubsystem;
+    this.maxSpeed = maxSpeedMetersPerSec;
+    this.maxAccel = maxAccelerationMetersPerSecSquared;
 
     m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
         maxAccelerationMetersPerSecSquared);
 
     transformedTrajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(m_pathPlannerTrajectory, DriverStation.getAlliance());
-
-
-    // Auto PID Controllers
-    PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
-    PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
-    PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
-        Constants.AUTO_THETA_KD);
-    // FIXME: TRY WITHOUT CONTINUOUS INPUT
-    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    m_swerveControllerCommand = new PPSwerveControllerCommand(
-        transformedTrajectory,
-        m_driveSubsystem::getPose,
-        Constants.DRIVE_KINEMATICS,
-        xController,
-        yController,
-        thetaController,
-        m_driveSubsystem::setModuleStates,
-        isRedAlliance,
-        m_driveSubsystem);
-    System.out.println("auto trajectory start " + m_driveSubsystem.getPose());
+    
+    this.autoPathName = autoPathName;
+    this.isRedAlliance = isRedAlliance;
+    
   }
 
   public void resetOdometry() {
@@ -69,7 +71,7 @@ public class AutoTrajectory {
   }
 
   public Command getCommandAndStop() {
-    return m_swerveControllerCommand.withTimeout(transformedTrajectory.getTotalTimeSeconds())
-                              .andThen(() -> m_driveSubsystem.stop());
+    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName, maxSpeed, maxAccel, isRedAlliance).getCommandAndStop(), transformedTrajectory.getMarkers(), m_eventMap))
+            .andThen(() -> m_driveSubsystem.stop());
   }
 }

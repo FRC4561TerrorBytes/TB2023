@@ -101,6 +101,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void updateOdometry() {
     m_odometry.update(
         Rotation2d.fromDegrees(m_pigeon.getYaw()), getModulePositions());
+    System.out.println("odometry pose " + getPose());
   }
 
   public Pose2d getPose() {
