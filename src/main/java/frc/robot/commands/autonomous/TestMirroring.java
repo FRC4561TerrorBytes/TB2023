@@ -66,10 +66,6 @@ public class TestMirroring {
     
   }
 
-  public void resetOdometry() {
-    m_driveSubsystem.resetOdometry(transformedTrajectory.getInitialHolonomicPose());
-  }
-
   public Command getCommandAndStop() {
     return new FollowPathWithEvents(m_driveSubsystem.followTrajectoryCommand(transformedTrajectory, true), 
       transformedTrajectory.getMarkers(), 

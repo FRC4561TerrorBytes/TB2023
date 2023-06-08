@@ -58,8 +58,6 @@ public class TestOnly {
     PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
     PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
         Constants.AUTO_THETA_KD);
-    //FIXME: TRY WITHOUT CONTINUOUS INPUT
-
   }
 
   public void resetOdometry() {

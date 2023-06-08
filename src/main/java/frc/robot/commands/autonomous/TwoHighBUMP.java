@@ -60,33 +60,29 @@ public class TwoHighBUMP {
 
     transformedTrajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(m_pathPlannerTrajectory, DriverStation.getAlliance());
 
-    // Approach then stow
-    // m_eventMap.put("Approach1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    // m_eventMap.put("Stow1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
+    //Approach then stow
+    m_eventMap.put("Approach1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_eventMap.put("Stow1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
 
-    // m_eventMap.put("GameStateChange1", new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
+    m_eventMap.put("GameStateChange1", new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
 
-    // //going to floor grab and intaking
-    // m_eventMap.put("goToFloor1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
-    // m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(m_intakeSubsystem)));
+    //going to floor grab and intaking
+    m_eventMap.put("goToFloor1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
+    m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(m_intakeSubsystem)));
     
-    // //going back to stow to move arm out of the way
-    // m_eventMap.put("Approach2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    // m_eventMap.put("Print1", new InstantCommand(() -> System.out.println("OIDUABGAYGDWVBI \n \n \n")));
+    //going back to stow to move arm out of the way
+    m_eventMap.put("Approach2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    m_eventMap.put("Print1", new InstantCommand(() -> System.out.println("OIDUABGAYGDWVBI \n \n \n")));
 
-    // // Approach to high for score
-    // m_eventMap.put("High1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH)));
+    // Approach to high for score
+    m_eventMap.put("High1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH)));
 
-    // // Score cube high
-    // m_eventMap.put("ScoreCube2", new ScheduleCommand(new ScoreCommand(intakeSubsystem).withTimeout(0.5)));
+    // Score cube high
+    m_eventMap.put("ScoreCube2", new ScheduleCommand(new ScoreCommand(intakeSubsystem).withTimeout(0.5)));
     
     this.autoPathName = autoPathName;
     this.isRedAlliance = isRedAlliance;
   
-  }
-
-  public void resetOdometry() {
-    m_driveSubsystem.resetOdometry(transformedTrajectory.getInitialHolonomicPose());
   }
 
   public Command getCommandAndStop() {
