@@ -183,7 +183,7 @@ public class DriveSubsystem extends SubsystemBase {
              yController, // Y controller (usually the same values as X controller)
              thetaController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
              this::setModuleStates, // Module states consumer
-             false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+             false, // paths are already mirrored in auto command, turning true will double mirror
              this // Requires this drive subsystem
          )
      );
