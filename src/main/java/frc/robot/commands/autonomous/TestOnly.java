@@ -59,18 +59,7 @@ public class TestOnly {
     PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
         Constants.AUTO_THETA_KD);
     //FIXME: TRY WITHOUT CONTINUOUS INPUT
-    //thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    m_swerveControllerCommand = new PPSwerveControllerCommand(
-        m_pathPlannerTrajectory,
-        m_driveSubsystem::getPose,
-        Constants.DRIVE_KINEMATICS,
-        xController,
-        yController,
-        thetaController,
-        m_driveSubsystem::setModuleStates,
-        isRedAlliance,
-        m_driveSubsystem);
   }
 
   public void resetOdometry() {
@@ -78,8 +67,7 @@ public class TestOnly {
   }
 
   public Command getCommandAndStop() {
-    return new FollowPathWithEvents(m_driveSubsystem.followTrajectoryCommand(transformedTrajectory, true), 
-      transformedTrajectory.getMarkers(), 
-      m_eventMap);
+    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2, false).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
+            .andThen(() -> m_driveSubsystem.stop());
   }
 }

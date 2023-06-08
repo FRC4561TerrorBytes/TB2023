@@ -179,9 +179,9 @@ public class DriveSubsystem extends SubsystemBase {
              traj, 
              this::getPose, // Pose supplier
              Constants.DRIVE_KINEMATICS,
-             new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-             new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
-             new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+             xController, // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+             yController, // Y controller (usually the same values as X controller)
+             thetaController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
              this::setModuleStates, // Module states consumer
              true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
              this // Requires this drive subsystem
