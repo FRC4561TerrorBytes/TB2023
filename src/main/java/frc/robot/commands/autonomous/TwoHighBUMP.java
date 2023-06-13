@@ -6,88 +6,76 @@ package frc.robot.commands.autonomous;
 
 import java.util.HashMap;
 
-import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.robot.GameState;
 import frc.robot.GameState.GamePiece;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.MoveConeHighCommand;
-import frc.robot.commands.ScoreAutoCube;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.commands.GroundIntake;
-public class TwoHighBUMP {
+
+public class TwoHighBUMP extends BasePathAuto {
 
   DriveSubsystem m_driveSubsystem;
   ArmSubsystem m_armSubsystem;
   IntakeSubsystem m_intakeSubsystem;
   PathPlannerTrajectory m_pathPlannerTrajectory;
   PPSwerveControllerCommand m_swerveControllerCommand;
-  HashMap<String, Command> m_eventMap = new HashMap<>();
   String autoPathName = "";
   PathPlannerTrajectory transformedTrajectory;
   boolean isRedAlliance;
 
-    /**
-   * Creates a new PathPlanner trajectory for swerve modules to follow in autonomous
+  /**
+   * Creates a new PathPlanner trajectory for swerve modules to follow in
+   * autonomous
+   * 
    * @param driveSubsystem
    * @param autoPathName
    * @param maxSpeedMetersPerSec
    * @param maxAccelerationMetersPerSecSquared
    */
-  public TwoHighBUMP(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
-      double maxAccelerationMetersPerSecSquared, boolean isRedAlliance) {
-    this.m_driveSubsystem = driveSubsystem;
+  public TwoHighBUMP(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem,
+      String autoPathName, double maxSpeedMetersPerSec,
+      double maxAccelerationMetersPerSecSquared) {
+
+    super(driveSubsystem, autoPathName, maxSpeedMetersPerSec, maxAccelerationMetersPerSecSquared);
+
     this.m_armSubsystem = armsubsystem;
     this.m_intakeSubsystem = intakeSubsystem;
+    HashMap<String, Command> eventMap = new HashMap<>(); 
+    // Approach then stow
+    eventMap.put("Approach1",
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    eventMap.put("Stow1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
 
-    m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
-        maxAccelerationMetersPerSecSquared);
+    eventMap.put("GameStateChange1",
+        new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
 
-    transformedTrajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(m_pathPlannerTrajectory, DriverStation.getAlliance());
+    // going to floor grab and intaking
+    eventMap.put("goToFloor1",
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
+    eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(m_intakeSubsystem)));
 
-    //Approach then stow
-    m_eventMap.put("Approach1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    m_eventMap.put("Stow1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
-
-    m_eventMap.put("GameStateChange1", new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE)));
-
-    //going to floor grab and intaking
-    m_eventMap.put("goToFloor1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CUBE)));
-    m_eventMap.put("intake1", new ScheduleCommand(new IntakeCommand(m_intakeSubsystem)));
-    
-    //going back to stow to move arm out of the way
-    m_eventMap.put("Approach2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
-    m_eventMap.put("Print1", new InstantCommand(() -> System.out.println("OIDUABGAYGDWVBI \n \n \n")));
+    // going back to stow to move arm out of the way
+    eventMap.put("Approach2",
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH)));
+    eventMap.put("Print1", new InstantCommand(() -> System.out.println("OIDUABGAYGDWVBI \n \n \n")));
 
     // Approach to high for score
-    m_eventMap.put("High1", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH)));
+    eventMap.put("High1",
+        new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CUBE_HIGH)));
 
     // Score cube high
-    m_eventMap.put("ScoreCube2", new ScheduleCommand(new ScoreCommand(intakeSubsystem).withTimeout(0.5)));
-    
-    this.autoPathName = autoPathName;
-    this.isRedAlliance = isRedAlliance;
-  
-  }
+    eventMap.put("ScoreCube2", new ScheduleCommand(new ScoreCommand(intakeSubsystem).withTimeout(0.5)));
 
-  public Command getCommandAndStop() {
-    return new FollowPathWithEvents(m_driveSubsystem.followTrajectoryCommand(transformedTrajectory, true), 
-      transformedTrajectory.getMarkers(), 
-      m_eventMap);
+    setEventMap(eventMap);
+
   }
 }
