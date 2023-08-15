@@ -56,5 +56,7 @@ public class LowLink extends BasePathAuto{
     m_eventMap.put("Stow2", new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.STOWED)));
 
     m_eventMap.put("score3", new ScheduleCommand(new ScoreCommand(m_intakeSubsystem).withTimeout(0.5)));
+
+    setEventMap(m_eventMap);
   }
 }

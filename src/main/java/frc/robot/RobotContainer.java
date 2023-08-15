@@ -54,12 +54,9 @@ public class RobotContainer {
   private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
   private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
   private boolean isAuto;
-  private String twoHighBump;
-  public boolean isRedAlliance = true;
 
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
-  private final CommandXboxController m_tertiaryController = new CommandXboxController(2);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -75,8 +72,6 @@ public class RobotContainer {
 
     m_armSubsystem.setDefaultCommand(
         new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
-
-    twoHighBump = "BLUETwoHighAuto";
 
     m_autoChooser.setDefaultOption("Do Nothing", () -> new DriveUntilCommand(m_driveSubsystem, 0.0, 0.0, () -> true));
     m_autoChooser.addOption("Score1CubeHigh",
@@ -134,13 +129,13 @@ public class RobotContainer {
             .andThen(new DriveUntilCommand(m_driveSubsystem, -1, -0.1, () -> false).withTimeout(5)));
 
     m_autoChooser.addOption("Score3CubeLowLeft",
-        () -> new LowLink(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "BottomLink", 1, 1)
+        () -> new LowLink(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "BottomLink", 3, 2)
             .getCommandAndStop());
 
     m_autoChooser.addOption("Score2HighBump",
         () -> (new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE)))
             .andThen(
-                new TwoHighBUMP(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, twoHighBump, 1, 1)
+                new TwoHighBUMP(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, "twoHighAuto", 2, 2)
                     .getCommandAndStop()));
 
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
