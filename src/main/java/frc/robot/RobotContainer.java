@@ -4,12 +4,9 @@
 
 package frc.robot;
 
-import java.time.Instant;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,15 +24,12 @@ import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.BalanceAutoNoStop;
-import frc.robot.commands.autonomous.ConeHighBalance;
 import frc.robot.commands.autonomous.DriveUntilCommand;
 import frc.robot.commands.autonomous.ExitChargeStation;
-import frc.robot.commands.autonomous.FlipAuto;
 import frc.robot.commands.autonomous.LeaveCommunity;
 import frc.robot.commands.autonomous.LowLink;
 import frc.robot.commands.autonomous.LowLinkRIGHT;
 import frc.robot.commands.autonomous.ScoreCube;
-import frc.robot.commands.autonomous.TestOnly;
 import frc.robot.commands.autonomous.TwoHighBUMP;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;

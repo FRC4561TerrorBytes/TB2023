@@ -5,6 +5,8 @@
 # Prerequisites
 *.d
 
+src/main/java/frc/robot/BuildConstants.java
+
 # Compiled Object files
 *.slo
 *.lo
