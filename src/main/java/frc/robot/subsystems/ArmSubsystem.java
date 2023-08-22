@@ -357,7 +357,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_targetElbowPosition, ControlType.kPosition, pidSlot,
             Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
       } else {
-        setIdleMotorsElbow(IdleMode.kCoast);
+        setIdleMotorsElbow(IdleMode.kBrake);
         m_elbowController.setReference(
             m_elbowMotionProfile.calculate(m_elbowTimer.get()).position, ControlType.kPosition, pidSlot,
             Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
@@ -386,7 +386,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_targetShoulderPosition, ControlType.kPosition, pidSlot,
             Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
       } else {
-        setIdleMotorsShoulder(IdleMode.kCoast);
+        setIdleMotorsShoulder(IdleMode.kBrake);
         m_shoulderController.setReference(
             m_shoulderMotionProfile.calculate(m_shoulderTimer.get()).position, ControlType.kPosition, pidSlot,
             Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);

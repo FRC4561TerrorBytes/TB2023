@@ -148,8 +148,8 @@ public final class Constants {
   public static final int WRIST_MOTOR = 13;
 
   public static final double ELBOW_ROTATIONS_PER_DEGREE = 225.0 / 360.0;
-  public static final double ELBOW_MAX_VOLTAGE_FF = 1.25;
-  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 1.0; //UP
+  public static final double ELBOW_MAX_VOLTAGE_FF = 1.35;
+  public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 1.5; //UP
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.025; //DOWN
   public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
   public static final double ELBOW_INTEGRAL_GAIN = 0.000015;
@@ -161,11 +161,11 @@ public final class Constants {
 
   public static final double SHOULDER_ROTATIONS_PER_DEGREE = 500.0 / 360.0;
   // needs fixing; moves to fast and with to much force.
-  public static final double SHOULDER_MAX_VOLTAGE_FF = 0.5;
-  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.015; // Scoring (May change to 0.022)
+  public static final double SHOULDER_MAX_VOLTAGE_FF = 0.3;
+  public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_0 = 0.01; // Scoring (May change to 0.022)
   public static final double SHOULDER_PROPORTIONAL_GAIN_SLOT_1 = 0.025; // Returning from score (May change to 0.033)
-  public static final double SHOULDER_INTEGRAL_GAIN_SLOT_0 = 0.000015;
-  public static final double SHOULDER_DERIVATIVE_GAIN = 0.0;
+  public static final double SHOULDER_INTEGRAL_GAIN_SLOT_0 = 0.000045;
+  public static final double SHOULDER_DERIVATIVE_GAIN = 0.1;
   public static final double SHOULDER_TOLERANCE = SHOULDER_ROTATIONS_PER_DEGREE / 2.0;
   public static final double SHOULDER_NUDGE_DEGREES = 3.0; //Placeholder value, this will 
   public static final int SHOULDER_ENCODER_COUNT_PER_REV = 8192;
