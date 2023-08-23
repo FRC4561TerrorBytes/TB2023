@@ -350,25 +350,16 @@ public class ArmSubsystem extends SubsystemBase {
       pidSlot = 1;
       cosineScalar = 0;
     }
-    if (m_elbowMotionProfile != null) {
       if (m_elbowMotionProfile.isFinished(m_elbowTimer.get())) {
-        setIdleMotorsElbow(IdleMode.kBrake);
         m_elbowController.setReference(
-            m_targetElbowPosition, ControlType.kPosition, pidSlot,
-            Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
-      } else {
-        setIdleMotorsElbow(IdleMode.kBrake);
-        m_elbowController.setReference(
-            m_elbowMotionProfile.calculate(m_elbowTimer.get()).position, ControlType.kPosition, pidSlot,
-            Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
-      }
-    } else {
-      setIdleMotorsElbow(IdleMode.kBrake);
-      m_elbowController.setReference(
           m_targetElbowPosition, ControlType.kPosition, pidSlot,
           Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+      } else {
+        m_elbowController.setReference(
+          m_elbowMotionProfile.calculate(m_elbowTimer.get()).position, ControlType.kPosition, pidSlot,
+          Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+      }
     }
-  }
 
   void proceedToShoulderPosition() {
     double currentDegrees = m_shoulderEncoder.getPosition();
@@ -379,26 +370,15 @@ public class ArmSubsystem extends SubsystemBase {
       pidSlot = 1;
     }
 
-    if (m_shoulderMotionProfile != null) {
       if (m_shoulderMotionProfile.isFinished(m_elbowTimer.get())) {
-        setIdleMotorsShoulder(IdleMode.kBrake);
         m_shoulderController.setReference(
             m_targetShoulderPosition, ControlType.kPosition, pidSlot,
             Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
       } else {
-        setIdleMotorsShoulder(IdleMode.kBrake);
         m_shoulderController.setReference(
             m_shoulderMotionProfile.calculate(m_shoulderTimer.get()).position, ControlType.kPosition, pidSlot,
             Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
       }
-
-    }
-    else {
-      setIdleMotorsShoulder(IdleMode.kBrake);
-      m_shoulderController.setReference(
-          m_targetShoulderPosition, ControlType.kPosition, pidSlot,
-          Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
-    }
   }
 
   void proceedToWristPosition() {
@@ -458,11 +438,5 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elbow Througbore Encoder", m_elbowThroughboreEncoder.getPosition());
     SmartDashboard.putNumber(("Shoulder Calculated Angle"), getCalculatedShoulderAngle());
 
-  }
-  public void setIdleMotorsElbow(IdleMode mode){
-    m_elbowMotor.setIdleMode(mode);
-  }
-  public void setIdleMotorsShoulder(IdleMode mode){
-    m_shoulderMotor.setIdleMode(mode);
   }
 }
