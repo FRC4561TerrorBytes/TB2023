@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
+import org.littletonrobotics.junction.Logger;
+
 public class ArmSubsystem extends SubsystemBase {
   private CANSparkMax m_shoulderMotor = new CANSparkMax(Constants.SHOULDER_MOTOR, MotorType.kBrushless);
   private RelativeEncoder m_shoulderEncoder;
@@ -456,6 +458,14 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber(("Shoulder Throughbore Encoder"), m_shoulderThroughboreEncoder.getPosition());
     SmartDashboard.putNumber("Elbow Througbore Encoder", m_elbowThroughboreEncoder.getPosition());
     SmartDashboard.putNumber(("Shoulder Calculated Angle"), getCalculatedShoulderAngle());
+
+    Logger.getInstance().recordOutput("Calculated Shoulder", getCalculatedShoulderAngle());
+    Logger.getInstance().recordOutput("Calculated Elbow", getCalculatedElbowAngle());
+    Logger.getInstance().recordOutput("Calculated Wrist", getCalculatedWristAngle());
+  
+    Logger.getInstance().recordOutput("Shoulder Target", m_targetShoulderPosition);
+    Logger.getInstance().recordOutput("Elbow Target", m_targetElbowPosition);
+    Logger.getInstance().recordOutput("Wrist Target", m_targetWristPosition);
 
   }
   public void setIdleMotorsElbow(IdleMode mode){
