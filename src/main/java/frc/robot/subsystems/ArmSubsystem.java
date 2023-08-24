@@ -350,6 +350,7 @@ public class ArmSubsystem extends SubsystemBase {
       pidSlot = 1;
       cosineScalar = 0;
     }
+    if (m_elbowMotionProfile != null) {
       if (m_elbowMotionProfile.isFinished(m_elbowTimer.get())) {
         m_elbowController.setReference(
           m_targetElbowPosition, ControlType.kPosition, pidSlot,
@@ -359,7 +360,12 @@ public class ArmSubsystem extends SubsystemBase {
           m_elbowMotionProfile.calculate(m_elbowTimer.get()).position, ControlType.kPosition, pidSlot,
           Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
       }
+    } else {
+      m_elbowController.setReference(
+        m_targetElbowPosition, ControlType.kPosition, pidSlot,
+        Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
     }
+  }
 
   void proceedToShoulderPosition() {
     double currentDegrees = m_shoulderEncoder.getPosition();
@@ -369,8 +375,8 @@ public class ArmSubsystem extends SubsystemBase {
     if (currentDegrees < m_targetShoulderPosition) {
       pidSlot = 1;
     }
-
-      if (m_shoulderMotionProfile.isFinished(m_elbowTimer.get())) {
+    if (m_shoulderMotionProfile != null) {
+      if (m_shoulderMotionProfile.isFinished(m_shoulderTimer.get())) {
         m_shoulderController.setReference(
             m_targetShoulderPosition, ControlType.kPosition, pidSlot,
             Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
@@ -379,6 +385,11 @@ public class ArmSubsystem extends SubsystemBase {
             m_shoulderMotionProfile.calculate(m_shoulderTimer.get()).position, ControlType.kPosition, pidSlot,
             Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
       }
+    } else {
+      m_shoulderController.setReference(
+        m_targetShoulderPosition, ControlType.kPosition, pidSlot,
+        Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+    }
   }
 
   void proceedToWristPosition() {
