@@ -10,6 +10,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.utils.GeometryUtils;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -76,6 +78,21 @@ public class DriveSubsystem extends SubsystemBase {
       Rotation2d.fromDegrees(m_pigeon.getYaw()),
       getModulePositions());
   }
+  private static ChassisSpeeds correctForDynamics(ChassisSpeeds originalSpeeds) {
+    final double LOOP_TIME_S = 0.02;
+    Pose2d futureRobotPose =
+        new Pose2d(
+            originalSpeeds.vxMetersPerSecond * LOOP_TIME_S,
+            originalSpeeds.vyMetersPerSecond * LOOP_TIME_S,
+            Rotation2d.fromRadians(originalSpeeds.omegaRadiansPerSecond * LOOP_TIME_S));
+    Twist2d twistForPose = GeometryUtils.log(futureRobotPose);
+    ChassisSpeeds updatedSpeeds =
+        new ChassisSpeeds(
+            twistForPose.dx / LOOP_TIME_S,
+            twistForPose.dy / LOOP_TIME_S,
+            twistForPose.dtheta / LOOP_TIME_S);
+    return updatedSpeeds;
+}
 
   /**
    * Method to drive the robot using joystick info.
@@ -87,10 +104,14 @@ public class DriveSubsystem extends SubsystemBase {
    *                      field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    var swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_pigeon.getYaw()))
-            : new ChassisSpeeds(xSpeed, ySpeed, rot));
+    ChassisSpeeds desiredChassisSpeeds = 
+    fieldRelative
+    ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_pigeon.getYaw()))
+    : new ChassisSpeeds(xSpeed, ySpeed, rot);
+
+    desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
+    
+    var swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(desiredChassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_VELOCITY_METERS_PER_SECOND);
     setModuleStates(swerveModuleStates);
   }
