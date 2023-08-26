@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,6 +24,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Pigeon gyro
   private final PigeonIMU m_pigeon = new PigeonIMU(Constants.PIGEON_ID);
+
+  private final Field2d m_field = new Field2d();
 
   // Swerve Modules
   private final SwerveModule m_frontLeftModule = new SwerveModule(
@@ -64,7 +69,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
       Rotation2d.fromDegrees(m_pigeon.getYaw()),
       getModulePositions());
-  }
+    SmartDashboard.putData("field", m_field);
+    }
 
   /**
    * Method to drive the robot using joystick info.
@@ -120,6 +126,15 @@ public class DriveSubsystem extends SubsystemBase {
     };
   }
 
+  public SwerveModuleState[] getModuleStates() {
+    return new SwerveModuleState[] {
+      m_frontLeftModule.getState(),
+      m_frontRightModule.getState(),
+      m_backLeftModule.getState(),
+      m_backRightModule.getState()
+    };
+  }
+
   public boolean onChargeStation() {
     return Math.abs(m_pigeon.getPitch()) > 20;
   }
@@ -153,5 +168,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
     SmartDashboard.putBoolean("On Charge Station", onChargeStation());
     SmartDashboard.putBoolean("On Pitch Down", onPitchDown());
+
+    m_field.setRobotPose(getPose());
+    Logger.getInstance().recordOutput("states", getModuleStates());
   }
 }
