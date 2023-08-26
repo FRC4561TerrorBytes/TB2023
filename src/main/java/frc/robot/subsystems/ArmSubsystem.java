@@ -70,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_MIDDLE_CUBE(91.0, -1.0, 73.0),
     // SCORE_CONE_ MIDDLE_UPPER(63.0, 35.0, 150.0),
     SCORE_CONE_MIDDLE(92.5, 11.5, 162.0),
-    SCORE_CUBE_HIGH(56.0, 26.0, 68.0),
+    SCORE_CUBE_HIGH(65.0, 22.0, 68.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
     SCORE_CONE_HIGH(64.0, 36.0, 70.0),
     SCORE_CONE_HIGH_WRIST(61.0, 33.0, 162.0),
