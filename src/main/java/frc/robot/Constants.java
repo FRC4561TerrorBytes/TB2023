@@ -148,7 +148,7 @@ public final class Constants {
   public static final int WRIST_MOTOR = 13;
 
   public static final double ELBOW_ROTATIONS_PER_DEGREE = 225.0 / 360.0;
-  public static final double ELBOW_MAX_VOLTAGE_FF = 1.35;
+  public static final double ELBOW_MAX_VOLTAGE_FF = 1.6;
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_0 = 1.5; //UP
   public static final double ELBOW_PROPORTIONAL_GAIN_SLOT_1 = 0.025; //DOWN
   public static final double ELBOW_DERIVATIVE_GAIN = 0.0001;
