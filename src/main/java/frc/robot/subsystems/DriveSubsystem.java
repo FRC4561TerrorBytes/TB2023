@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.utils.GeometryUtils;
+import frc.robot.utils.SecondOrderSwerveModuleStates;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -111,8 +112,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
     
-    var swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(desiredChassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_VELOCITY_METERS_PER_SECOND);
+    SecondOrderSwerveModuleStates secondOrderSwerveModuleStates = Constants.SECOND_ORDER_SWERVE_KINEMATICS.toSwerveModuleState(desiredChassisSpeeds, getRotation2d());
+    SwerveModuleState[] swerveModuleStates = secondOrderSwerveModuleStates.getSwerveModuleStates();    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_VELOCITY_METERS_PER_SECOND);
     setModuleStates(swerveModuleStates);
   }
 
