@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -75,7 +77,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
       Rotation2d.fromDegrees(m_pigeon.getYaw()),
       getModulePositions());
-  }
+    }
 
   /**
    * Method to drive the robot using joystick info.
@@ -132,6 +134,15 @@ public class DriveSubsystem extends SubsystemBase {
     };
   }
 
+  public SwerveModuleState[] getModuleStates() {
+    return new SwerveModuleState[] {
+      m_frontLeftModule.getState(),
+      m_frontRightModule.getState(),
+      m_backLeftModule.getState(),
+      m_backRightModule.getState()
+    };
+  }
+
   public boolean onChargeStation() {
     return Math.abs(m_pigeon.getPitch()) > 20;
   }
@@ -165,6 +176,20 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
     SmartDashboard.putBoolean("On Charge Station", onChargeStation());
     SmartDashboard.putBoolean("On Pitch Down", onPitchDown());
+
+    Logger.getInstance().recordOutput("odometry", getPose());
+    // Logger.getInstance().recordOutput("states", getModuleStates());
+
+    SwerveModuleState[] measuredStates = new SwerveModuleState[] {null, null, null, null};
+
+    for (int i = 0; i < 4; i++) {
+      measuredStates[i] = 
+        new SwerveModuleState(
+          getModuleStates()[i].speedMetersPerSecond,
+          getModuleStates()[i].angle);
+    }
+
+    Logger.getInstance().recordOutput("measured states", measuredStates);
   }
 
   public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {

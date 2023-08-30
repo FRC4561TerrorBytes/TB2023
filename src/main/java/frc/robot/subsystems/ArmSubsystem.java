@@ -12,13 +12,14 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.GameState;
-import edu.wpi.first.wpilibj.Timer;
+
+import org.littletonrobotics.junction.Logger;
 
 public class ArmSubsystem extends SubsystemBase {
   private CANSparkMax m_shoulderMotor = new CANSparkMax(Constants.SHOULDER_MOTOR, MotorType.kBrushless);
@@ -69,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_LOW_CONE(93.0, -68.0, 72.0),
     SCORE_MIDDLE_CUBE(91.0, -1.0, 73.0),
     // SCORE_CONE_ MIDDLE_UPPER(63.0, 35.0, 150.0),
-    SCORE_CONE_MIDDLE(92.5, 11.5, 162.0),
+    SCORE_CONE_MIDDLE(86.5, 11.5, 162.0),
     SCORE_CUBE_HIGH(56.0, 26.0, 68.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
     SCORE_CONE_HIGH(64.0, 36.0, 70.0),
@@ -457,6 +458,14 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber(("Shoulder Throughbore Encoder"), m_shoulderThroughboreEncoder.getPosition());
     SmartDashboard.putNumber("Elbow Througbore Encoder", m_elbowThroughboreEncoder.getPosition());
     SmartDashboard.putNumber(("Shoulder Calculated Angle"), getCalculatedShoulderAngle());
+
+    Logger.getInstance().recordOutput("Calculated Shoulder", getCalculatedShoulderAngle());
+    Logger.getInstance().recordOutput("Calculated Elbow", getCalculatedElbowAngle());
+    Logger.getInstance().recordOutput("Calculated Wrist", getCalculatedWristAngle());
+  
+    Logger.getInstance().recordOutput("Shoulder Target", m_targetShoulderPosition);
+    Logger.getInstance().recordOutput("Elbow Target", m_targetElbowPosition);
+    Logger.getInstance().recordOutput("Wrist Target", m_targetWristPosition);
 
   }
   public void setIdleMotorsElbow(IdleMode mode){
