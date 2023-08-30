@@ -96,16 +96,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-    DriverStation.Alliance color = DriverStation.getAlliance();
-
-    if(color == Alliance.Red) {
-      m_robotContainer.isRedAlliance = true;
-    }
-    else {
-      m_robotContainer.isRedAlliance = false;
-    }
+    
   }
-
   /**
    * This autonomous runs the autonomous command selected by your
    * {@link RobotContainer} class.

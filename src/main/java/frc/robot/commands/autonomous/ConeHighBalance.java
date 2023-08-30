@@ -20,18 +20,12 @@ import frc.robot.commands.GroundIntake;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-public class ConeHighBalance {
+public class ConeHighBalance extends BasePathAuto{
 
-  DriveSubsystem m_driveSubsystem;
   ArmSubsystem m_armSubsystem;
   IntakeSubsystem m_intakeSubsystem;
-  PathPlannerTrajectory m_pathPlannerTrajectory;
-  PPSwerveControllerCommand m_swerveControllerCommand;
-  HashMap<String, Command> m_eventMap = new HashMap<>();
-  String autoPathName = "";
-  boolean isRedAlliance;
 
-    /**
+  /**
    * Creates a new PathPlanner trajectory for swerve modules to follow in autonomous
    * @param driveSubsystem
    * @param autoPathName
@@ -39,27 +33,11 @@ public class ConeHighBalance {
    * @param maxAccelerationMetersPerSecSquared
    */
   public ConeHighBalance(DriveSubsystem driveSubsystem, ArmSubsystem armsubsystem, IntakeSubsystem intakeSubsystem, String autoPathName, double maxSpeedMetersPerSec,
-      double maxAccelerationMetersPerSecSquared, boolean isRedAlliance) {
-    this.m_driveSubsystem = driveSubsystem;
+  double maxAccelerationMetersPerSecSquared) {
+
+    super(driveSubsystem, autoPathName, maxSpeedMetersPerSec, maxAccelerationMetersPerSecSquared);
+
     this.m_armSubsystem = armsubsystem;
     this.m_intakeSubsystem = intakeSubsystem;
-
-    m_pathPlannerTrajectory = PathPlanner.loadPath(autoPathName, maxSpeedMetersPerSec,
-        maxAccelerationMetersPerSecSquared);
-
-    //m_eventMap.put("FloorGrab", new ScheduleCommand(new GroundIntake(intakeSubsystem, armsubsystem)));
-
-    this.autoPathName = autoPathName;
-    this.isRedAlliance = isRedAlliance;
-    
-  }
-
-  public void resetOdometry() {
-    m_driveSubsystem.resetOdometry(m_pathPlannerTrajectory.getInitialHolonomicPose());
-  }
-
-  public Command getCommandAndStop() {
-    return new InstantCommand(() -> resetOdometry(), m_driveSubsystem).andThen(new FollowPathWithEvents(new AutoTrajectory(m_driveSubsystem,autoPathName,3,2, isRedAlliance).getCommandAndStop(), m_pathPlannerTrajectory.getMarkers(), m_eventMap))
-            .andThen(() -> m_driveSubsystem.stop());
   }
 }
