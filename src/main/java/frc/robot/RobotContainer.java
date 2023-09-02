@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveConeHighCommand;
-import frc.robot.commands.MoveConeMiddleCommand;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.BalanceAutoNoStop;
@@ -255,7 +254,7 @@ public class RobotContainer {
     coneTrigger.and(m_secondaryController.a()).onTrue(new InstantCommand(() -> m_armSubsystem
         .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW_CONE)));
     coneTrigger.and(m_secondaryController.b())
-        .onTrue(new MoveConeMiddleCommand(m_armSubsystem).withTimeout(2.5));
+        .onTrue(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SCORE_CONE_MIDDLE)));
     coneTrigger.and(m_secondaryController.y()).and(stowedTrigger.negate())
         .onTrue(new MoveConeHighCommand(m_armSubsystem));
     coneTrigger.and(m_secondaryController.leftBumper()).onTrue(
