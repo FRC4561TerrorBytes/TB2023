@@ -70,8 +70,8 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_LOW_CONE(93.0, -68.0, 72.0),
     SCORE_MIDDLE_CUBE(91.0, -1.0, 73.0),
     // SCORE_CONE_ MIDDLE_UPPER(63.0, 35.0, 150.0),
-    SCORE_CONE_MIDDLE(86.5, 11.5, 162.0),
-    SCORE_CUBE_HIGH(56.0, 26.0, 68.0),
+    SCORE_CONE_MIDDLE(92.5, 11.5, 162.0),
+    SCORE_CUBE_HIGH(68.0, 20.0, 68.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
     SCORE_CONE_HIGH(64.0, 36.0, 70.0),
     SCORE_CONE_HIGH_WRIST(61.0, 33.0, 162.0),
@@ -114,7 +114,8 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowController.setOutputRange(-0.15, 0.25);
     m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_0, 0);
     m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_1, 1);
-    m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN, 0);
+    m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN_SLOT_0, 0);
+    m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN_SLOT_1, 1);
     m_elbowController.setI(Constants.ELBOW_INTEGRAL_GAIN, 0);
     m_elbowController.setIZone(Constants.ELBOW_IZONE, 0);
     m_elbowController.setIMaxAccum(0.1, 0);
@@ -353,21 +354,18 @@ public class ArmSubsystem extends SubsystemBase {
     }
     if (m_elbowMotionProfile != null) {
       if (m_elbowMotionProfile.isFinished(m_elbowTimer.get())) {
-        setIdleMotorsElbow(IdleMode.kBrake);
         m_elbowController.setReference(
-            m_targetElbowPosition, ControlType.kPosition, pidSlot,
-            Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
-      } else {
-        setIdleMotorsElbow(IdleMode.kCoast);
-        m_elbowController.setReference(
-            m_elbowMotionProfile.calculate(m_elbowTimer.get()).position, ControlType.kPosition, pidSlot,
-            Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
-      }
-    } else {
-      setIdleMotorsElbow(IdleMode.kBrake);
-      m_elbowController.setReference(
           m_targetElbowPosition, ControlType.kPosition, pidSlot,
           Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+      } else {
+        m_elbowController.setReference(
+          m_elbowMotionProfile.calculate(m_elbowTimer.get()).position, ControlType.kPosition, pidSlot,
+          Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+      }
+    } else {
+      m_elbowController.setReference(
+        m_targetElbowPosition, ControlType.kPosition, pidSlot,
+        Constants.ELBOW_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
     }
   }
 
@@ -379,26 +377,20 @@ public class ArmSubsystem extends SubsystemBase {
     if (currentDegrees < m_targetShoulderPosition) {
       pidSlot = 1;
     }
-
     if (m_shoulderMotionProfile != null) {
-      if (m_shoulderMotionProfile.isFinished(m_elbowTimer.get())) {
-        setIdleMotorsShoulder(IdleMode.kBrake);
+      if (m_shoulderMotionProfile.isFinished(m_shoulderTimer.get())) {
         m_shoulderController.setReference(
             m_targetShoulderPosition, ControlType.kPosition, pidSlot,
             Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
       } else {
-        setIdleMotorsShoulder(IdleMode.kCoast);
         m_shoulderController.setReference(
             m_shoulderMotionProfile.calculate(m_shoulderTimer.get()).position, ControlType.kPosition, pidSlot,
             Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
       }
-
-    }
-    else {
-      setIdleMotorsShoulder(IdleMode.kBrake);
+    } else {
       m_shoulderController.setReference(
-          m_targetShoulderPosition, ControlType.kPosition, pidSlot,
-          Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
+        m_targetShoulderPosition, ControlType.kPosition, pidSlot,
+        Constants.SHOULDER_MAX_VOLTAGE_FF * cosineScalar, ArbFFUnits.kVoltage);
     }
   }
 
@@ -467,11 +459,5 @@ public class ArmSubsystem extends SubsystemBase {
     Logger.getInstance().recordOutput("Elbow Target", m_targetElbowPosition);
     Logger.getInstance().recordOutput("Wrist Target", m_targetWristPosition);
 
-  }
-  public void setIdleMotorsElbow(IdleMode mode){
-    m_elbowMotor.setIdleMode(mode);
-  }
-  public void setIdleMotorsShoulder(IdleMode mode){
-    m_shoulderMotor.setIdleMode(mode);
   }
 }
