@@ -192,12 +192,10 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_armSubsystem.seedRelativeEncoders(), m_armSubsystem));
 
     // Arm nudges
-    m_secondaryController.povLeft().onTrue(new InstantCommand(m_armSubsystem::nudgeShoulderBackward));
-    m_secondaryController.povRight().onTrue(new InstantCommand(m_armSubsystem::nudgeShoulderForward));
-    m_secondaryController.povUp().onTrue(new InstantCommand(m_armSubsystem::nudgeElbowUp));
-    m_secondaryController.povDown().onTrue(new InstantCommand(m_armSubsystem::nudgeElbowDown));
-    m_secondaryController.rightTrigger().onTrue(new InstantCommand(m_armSubsystem::nudgeWristDown));
-    m_secondaryController.rightBumper().onTrue(new InstantCommand(m_armSubsystem::nudgeWristUp));
+    m_secondaryController.rightBumper().onTrue(new InstantCommand(m_armSubsystem::nudgeElbowUp));
+    m_secondaryController.rightTrigger().onTrue(new InstantCommand(m_armSubsystem::nudgeElbowDown));
+    m_secondaryController.povDown().onTrue(new InstantCommand(m_armSubsystem::nudgeWristDown));
+    m_secondaryController.povUp().onTrue(new InstantCommand(m_armSubsystem::nudgeWristUp));
 
     // Game piece indication
     m_secondaryController.start()
@@ -234,11 +232,7 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(
                 KnownArmPlacement.SUBSTATION_GRAB_HALFWAY_CUBE)));
-    cubeTrigger.and(m_secondaryController.leftTrigger()).onTrue(
-        new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CUBE)));
-    (m_primaryController.y()).onTrue(
+    (m_secondaryController.povLeft()).onTrue(
         new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE))
             .andThen(new InstantCommand(() -> m_armSubsystem
                 .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE)))
@@ -273,7 +267,7 @@ public class RobotContainer {
     coneTrigger.and(stowedTrigger).and(m_secondaryController.y())
         .onTrue(new MoveConeHighCommand(m_armSubsystem));
 
-    (m_primaryController.b()).onTrue(
+    (m_secondaryController.povRight()).onTrue(
         new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE))
             .andThen(new InstantCommand(() -> m_armSubsystem
                 .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE)))
