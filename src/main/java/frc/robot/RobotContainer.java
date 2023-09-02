@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveConeHighCommand;
+import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.BalanceAutoNoStop;
@@ -186,6 +187,10 @@ public class RobotContainer {
         .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(0.0, 0.0, -1.0, true),
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+
+    m_primaryController.x()
+      .whileTrue(new ScoreAlign(m_driveSubsystem));
+      // .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     // Secondary Controller Bindings
     m_secondaryController.leftStick().and(m_secondaryController.rightStick())
