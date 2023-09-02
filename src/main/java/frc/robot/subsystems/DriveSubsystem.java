@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -27,6 +28,12 @@ import frc.robot.utils.GeometryUtils;
 import frc.robot.utils.SecondOrderSwerveModuleStates;
 
 public class DriveSubsystem extends SubsystemBase {
+
+    double previousT;
+    double offT;
+    Timer timer = new Timer();
+
+    private Rotation2d targetHeading;
 
   // Pigeon gyro
   private final PigeonIMU m_pigeon = new PigeonIMU(Constants.PIGEON_ID);
@@ -94,6 +101,41 @@ public class DriveSubsystem extends SubsystemBase {
             twistForPose.dtheta / LOOP_TIME_S);
     return updatedSpeeds;
 }
+private ChassisSpeeds correctHeading(ChassisSpeeds desiredSpeed){
+  //Determine time interval
+  double currentT = timer.get();
+  double dt = currentT - previousT;
+  //Get desired rotational speed in radians per second and absolute translational speed in m/s
+  double vr = desiredSpeed.omegaRadiansPerSecond;
+  double v = Math.hypot(desiredSpeed.vxMetersPerSecond, desiredSpeed.vyMetersPerSecond);
+  if (vr > 0.01 || vr < -0.01){
+      offT = currentT;
+      setTargetHeading(getRotation2d());
+      return desiredSpeed;
+  }
+  if (currentT - offT < 0.5){
+      setTargetHeading(getRotation2d());
+      return desiredSpeed;
+  }
+  //Determine target and current heading
+  setTargetHeading( getTargetHeading().plus(new Rotation2d(vr * dt)) );
+  Rotation2d currentHeading = getRotation2d();
+  //Calculate the change in heading that is needed to achieve the target
+  Rotation2d deltaHeading = getTargetHeading().minus(currentHeading);
+  if (Math.abs(deltaHeading.getDegrees()) < 0.05){
+      return desiredSpeed;
+  }
+  double correctedVr = deltaHeading.getRadians() / dt * 0.05;
+  previousT = currentT;
+
+  return new ChassisSpeeds(desiredSpeed.vxMetersPerSecond, desiredSpeed.vyMetersPerSecond, correctedVr);
+}
+public Rotation2d getTargetHeading(){ 
+  return targetHeading; 
+}
+public void setTargetHeading(Rotation2d targetHeading) { 
+  this.targetHeading = targetHeading; 
+}
 
   /**
    * Method to drive the robot using joystick info.
@@ -111,6 +153,7 @@ public class DriveSubsystem extends SubsystemBase {
     : new ChassisSpeeds(xSpeed, ySpeed, rot);
 
     desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
+    desiredChassisSpeeds = correctHeading(desiredChassisSpeeds);
     
     SecondOrderSwerveModuleStates secondOrderSwerveModuleStates = Constants.SECOND_ORDER_SWERVE_KINEMATICS.toSwerveModuleState(desiredChassisSpeeds, getRotation2d());
     SwerveModuleState[] swerveModuleStates = secondOrderSwerveModuleStates.getSwerveModuleStates();    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_VELOCITY_METERS_PER_SECOND);
