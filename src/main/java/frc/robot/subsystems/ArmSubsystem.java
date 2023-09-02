@@ -70,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
     SCORE_MIDDLE_CUBE(91.0, -1.0, 73.0),
     // SCORE_CONE_ MIDDLE_UPPER(63.0, 35.0, 150.0),
     SCORE_CONE_MIDDLE(92.5, 11.5, 162.0),
-    SCORE_CUBE_HIGH(56.0, 26.0, 68.0),
+    SCORE_CUBE_HIGH(68.0, 20.0, 68.0),
     SCORE_CONE_HIGH_PRE(55.0, 40.0, 0.0),
     SCORE_CONE_HIGH(64.0, 36.0, 70.0),
     SCORE_CONE_HIGH_WRIST(61.0, 33.0, 162.0),
@@ -113,7 +113,8 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowController.setOutputRange(-0.15, 0.25);
     m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_0, 0);
     m_elbowController.setP(Constants.ELBOW_PROPORTIONAL_GAIN_SLOT_1, 1);
-    m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN, 0);
+    m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN_SLOT_0, 0);
+    m_elbowController.setD(Constants.ELBOW_DERIVATIVE_GAIN_SLOT_1, 1);
     m_elbowController.setI(Constants.ELBOW_INTEGRAL_GAIN, 0);
     m_elbowController.setIZone(Constants.ELBOW_IZONE, 0);
     m_elbowController.setIMaxAccum(0.1, 0);
