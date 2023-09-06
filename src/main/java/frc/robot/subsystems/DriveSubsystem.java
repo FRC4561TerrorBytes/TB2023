@@ -177,6 +177,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("On Charge Station", onChargeStation());
     SmartDashboard.putBoolean("On Pitch Down", onPitchDown());
 
+    Logger.getInstance().recordOutput("heading", getPose().getRotation().getDegrees() + 180);
+
     Logger.getInstance().recordOutput("odometry", getPose());
     // Logger.getInstance().recordOutput("states", getModuleStates());
 
