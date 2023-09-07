@@ -11,6 +11,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -181,6 +182,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     Logger.getInstance().recordOutput("odometry", getPose());
     // Logger.getInstance().recordOutput("states", getModuleStates());
+
+    Logger.getInstance().recordOutput("3d pose", new Pose3d(getPose()));
 
     SwerveModuleState[] measuredStates = new SwerveModuleState[] {null, null, null, null};
 
