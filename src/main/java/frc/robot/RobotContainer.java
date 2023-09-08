@@ -51,6 +51,7 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final VisionSubsytem m_visionSubsystem = new VisionSubsytem(m_driveSubsystem);
 
   private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
   private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
@@ -192,6 +193,10 @@ public class RobotContainer {
     m_primaryController.x()
       .whileTrue(new ScoreAlign(m_driveSubsystem));
       // .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+
+    //change the parameter values to tweak
+    m_primaryController.a()
+      .whileTrue(new InstantCommand(() -> m_visionSubsystem.centerAprilTagCommand(0, 0)));
 
     // Secondary Controller Bindings
     m_secondaryController.leftStick().and(m_secondaryController.rightStick())

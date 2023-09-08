@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -16,7 +17,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import frc.robot.Constants;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -68,7 +67,7 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.BACK_RIGHT_TURN_MOTOR_INVERTED);
 
   // Odometry
-  private static SwerveDrivePoseEstimator m_poseEstimator;
+  private SwerveDrivePoseEstimator m_poseEstimator;
 
   private final PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
   private final  PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
@@ -128,7 +127,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), position);
   }
 
-  public static void addVision(Pose2d visionPose) {
+  public void addVision(Pose2d visionPose) {
     m_poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
   }
 
