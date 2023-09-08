@@ -10,6 +10,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -66,7 +68,7 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.BACK_RIGHT_TURN_MOTOR_INVERTED);
 
   // Odometry
-  private final SwerveDriveOdometry m_odometry;
+  private static SwerveDrivePoseEstimator m_poseEstimator;
 
   private final PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
   private final  PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
@@ -75,9 +77,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public DriveSubsystem() {
     m_pigeon.setYaw(0.0);
-    m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
-      Rotation2d.fromDegrees(m_pigeon.getYaw()),
-      getModulePositions());
+    m_poseEstimator = new SwerveDrivePoseEstimator(Constants.DRIVE_KINEMATICS,
+      getRotation2d(),
+      getModulePositions(),
+      getPose());
     }
 
   /**
@@ -113,17 +116,20 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    m_odometry.update(
-        Rotation2d.fromDegrees(m_pigeon.getYaw()), getModulePositions());
+    m_poseEstimator.update(getRotation2d(), getModulePositions());
     System.out.println("odometry pose " + getPose());
   }
 
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   public void resetOdometry(Pose2d position) {
-    m_odometry.resetPosition(getRotation2d(), getModulePositions(), position);
+    m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), position);
+  }
+
+  public static void addVision(Pose2d visionPose) {
+    m_poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
   }
 
   public SwerveModulePosition[] getModulePositions() {
