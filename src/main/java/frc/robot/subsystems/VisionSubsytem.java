@@ -236,7 +236,7 @@ public class VisionSubsytem extends SubsystemBase {
   public void updateOdometry() {
     LimelightResults results = LimelightHelpers.getLatestResults("limelightLeft");
 
-    m_driveSubsytem.addVision(results.targetingResults.getBotPose2d_wpiBlue());
+    m_driveSubsytem.addVision(results);
   }
 
   @Override

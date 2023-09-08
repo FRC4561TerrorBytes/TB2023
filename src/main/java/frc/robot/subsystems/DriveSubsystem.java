@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers.LimelightResults;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -127,8 +128,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), position);
   }
 
-  public void addVision(Pose2d visionPose) {
-    m_poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
+  public void addVision(LimelightResults result) {
+    m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d_wpiBlue(), 
+      Timer.getFPGATimestamp() - (result.targetingResults.latency_pipeline/1000.0) - (result.targetingResults.latency_capture/1000.0));
   }
 
   public SwerveModulePosition[] getModulePositions() {
