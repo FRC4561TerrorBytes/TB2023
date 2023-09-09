@@ -161,6 +161,7 @@ public class RobotContainer {
 
     // Scoring
     m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
+    m_secondaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
     m_primaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
     // Driver nudges
     m_primaryController.povUp()
@@ -197,8 +198,6 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_armSubsystem.seedRelativeEncoders(), m_armSubsystem));
 
     // Arm nudges
-    m_secondaryController.rightBumper().onTrue(new InstantCommand(m_armSubsystem::nudgeElbowUp));
-    m_secondaryController.rightTrigger().onTrue(new InstantCommand(m_armSubsystem::nudgeElbowDown));
     m_secondaryController.povDown().onTrue(new InstantCommand(m_armSubsystem::nudgeWristDown));
     m_secondaryController.povUp().onTrue(new InstantCommand(m_armSubsystem::nudgeWristUp));
 
