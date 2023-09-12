@@ -333,7 +333,7 @@ public class RobotContainer {
     // Square the axis
     value = Math.copySign(value * value, value);
 
-    return value;
+    return value * 0.8;
   }
 
   public void endAutoScore() {
