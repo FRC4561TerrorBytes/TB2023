@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GameState.GamePiece;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveConeHighCommand;
+import frc.robot.commands.ScoreAlign;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.autonomous.BalanceAuto;
 import frc.robot.commands.autonomous.BalanceAutoNoStop;
@@ -160,6 +161,7 @@ public class RobotContainer {
 
     // Scoring
     m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
+    m_secondaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
     m_primaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
     // Driver nudges
     m_primaryController.povUp()
@@ -187,17 +189,17 @@ public class RobotContainer {
             m_driveSubsystem))
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
+    m_primaryController.x()
+      .whileTrue(new ScoreAlign(m_driveSubsystem));
+      // .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
+
     // Secondary Controller Bindings
     m_secondaryController.leftStick().and(m_secondaryController.rightStick())
         .onTrue(new InstantCommand(() -> m_armSubsystem.seedRelativeEncoders(), m_armSubsystem));
 
     // Arm nudges
-    m_secondaryController.povLeft().onTrue(new InstantCommand(m_armSubsystem::nudgeShoulderBackward));
-    m_secondaryController.povRight().onTrue(new InstantCommand(m_armSubsystem::nudgeShoulderForward));
-    m_secondaryController.povUp().onTrue(new InstantCommand(m_armSubsystem::nudgeElbowUp));
-    m_secondaryController.povDown().onTrue(new InstantCommand(m_armSubsystem::nudgeElbowDown));
-    m_secondaryController.rightTrigger().onTrue(new InstantCommand(m_armSubsystem::nudgeWristDown));
-    m_secondaryController.rightBumper().onTrue(new InstantCommand(m_armSubsystem::nudgeWristUp));
+    m_secondaryController.povDown().onTrue(new InstantCommand(m_armSubsystem::nudgeWristDown));
+    m_secondaryController.povUp().onTrue(new InstantCommand(m_armSubsystem::nudgeWristUp));
 
     // Game piece indication
     m_secondaryController.start()
@@ -234,11 +236,7 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(
                 KnownArmPlacement.SUBSTATION_GRAB_HALFWAY_CUBE)));
-    cubeTrigger.and(m_secondaryController.leftTrigger()).onTrue(
-        new InstantCommand(
-            () -> m_armSubsystem.setKnownArmPlacement(
-                KnownArmPlacement.SUBSTATION_GRAB_FULLWAY_CUBE)));
-    (m_primaryController.y()).onTrue(
+    (m_secondaryController.povLeft()).onTrue(
         new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CUBE))
             .andThen(new InstantCommand(() -> m_armSubsystem
                 .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE)))
@@ -273,7 +271,7 @@ public class RobotContainer {
     coneTrigger.and(stowedTrigger).and(m_secondaryController.y())
         .onTrue(new MoveConeHighCommand(m_armSubsystem));
 
-    (m_primaryController.b()).onTrue(
+    (m_secondaryController.povRight()).onTrue(
         new InstantCommand(() -> GameState.getInstance().setGamePieceDesired(GamePiece.CONE))
             .andThen(new InstantCommand(() -> m_armSubsystem
                 .setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_PRE)))
@@ -335,7 +333,7 @@ public class RobotContainer {
     // Square the axis
     value = Math.copySign(value * value, value);
 
-    return value;
+    return value * 0.8;
   }
 
   public void endAutoScore() {
