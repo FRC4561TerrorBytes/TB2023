@@ -229,7 +229,7 @@ public class ArmSubsystem extends SubsystemBase {
     setWristPosition(desiredWristAngle);
     if (shoulderRotation < desiredShoulderAngle) {
       setShoulderPosition(desiredShoulderAngle);
-      new WaitCommand(0.25)
+      new WaitCommand(0.5)
           .andThen(new InstantCommand(() -> setElbowPosition(desiredElbowAngle))).schedule();
     } else {
       setElbowPosition(desiredElbowAngle);

@@ -226,12 +226,12 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_armSubsystem
             .setKnownArmPlacement(KnownArmPlacement.SCORE_MIDDLE_CUBE)));
     cubeTrigger.and(m_secondaryController.y())
-        .onTrue(new InstantCommand(() -> m_armSubsystem
-            .setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
-            .andThen(new WaitCommand(0.5))
-            .andThen(new InstantCommand(
+        // .onTrue(new InstantCommand(() -> m_armSubsystem
+        //     .setKnownArmPlacement(KnownArmPlacement.SUBSTATION_APPROACH))
+        //     .andThen(new WaitCommand(0.5))
+            .onTrue(new InstantCommand(
                 () -> m_armSubsystem.setKnownArmPlacement(
-                    KnownArmPlacement.SCORE_CUBE_HIGH))));
+                    KnownArmPlacement.SCORE_CUBE_HIGH)));
     cubeTrigger.and(m_secondaryController.leftBumper()).onTrue(
         new InstantCommand(
             () -> m_armSubsystem.setKnownArmPlacement(
