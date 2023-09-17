@@ -110,6 +110,10 @@ public class RobotContainer {
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_LOW_CUBE)
             .andThen(new BalanceAuto(m_driveSubsystem, -2, -1, 1).withTimeout(5.0))
             .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
+    m_autoChooser.addOption("Score1CubeMidBalance",
+        () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_MIDDLE_CUBE)
+            .andThen(new BalanceAuto(m_driveSubsystem, -2, -1, 1).withTimeout(5.0))
+            .andThen(new InstantCommand(() -> m_driveSubsystem.drive(0, 0, 0.01, false))));
 
     m_autoChooser.addOption("Score1CubeHighBalance",
         () -> new ScoreCube(m_driveSubsystem, m_armSubsystem, m_intakeSubsystem, KnownArmPlacement.SCORE_CUBE_HIGH)
