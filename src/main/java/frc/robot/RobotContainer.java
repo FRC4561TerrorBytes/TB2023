@@ -66,7 +66,7 @@ public class RobotContainer {
         modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
         modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
         modifyAxis(-m_primaryController.getRightX())
-            * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * 0.6,
         true),
         m_driveSubsystem));
 
