@@ -73,7 +73,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final  PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
         Constants.AUTO_THETA_KD);
 
-  private final PIDController absoluteRotationController = new PIDController(0.025, 0.01, 0);
+  private final PIDController absoluteRotationController = new PIDController(0.025, 0, 0);
 
   public DriveSubsystem() {
     m_pigeon.setYaw(0.0);
