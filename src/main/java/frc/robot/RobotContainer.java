@@ -48,8 +48,8 @@ import frc.robot.subsystems.LEDSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final ArmSubsystem m_armSubsystem = null;
+  private final IntakeSubsystem m_intakeSubsystem = null;
 
   private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
   private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
@@ -62,16 +62,17 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
+    m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.driveAbsoluteRotation(
         modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
         modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
         modifyAxis(-m_primaryController.getRightX())
             * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        modifyAxis(-m_primaryController.getRightY())*Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true),
         m_driveSubsystem));
 
-    m_armSubsystem.setDefaultCommand(
-        new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
+    //m_armSubsystem.setDefaultCommand(
+        //new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem));
 
     m_autoChooser.setDefaultOption("Do Nothing", () -> new DriveUntilCommand(m_driveSubsystem, 0.0, 0.0, () -> true));
     m_autoChooser.addOption("Score1CubeHigh",
@@ -160,9 +161,9 @@ public class RobotContainer {
   private void configureBindings() {
 
     // Scoring
-    m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
-    m_secondaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
-    m_primaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
+    //m_primaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
+    //m_secondaryController.rightBumper().whileTrue(new IntakeCommand(m_intakeSubsystem));
+    //m_primaryController.leftBumper().whileTrue(new ScoreCommand(m_intakeSubsystem));
     // Driver nudges
     m_primaryController.povUp()
         .whileTrue(new RunCommand(() -> m_driveSubsystem.drive(-1.0, 0.0, 0.0, true),
@@ -194,12 +195,12 @@ public class RobotContainer {
       // .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     // Secondary Controller Bindings
-    m_secondaryController.leftStick().and(m_secondaryController.rightStick())
-        .onTrue(new InstantCommand(() -> m_armSubsystem.seedRelativeEncoders(), m_armSubsystem));
+    //m_secondaryController.leftStick().and(m_secondaryController.rightStick())
+        //.onTrue(new InstantCommand(() -> m_armSubsystem.seedRelativeEncoders(), m_armSubsystem));
 
     // Arm nudges
-    m_secondaryController.povDown().onTrue(new InstantCommand(m_armSubsystem::nudgeWristDown));
-    m_secondaryController.povUp().onTrue(new InstantCommand(m_armSubsystem::nudgeWristUp));
+    //m_secondaryController.povDown().onTrue(new InstantCommand(m_armSubsystem::nudgeWristDown));
+    //m_secondaryController.povUp().onTrue(new InstantCommand(m_armSubsystem::nudgeWristUp));
 
     // Game piece indication
     m_secondaryController.start()
@@ -279,12 +280,12 @@ public class RobotContainer {
             .andThen(new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.FLOOR_GRAB_CONE))));
 
     // Grabby thing control
-    m_intakeSubsystem.setDefaultCommand(
-        new RunCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED), m_intakeSubsystem));
+    //m_intakeSubsystem.setDefaultCommand(
+        //new RunCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED), m_intakeSubsystem));
 
-    Trigger floorGrab = new Trigger(
-        () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB_CUBE);
-    (floorGrab.and(() -> isAuto)).whileTrue(new IntakeCommand(m_intakeSubsystem));
+    // Trigger floorGrab = new Trigger(
+    //     () -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.FLOOR_GRAB_CUBE);
+    // (floorGrab.and(() -> isAuto)).whileTrue(new IntakeCommand(m_intakeSubsystem));
 
     coneTrigger.and(m_secondaryController.leftTrigger()).onTrue(
         new InstantCommand(() -> m_armSubsystem.setKnownArmPlacement(KnownArmPlacement.SINGLE_SUBSTATION_CONE)));
@@ -307,7 +308,7 @@ public class RobotContainer {
     if (autoCommandSupplier != null) {
       return autoCommandSupplier.get()
           .alongWith(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem))
-          .alongWith(new InstantCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED)))
+          //.alongWith(new InstantCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED)))
           .beforeStarting(
               (new RunCommand(() -> m_armSubsystem.setManualWristSpeed(-0.1), m_armSubsystem)).withTimeout(0.25));
       // .beforeStarting(new ZeroArmCommand(m_armSubsystem));
@@ -316,8 +317,8 @@ public class RobotContainer {
   }
 
   public void teleopInit() {
-    m_armSubsystem.seedRelativeEncoders();
-    m_armSubsystem.setTargetsToCurrents();
+    //m_armSubsystem.seedRelativeEncoders();
+    //m_armSubsystem.setTargetsToCurrents();
     // new ZeroArmCommand(m_armSubsystem).schedule();
   }
 
@@ -337,6 +338,6 @@ public class RobotContainer {
   }
 
   public void endAutoScore() {
-    new ScheduleCommand(new ScoreCommand(m_intakeSubsystem)).schedule();
+    //new ScheduleCommand(new ScoreCommand(m_intakeSubsystem)).schedule();
   }
 }
