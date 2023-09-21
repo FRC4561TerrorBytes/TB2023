@@ -73,12 +73,16 @@ public class DriveSubsystem extends SubsystemBase {
   private final  PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
         Constants.AUTO_THETA_KD);
 
+  private final PIDController absoluteRotationController = new PIDController(0.025, 0.01, 0);
+
   public DriveSubsystem() {
     m_pigeon.setYaw(0.0);
     m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
       Rotation2d.fromDegrees(m_pigeon.getYaw()),
       getModulePositions());
-    }
+      //setting tolerance in radians
+    absoluteRotationController.setTolerance((Math.PI/180)*1);
+  }
 
   /**
    * Method to drive the robot using joystick info.
@@ -90,6 +94,21 @@ public class DriveSubsystem extends SubsystemBase {
    *                      field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    var swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(
+        fieldRelative
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_pigeon.getYaw()))
+            : new ChassisSpeeds(xSpeed, ySpeed, rot));
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_VELOCITY_METERS_PER_SECOND);
+    setModuleStates(swerveModuleStates);
+  }
+
+  public void driveAbsoluteRotation(double xSpeed, double ySpeed, double rotX, double rotY, boolean fieldRelative){
+    double joystickAngle = Math.atan(rotY/rotX);
+    SmartDashboard.putNumber("Joystick Rotation", joystickAngle);
+
+    //rotation
+    double rot = absoluteRotationController.calculate(getPose().getRotation().getRadians(), Math.toRadians(joystickAngle));
+
     var swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_pigeon.getYaw()))
