@@ -180,6 +180,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (Math.abs(m_pigeon.getPitch()) > 50 || Math.abs(m_pigeon.getRoll()) > 50) {
+      Logger.getInstance().recordOutput("tipping", true);
+      stop();
+    } else {
+      Logger.getInstance().recordOutput("tipping", false);
+    }
+
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
     SmartDashboard.putBoolean("On Charge Station", onChargeStation());
