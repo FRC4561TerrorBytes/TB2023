@@ -96,9 +96,9 @@ public class VisionSubsytem extends SubsystemBase {
   }
 
   private void centerApriltag(final double aprilTagOffset, final double backOffset) {
-    LimelightResults leftResult = LimelightHelpers.getLatestResults("limelightLeft");
+    LimelightResults leftResult = LimelightHelpers.getLatestResults("limelight-left");
 
-    var leftClosestTag = getClosestTag("limelightLeft");
+    var leftClosestTag = getClosestTag("limelight-left");
     if (leftResult.targetingResults.valid && leftClosestTag != null) {
       leftTag = getTagByID(leftResult.targetingResults.targets_Fiducials, leftClosestTag.fiducialID);
 
@@ -110,32 +110,32 @@ public class VisionSubsytem extends SubsystemBase {
         leftAprilTransform3d = null;
       }
     } else {
-      rightTargetIDValid = false;
+      leftTargetIDValid = false;
     }
 
-    LimelightResults rightResults = LimelightHelpers.getLatestResults("limelightRight");
+    // LimelightResults rightResults = LimelightHelpers.getLatestResults("limelightRight");
 
-    var rightClosestTag = getClosestTag("limelightRight");
-    if (rightResults.targetingResults.valid && rightClosestTag != null) {
-      rightTag = getTagByID(rightResults.targetingResults.targets_Fiducials, rightClosestTag.fiducialID);
+    // var rightClosestTag = getClosestTag("limelightRight");
+    // if (rightResults.targetingResults.valid && rightClosestTag != null) {
+    //   rightTag = getTagByID(rightResults.targetingResults.targets_Fiducials, rightClosestTag.fiducialID);
 
-      if (rightTag != null) {
-        rightTargetIDValid = true;
-        rightAprilTransform3d = rightTag.getRobotPose_FieldSpace();
-      } else {
-        rightTargetIDValid = false;
-        rightAprilTransform3d = null;
-      }
-    } else {
-      rightTargetIDValid = false;
-    }
+    //   if (rightTag != null) {
+    //     rightTargetIDValid = true;
+    //     rightAprilTransform3d = rightTag.getRobotPose_FieldSpace();
+    //   } else {
+    //     rightTargetIDValid = false;
+    //     rightAprilTransform3d = null;
+    //   }
+    // } else {
+    //   rightTargetIDValid = false;
+    // }
 
-    if (rightTargetIDValid) {
-      targetPose = rightAprilTransform3d;
-      cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset;
-    }
+    // if (rightTargetIDValid) {
+    //   targetPose = rightAprilTransform3d;
+    //   cameraOffset = Constants.RIGHT_CAMERA_OFFSET_RIGHT - aprilTagOffset;
+    // }
 
-    else if (leftTargetIDValid) {
+    if (leftTargetIDValid) {
       targetPose = leftAprilTransform3d;
       cameraOffset = Constants.LEFT_CAMERA_OFFSET_RIGHT - aprilTagOffset;
     }
