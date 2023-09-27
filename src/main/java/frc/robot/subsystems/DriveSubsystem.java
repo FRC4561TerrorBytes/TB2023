@@ -108,7 +108,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void driveAbsoluteRotation(double xSpeed, double ySpeed, double rotX, double rotY, boolean fieldRelative){
     //double joystickAngle = (Math.atan2(rotY, -rotX) - Math.toRadians(180))*-1 - Math.toRadians(90);
-    double joystickAngle = calculateJoystickAngle(rotX, rotY);
+    double joystickAngle = calculateJoystickAngle(rotX, rotY*-1);
 
     SmartDashboard.putNumber("Joystick X", -rotX);
     SmartDashboard.putNumber("Joystick Y", rotY);
