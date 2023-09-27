@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -11,22 +13,16 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.LimelightHelpers.LimelightResults;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -67,9 +63,6 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.BACK_RIGHT_DRIVE_MOTOR_INVERTED,
       Constants.BACK_RIGHT_TURN_MOTOR_INVERTED);
 
-  // Odometry
-  private SwerveDrivePoseEstimator m_poseEstimator;
-
   private final PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
   private final  PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
   private final  PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
@@ -77,10 +70,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public DriveSubsystem() {
     m_pigeon.setYaw(0.0);
-    m_poseEstimator = new SwerveDrivePoseEstimator(Constants.DRIVE_KINEMATICS,
-      getRotation2d(),
-      getModulePositions(),
-      new Pose2d());
     }
 
   /**
@@ -106,31 +95,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRightModule.setDesiredState(states[1]);
     m_backLeftModule.setDesiredState(states[2]);
     m_backRightModule.setDesiredState(states[3]);
-
-    updateOdometry();
   }
 
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
-  }
-
-  /** Updates the field relative position of the robot. */
-  public void updateOdometry() {
-    m_poseEstimator.update(getRotation2d(), getModulePositions());
-    System.out.println("odometry pose " + getPose());
-  }
-
-  public Pose2d getPose() {
-    return m_poseEstimator.getEstimatedPosition();
-  }
-
-  public void resetOdometry(Pose2d position) {
-    m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), position);
-  }
-
-  public void addVision(LimelightResults result) {
-    m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d_wpiBlue(), 
-      Timer.getFPGATimestamp() - (result.targetingResults.latency_pipeline/1000.0) - (result.targetingResults.latency_capture/1000.0));
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -192,12 +160,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("On Charge Station", onChargeStation());
     SmartDashboard.putBoolean("On Pitch Down", onPitchDown());
 
-    Logger.getInstance().recordOutput("heading", getPose().getRotation().getDegrees() + 180);
-
-    Logger.getInstance().recordOutput("odometry", getPose());
-    // Logger.getInstance().recordOutput("states", getModuleStates());
-
-    Logger.getInstance().recordOutput("3d pose", new Pose3d(getPose()));
+    Logger.getInstance().recordOutput("heading", m_pigeon.getFusedHeading());
 
     SwerveModuleState[] measuredStates = new SwerveModuleState[] {null, null, null, null};
 
@@ -211,25 +174,17 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.getInstance().recordOutput("measured states", measuredStates);
   }
 
-  public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-    return new SequentialCommandGroup(
-         new InstantCommand(() -> {
-           // Reset odometry for the first path you run during auto
-           if(isFirstPath){
-               this.resetOdometry(traj.getInitialHolonomicPose());
-           }
-         }),
-         new PPSwerveControllerCommand(
-             traj, 
-             this::getPose, // Pose supplier
-             Constants.DRIVE_KINEMATICS,
-             xController, // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-             yController, // Y controller (usually the same values as X controller)
-             thetaController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-             this::setModuleStates, // Module states consumer
-             false, // paths are already mirrored in auto command, turning true will double mirror
-             this // Requires this drive subsystem
-         )
-     );
- }
+  public Command followTrajectoryCommand(PathPlannerTrajectory traj, Supplier<Pose2d> poseSupplier, boolean isFirstPath) {
+    return new PPSwerveControllerCommand(
+      traj, 
+      poseSupplier, // Pose supplier
+      Constants.DRIVE_KINEMATICS,
+      xController, // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+      yController, // Y controller (usually the same values as X controller)
+      thetaController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+      this::setModuleStates, // Module states consumer
+      false, // paths are already mirrored in auto command, turning true will double mirror
+      this // Requires this drive subsystem
+    );
+  }
 }

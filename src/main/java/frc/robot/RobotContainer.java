@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,6 +36,7 @@ import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.PoseEstimatorSubsytem;
 import frc.robot.subsystems.VisionSubsytem;
 
 /**
@@ -52,6 +54,7 @@ public class RobotContainer {
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final VisionSubsytem m_visionSubsystem = new VisionSubsytem(m_driveSubsystem);
+  private final PoseEstimatorSubsytem m_poseEstimator = new PoseEstimatorSubsytem(m_driveSubsystem, m_visionSubsystem);
 
   private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
   private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
@@ -313,6 +316,7 @@ public class RobotContainer {
     var autoCommandSupplier = m_autoChooser.getSelected();
     if (autoCommandSupplier != null) {
       return autoCommandSupplier.get()
+          .andThen(() -> m_poseEstimator.setCurrentPose(new Pose2d()))
           .alongWith(new RunCommand(() -> m_armSubsystem.proceedToArmPosition(), m_armSubsystem))
           .alongWith(new InstantCommand(() -> m_intakeSubsystem.setRollerSpeed(Constants.INTAKE_HOLD_SPEED)))
           .beforeStarting(

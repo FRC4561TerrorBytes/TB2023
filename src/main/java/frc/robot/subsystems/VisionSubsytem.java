@@ -60,7 +60,7 @@ public class VisionSubsytem extends SubsystemBase {
     m_driveSubsytem = driveSubsystem;
   }
 
-  private LimelightTarget_Fiducial getClosestTag(String cameraName) {
+  public LimelightTarget_Fiducial getClosestTag(String cameraName) {
     double closest = 100;
     LimelightTarget_Fiducial target = null;
     LimelightTarget_Fiducial[] targetList = LimelightHelpers.getLatestResults(cameraName).targetingResults.targets_Fiducials;
@@ -233,15 +233,8 @@ public class VisionSubsytem extends SubsystemBase {
     }
   }
 
-  public void updateOdometry() {
-    LimelightResults results = LimelightHelpers.getLatestResults("limelight-right");
-
-    // m_driveSubsytem.addVision(results);
-  }
-
   @Override
   public void periodic() {
-    updateOdometry();
   }
 
   private class CenterAprilTag extends CommandBase {
