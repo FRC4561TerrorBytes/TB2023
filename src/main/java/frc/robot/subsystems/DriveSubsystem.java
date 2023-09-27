@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -26,11 +24,13 @@ import frc.robot.Constants;
 
 public class DriveSubsystem extends SubsystemBase {
 
+  private final PoseEstimatorSubsytem m_poseEstimatorSubsytem;
+
   // Pigeon gyro
-  private final PigeonIMU m_pigeon = new PigeonIMU(Constants.PIGEON_ID);
+  private final static PigeonIMU m_pigeon = new PigeonIMU(Constants.PIGEON_ID);
 
   // Swerve Modules
-  private final SwerveModule m_frontLeftModule = new SwerveModule(
+  private final static SwerveModule m_frontLeftModule = new SwerveModule(
       Constants.FRONT_LEFT_DRIVE_MOTOR,
       Constants.FRONT_LEFT_STEER_MOTOR,
       Constants.FRONT_LEFT_STEER_ENCODER,
@@ -38,7 +38,7 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.TURN_MOTOR_CONFIG,
       Constants.FRONT_LEFT_DRIVE_MOTOR_INVERTED,
       Constants.FRONT_LEFT_TURN_MOTOR_INVERTED);
-  private final SwerveModule m_frontRightModule = new SwerveModule(
+  private final static SwerveModule m_frontRightModule = new SwerveModule(
       Constants.FRONT_RIGHT_DRIVE_MOTOR,
       Constants.FRONT_RIGHT_STEER_MOTOR,
       Constants.FRONT_RIGHT_STEER_ENCODER,
@@ -46,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.TURN_MOTOR_CONFIG,
       Constants.FRONT_RIGHT_DRIVE_MOTOR_INVERTED,
       Constants.FRONT_RIGHT_TURN_MOTOR_INVERTED);
-  private final SwerveModule m_backLeftModule = new SwerveModule(
+  private final static SwerveModule m_backLeftModule = new SwerveModule(
       Constants.BACK_LEFT_DRIVE_MOTOR,
       Constants.BACK_LEFT_STEER_MOTOR,
       Constants.BACK_LEFT_STEER_ENCODER,
@@ -54,7 +54,7 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.TURN_MOTOR_CONFIG,
       Constants.BACK_LEFT_DRIVE_MOTOR_INVERTED,
       Constants.BACK_LEFT_TURN_MOTOR_INVERTED);
-  private final SwerveModule m_backRightModule = new SwerveModule(
+  private final static SwerveModule m_backRightModule = new SwerveModule(
       Constants.BACK_RIGHT_DRIVE_MOTOR,
       Constants.BACK_RIGHT_STEER_MOTOR,
       Constants.BACK_RIGHT_STEER_ENCODER,
@@ -68,7 +68,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final  PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
         Constants.AUTO_THETA_KD);
 
-  public DriveSubsystem() {
+  public DriveSubsystem(PoseEstimatorSubsytem poseestimatorsubsystem) {
+    m_poseEstimatorSubsytem = poseestimatorsubsystem;
     m_pigeon.setYaw(0.0);
     }
 
@@ -97,11 +98,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRightModule.setDesiredState(states[3]);
   }
 
-  public Rotation2d getRotation2d() {
+  public static Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
   }
 
-  public SwerveModulePosition[] getModulePositions() {
+  public static SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
         m_frontLeftModule.getPosition(),
         m_frontRightModule.getPosition(),
@@ -146,6 +147,10 @@ public class DriveSubsystem extends SubsystemBase {
     drive(0.0, 0.0, 0.0, false);
   }
 
+  public Pose2d getPose() {
+    return m_poseEstimatorSubsytem.getCurrentPose();
+  }
+
   @Override
   public void periodic() {
     if (Math.abs(m_pigeon.getPitch()) > 50 || Math.abs(m_pigeon.getRoll()) > 50) {
@@ -174,10 +179,10 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.getInstance().recordOutput("measured states", measuredStates);
   }
 
-  public Command followTrajectoryCommand(PathPlannerTrajectory traj, Supplier<Pose2d> poseSupplier, boolean isFirstPath) {
+  public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
     return new PPSwerveControllerCommand(
       traj, 
-      poseSupplier, // Pose supplier
+      this::getPose, // Pose supplier
       Constants.DRIVE_KINEMATICS,
       xController, // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
       yController, // Y controller (usually the same values as X controller)

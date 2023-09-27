@@ -8,16 +8,19 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.PoseEstimatorSubsytem;
 
 public class FlipAuto extends CommandBase {
   /** Creates a new AutoFlip. */
 
   final DriveSubsystem m_driveSubsystem;
+  final PoseEstimatorSubsytem m_poseEstimator;
   final PIDController m_pidController = new PIDController(0.03, 0, 0);
 
-  public FlipAuto(DriveSubsystem driveSubsystem) {
+  public FlipAuto(DriveSubsystem driveSubsystem, PoseEstimatorSubsytem poseestimator) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_driveSubsystem = driveSubsystem;
+    m_poseEstimator = poseestimator;
     addRequirements(m_driveSubsystem);
     m_pidController.enableContinuousInput(-180.0, 180.0);
     //m_pidController.setSetpoint(0.0);
@@ -28,7 +31,7 @@ public class FlipAuto extends CommandBase {
   @Override
   public void initialize() {
     m_pidController.reset();
-    final double absAngle = Math.abs(m_driveSubsystem.getPose().getRotation().getDegrees());
+    final double absAngle = Math.abs(m_poseEstimator.getCurrentPose().getRotation().getDegrees());
     final boolean closerTo0 = (180.0 - absAngle) > absAngle;
     m_pidController.setSetpoint(closerTo0 ? 180.0 : 0.0);
   }
@@ -36,13 +39,13 @@ public class FlipAuto extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double rawAngle = m_driveSubsystem.getPose().getRotation().getDegrees();
+    double rawAngle = m_poseEstimator.getCurrentPose().getRotation().getDegrees();
     double rotationRate = m_pidController.calculate(rawAngle);
     rotationRate += 1.0 * Math.signum(rotationRate);
 
     m_driveSubsystem.drive(0, 0, rotationRate, true);
 
-    System.out.println("rotation from pose: 0: " + m_driveSubsystem.getPose().getRotation().getDegrees());
+    System.out.println("rotation from pose: 0: " + m_poseEstimator.getCurrentPose().getRotation().getDegrees());
     // System.out.println("rotation from pigeon: " + m_driveSubsystem.getPigeonYaw());
 
     SmartDashboard.putNumber("Raw Angle", rawAngle);

@@ -50,11 +50,12 @@ import frc.robot.subsystems.VisionSubsytem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+
+  private final PoseEstimatorSubsytem m_poseEstimator = new PoseEstimatorSubsytem();
+  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem(m_poseEstimator);
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final VisionSubsytem m_visionSubsystem = new VisionSubsytem(m_driveSubsystem);
-  private final PoseEstimatorSubsytem m_poseEstimator = new PoseEstimatorSubsytem(m_driveSubsystem, m_visionSubsystem);
 
   private final SendableChooser<Supplier<Command>> m_autoChooser = new SendableChooser<>();
   private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem();
@@ -194,7 +195,7 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     m_primaryController.x()
-      .whileTrue(new ScoreAlign(m_driveSubsystem));
+      .whileTrue(new ScoreAlign(m_driveSubsystem, m_poseEstimator));
       // .onFalse(new InstantCommand(() -> m_driveSubsystem.stop()));
 
     //change the parameter values to tweak
