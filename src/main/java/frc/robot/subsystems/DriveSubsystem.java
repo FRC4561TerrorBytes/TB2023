@@ -80,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_poseEstimator = new SwerveDrivePoseEstimator(Constants.DRIVE_KINEMATICS,
       getRotation2d(),
       getModulePositions(),
-      getPose());
+      new Pose2d());
     }
 
   /**
