@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.sql.Driver;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -64,15 +65,17 @@ public class RobotContainer {
   private final CommandXboxController m_primaryController = new CommandXboxController(0);
   private final CommandXboxController m_secondaryController = new CommandXboxController(1);
 
+  private double driveScalar;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     m_driveSubsystem.setDefaultCommand(new RunCommand(() -> m_driveSubsystem.drive(
-        modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-        modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND * driveScalar,
+        modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND * driveScalar,
         modifyAxis(-m_primaryController.getRightX())
-            * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * driveScalar,
         true),
         m_driveSubsystem));
 
@@ -259,6 +262,12 @@ public class RobotContainer {
         () -> GameState.getInstance().getGamePieceDesired() == GamePiece.CONE);
 
     Trigger stowedTrigger = new Trigger(() -> m_armSubsystem.getArmPlacement() == KnownArmPlacement.STOWED);
+
+    if(m_armSubsystem.getArmPlacement() == KnownArmPlacement.STOWED){
+      driveScalar = 1;
+    } else {
+      driveScalar = 0.3;
+    }
 
     coneTrigger.and(m_secondaryController.a()).onTrue(new InstantCommand(() -> m_armSubsystem
         .setKnownArmPlacement(KnownArmPlacement.SCORE_LOW_CONE)));
