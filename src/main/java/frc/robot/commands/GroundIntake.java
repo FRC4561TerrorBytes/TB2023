@@ -4,16 +4,14 @@
 
 package frc.robot.commands;
 
-import java.net.ConnectException;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.GameState;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ArmSubsystem.KnownArmPlacement;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class GroundIntake extends CommandBase {
   private IntakeSubsystem m_intakeSubsystem;
