@@ -111,13 +111,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+    return Rotation2d.fromDegrees(m_pigeon.getYaw());
   }
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     m_poseEstimator.update(getRotation2d(), getModulePositions());
-    System.out.println("odometry pose " + getPose());
   }
 
   public Pose2d getPose() {
