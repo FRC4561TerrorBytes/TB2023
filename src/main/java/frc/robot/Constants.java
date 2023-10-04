@@ -6,10 +6,7 @@ package frc.robot;
 
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
@@ -130,9 +127,6 @@ public final class Constants {
   public static final double VISION_END_DISTANCE = Units.inchesToMeters(9);
   public static final double VISION_FORWARD_FLOOR_CLAMP = 0.2;
   public static final double VISION_FORWARD_CEILING_CLAMP = 1;
-
-  public static final Transform3d CAM_TO_ROBOT =
-    new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d());
 
   public static final SparkPIDConfig TURN_MOTOR_CONFIG = new SparkPIDConfig(
       false,
