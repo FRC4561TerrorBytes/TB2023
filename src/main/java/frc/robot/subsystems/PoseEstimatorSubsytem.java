@@ -21,10 +21,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
-import frc.robot.LimelightHelpers.LimelightTarget_Fiducial;
 
 public class PoseEstimatorSubsytem extends SubsystemBase {
 
+  private final DriveSubsystem m_driveSubsystem;
+  private final VisionSubsytem m_visionSubsystem;
   private final AprilTagFieldLayout aprilTagFieldLayout;
 
   private final SwerveDrivePoseEstimator m_poseEstimator;
@@ -34,7 +35,9 @@ public class PoseEstimatorSubsytem extends SubsystemBase {
   private double previousPipelineTimestamp = 0;
 
   /** Creates a new PoseEstimatorSubsytem. */
-  public PoseEstimatorSubsytem() {
+  public PoseEstimatorSubsytem(DriveSubsystem drivesubsystem, VisionSubsytem visionsubsytem) {
+    m_driveSubsystem = drivesubsystem;
+    m_visionSubsystem = visionsubsytem;
     AprilTagFieldLayout layout;
     try {
       layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
@@ -50,23 +53,9 @@ public class PoseEstimatorSubsytem extends SubsystemBase {
 
     m_poseEstimator = new SwerveDrivePoseEstimator(
       Constants.DRIVE_KINEMATICS, 
-      DriveSubsystem.getRotation2d(), 
-      DriveSubsystem.getModulePositions(),
+      m_driveSubsystem.getRotation2d(), 
+      m_driveSubsystem.getModulePositions(),
       new Pose2d());
-  }
-
-  public LimelightTarget_Fiducial getClosestTag(String cameraName) {
-    double closest = 100;
-    LimelightTarget_Fiducial target = null;
-    LimelightTarget_Fiducial[] targetList = LimelightHelpers.getLatestResults(cameraName).targetingResults.targets_Fiducials;
-    for (LimelightTarget_Fiducial i : targetList) {
-      double value = i.tx;
-      if (value < closest) {
-        closest = value;
-        target = i;
-      }
-    }
-    return target;
   }
 
   @Override
@@ -77,7 +66,7 @@ public class PoseEstimatorSubsytem extends SubsystemBase {
 
     if (resultTimestamp != previousPipelineTimestamp && limelightResult.targetingResults.valid) {
       previousPipelineTimestamp = resultTimestamp;
-      var closetTag = getClosestTag("limelight-left");
+      var closetTag = m_visionSubsystem.getClosestTag("limelight-left");
 
       Optional<Pose3d> tagPose = aprilTagFieldLayout == null ? Optional.empty() : aprilTagFieldLayout.getTagPose((int)closetTag.fiducialID);
 
@@ -93,8 +82,8 @@ public class PoseEstimatorSubsytem extends SubsystemBase {
     }
 
     m_poseEstimator.update(
-      DriveSubsystem.getRotation2d(),
-      DriveSubsystem.getModulePositions());
+      m_driveSubsystem.getRotation2d(),
+      m_driveSubsystem.getModulePositions());
 
 
     field2d.setRobotPose(getCurrentPose());
@@ -106,8 +95,8 @@ public class PoseEstimatorSubsytem extends SubsystemBase {
 
   public void setCurrentPose(Pose2d newPose) {
     m_poseEstimator.resetPosition(
-      DriveSubsystem.getRotation2d(),
-      DriveSubsystem.getModulePositions(),
+      m_driveSubsystem.getRotation2d(),
+      m_driveSubsystem.getModulePositions(),
       newPose);
   }
 
