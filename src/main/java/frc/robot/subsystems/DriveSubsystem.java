@@ -19,7 +19,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -128,8 +130,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void addVision(LimelightResults result) {
-    m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d_wpiBlue(), 
-      Timer.getFPGATimestamp() - (result.targetingResults.latency_pipeline/1000.0) - (result.targetingResults.latency_capture/1000.0));
+    if (DriverStation.getAlliance() == Alliance.Blue) {
+      m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d(), 
+        Timer.getFPGATimestamp() - (result.targetingResults.latency_pipeline/1000.0) - (result.targetingResults.latency_capture/1000.0));
+    } else if (DriverStation.getAlliance() == Alliance.Red) {
+      m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d_wpiRed(),
+        Timer.getFPGATimestamp() - (result.targetingResults.latency_pipeline/1000.0) - (result.targetingResults.latency_capture/1000.0));
+    }
   }
 
   public SwerveModulePosition[] getModulePositions() {
