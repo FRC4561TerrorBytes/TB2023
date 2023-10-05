@@ -136,10 +136,10 @@ public class DriveSubsystem extends SubsystemBase {
   public void addVision(LimelightResults result) {
     if (DriverStation.getAlliance() == Alliance.Blue) {
       m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d_wpiBlue(), 
-        Timer.getFPGATimestamp() - (result.targetingResults.latency_pipeline/1000.0) - (result.targetingResults.latency_capture/1000.0));
+        Timer.getFPGATimestamp());
     } else if (DriverStation.getAlliance() == Alliance.Red) {
       m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d_wpiRed(),
-        Timer.getFPGATimestamp() - (result.targetingResults.latency_pipeline/1000.0) - (result.targetingResults.latency_capture/1000.0));
+        Timer.getFPGATimestamp());
     }
   }
 

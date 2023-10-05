@@ -235,8 +235,12 @@ public class VisionSubsytem extends SubsystemBase {
 
   public void updateOdometry() {
     LimelightResults results = LimelightHelpers.getLatestResults("limelight-right");
-
-    m_driveSubsytem.addVision(results);
+    if (getClosestTag("limelight-right") != null) {
+      m_driveSubsytem.addVision(results);
+      Logger.getInstance().recordOutput("updating with tags", true);
+    } else {
+      Logger.getInstance().recordOutput("updating with tags", false);
+    }
   }
 
   @Override
