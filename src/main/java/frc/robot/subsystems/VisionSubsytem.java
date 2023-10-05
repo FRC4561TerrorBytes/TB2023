@@ -96,9 +96,9 @@ public class VisionSubsytem extends SubsystemBase {
   }
 
   private void centerApriltag(final double aprilTagOffset, final double backOffset) {
-    LimelightResults leftResult = LimelightHelpers.getLatestResults("limelight-left");
+    LimelightResults leftResult = LimelightHelpers.getLatestResults("limelight-right");
 
-    var leftClosestTag = getClosestTag("limelight-left");
+    var leftClosestTag = getClosestTag("limelight-right");
     if (leftResult.targetingResults.valid && leftClosestTag != null) {
       leftTag = getTagByID(leftResult.targetingResults.targets_Fiducials, leftClosestTag.fiducialID);
 
