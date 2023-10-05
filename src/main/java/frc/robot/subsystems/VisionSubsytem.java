@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -96,6 +97,7 @@ public class VisionSubsytem extends SubsystemBase {
   }
 
   private void centerApriltag(final double aprilTagOffset, final double backOffset) {
+    Logger.getInstance().recordOutput("center tag command", true);
     LimelightResults leftResult = LimelightHelpers.getLatestResults("limelight-right");
 
     var leftClosestTag = getClosestTag("limelight-right");
@@ -104,7 +106,7 @@ public class VisionSubsytem extends SubsystemBase {
 
       if (leftTag != null) {
         leftTargetIDValid = true;
-        leftAprilTransform3d = leftTag.getRobotPose_FieldSpace();
+        leftAprilTransform3d = leftTag.getTargetPose_RobotSpace();
       } else {
         leftTargetIDValid = false;
         leftAprilTransform3d = null;
@@ -265,13 +267,13 @@ public class VisionSubsytem extends SubsystemBase {
       outOfRotToleranceDebounceCount = OUT_OF_ROT_TOLERANCE_DEBOUNCE;
       averageDistance.clear();
       averageLateral.clear();
+      System.out.println("DBWADIBWADUBDWAB\n\n\n");
     }
 
     @Override
     public void execute() {
       centerApriltag(m_aprilTagOffset, m_backOffset);
-      //SmartDashboard.putBoolean("driving forward", false);
-      //SmartDashboard.putNumber("lost targets", lostTargetDebouceCount);
+      // SmartDashboard.putBoolean("driving", true);
     }
 
     @Override
@@ -279,8 +281,10 @@ public class VisionSubsytem extends SubsystemBase {
       // TODO check for drive stall. That is, up against
       // substation wall or grid edges.
       if (lostTargetDebounceCount >= LOST_TARGET_DEBOUNCE) {
+        System.out.println("DIWADDAWDWADA\n\n\n\n");
         return true;
       } else if (GameState.getInstance().getCenteredState() == CenteredState.CENTERED) {
+        System.out.println("DIWADDAWDWADA\n\n\n\n");
         return true;
       }
       return false;
