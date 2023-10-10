@@ -11,8 +11,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
@@ -63,6 +62,10 @@ public class Robot extends LoggedRobot {
 
     // Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
     Logger.getInstance().start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+
+    for (int port = 5800; port <= 5805; port++) {
+      PortForwarder.add(port, "limelight.local", port);
+    }
 
     m_robotContainer = new RobotContainer();
   }

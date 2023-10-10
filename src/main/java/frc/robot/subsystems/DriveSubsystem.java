@@ -8,23 +8,29 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers.LimelightResults;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -66,7 +72,7 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.BACK_RIGHT_TURN_MOTOR_INVERTED);
 
   // Odometry
-  private final SwerveDriveOdometry m_odometry;
+  private SwerveDrivePoseEstimator m_poseEstimator;
 
   private final PIDController xController = new PIDController(Constants.AUTO_X_KP, Constants.AUTO_X_KI, Constants.AUTO_X_KD);
   private final  PIDController yController = new PIDController(Constants.AUTO_Y_KP, Constants.AUTO_Y_KI, Constants.AUTO_Y_KD);
@@ -75,9 +81,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   public DriveSubsystem() {
     m_pigeon.setYaw(0.0);
-    m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS,
-      Rotation2d.fromDegrees(m_pigeon.getYaw()),
-      getModulePositions());
+    m_poseEstimator = new SwerveDrivePoseEstimator(Constants.DRIVE_KINEMATICS,
+      getRotation2d(),
+      getModulePositions(),
+      new Pose2d(),
+      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+      VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
     }
 
   /**
@@ -108,22 +117,30 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+    return Rotation2d.fromDegrees(m_pigeon.getYaw());
   }
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    m_odometry.update(
-        Rotation2d.fromDegrees(m_pigeon.getYaw()), getModulePositions());
-    System.out.println("odometry pose " + getPose());
+    m_poseEstimator.update(getRotation2d(), getModulePositions());
   }
 
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   public void resetOdometry(Pose2d position) {
-    m_odometry.resetPosition(getRotation2d(), getModulePositions(), position);
+    m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), position);
+  }
+
+  public void addVision(LimelightResults result) {
+    if (DriverStation.getAlliance() == Alliance.Blue) {
+      m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d_wpiBlue(), 
+        Timer.getFPGATimestamp());
+    } else if (DriverStation.getAlliance() == Alliance.Red) {
+      m_poseEstimator.addVisionMeasurement(result.targetingResults.getBotPose2d_wpiRed(),
+        Timer.getFPGATimestamp());
+    }
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -173,6 +190,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (Math.abs(m_pigeon.getPitch()) > 50 || Math.abs(m_pigeon.getRoll()) > 50) {
+      Logger.getInstance().recordOutput("tipping", true);
+      stop();
+    } else {
+      Logger.getInstance().recordOutput("tipping", false);
+    }
+
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pitch", m_pigeon.getPitch());
     SmartDashboard.putBoolean("On Charge Station", onChargeStation());
