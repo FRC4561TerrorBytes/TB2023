@@ -201,7 +201,7 @@ public class RobotContainer {
 
     //change the parameter values to tweak
     m_primaryController.a()
-      .whileTrue(new InstantCommand(() -> m_visionSubsystem.centerAprilTagCommand(0, 0)));
+      .whileTrue(m_visionSubsystem.centerAprilTagCommand(0, 0));
 
     // Secondary Controller Bindings
     m_secondaryController.leftStick().and(m_secondaryController.rightStick())
