@@ -73,7 +73,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final  PIDController thetaController = new PIDController(Constants.AUTO_THETA_KP, Constants.AUTO_THETA_KI,
         Constants.AUTO_THETA_KD);
 
-  private final PIDController absoluteRotationController = new PIDController(0.025, 0, 0);
+  private final PIDController absoluteRotationController = new PIDController(0.02, 0, 1);
 
   //absolute rotate target angle
   double absoluteRotateTargetDegrees = 0.0;
@@ -108,22 +108,20 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void driveAbsoluteRotation(double xSpeed, double ySpeed, double rotX, double rotY, boolean fieldRelative){
     //double joystickAngle = (Math.atan2(rotY, -rotX) - Math.toRadians(180))*-1 - Math.toRadians(90);
-    double joystickAngle = calculateJoystickAngle(rotX, rotY*-1);
+    double joystickAngle = calculateJoystickAngle(rotX*-1, rotY*-1);
 
-    SmartDashboard.putNumber("Joystick X", -rotX);
-    SmartDashboard.putNumber("Joystick Y", rotY);
-    SmartDashboard.putNumber("Joystick Rotation", Math.toDegrees(joystickAngle));
+    SmartDashboard.putNumber("Joystick Rotation", joystickAngle);
 
     double rot = 0;
     //rotation
     //if the joystick is outside of deadzone
     //Deadzone because don't want robot to rotate back to 0 when the joystick is not being touched
     if(Math.hypot(rotX, rotY) > 0.5){
-      rot = Math.toRadians(absoluteRotationController.calculate(getPose().getRotation().getDegrees(), joystickAngle));
-      absoluteRotateTargetDegrees = absoluteRotationController.calculate(getPose().getRotation().getDegrees(), joystickAngle);
+      rot = Math.toRadians(absoluteRotationController.calculate(m_pigeon.getYaw(), joystickAngle));
+      absoluteRotateTargetDegrees = rot;
     }
     else{
-      rot = Math.toRadians(absoluteRotationController.calculate(getPose().getRotation().getDegrees(), absoluteRotateTargetDegrees));
+      rot = Math.toRadians(absoluteRotationController.calculate(m_pigeon.getYaw(), absoluteRotateTargetDegrees));
     }
     var swerveModuleStates = Constants.DRIVE_KINEMATICS.toSwerveModuleStates(
         fieldRelative
@@ -131,6 +129,8 @@ public class DriveSubsystem extends SubsystemBase {
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_VELOCITY_METERS_PER_SECOND);
     setModuleStates(swerveModuleStates);
+    System.out.println("joystick distance" + Math.hypot(rotX, rotY));
+    SmartDashboard.putNumber("robot angle", getPose().getRotation().getDegrees());
   }
 
   //return the degrees of the coordinates in degrees
