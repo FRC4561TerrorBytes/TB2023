@@ -126,7 +126,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowThroughboreEncoder = m_elbowMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     m_elbowThroughboreEncoder.setInverted(true);
     m_elbowThroughboreEncoder.setPositionConversionFactor(360.0);
-    m_elbowThroughboreEncoder.setZeroOffset(220.0);
+    m_elbowThroughboreEncoder.setZeroOffset(130.0);
 
     m_shoulderMotor.restoreFactoryDefaults();
     m_shoulderMotor.setIdleMode(IdleMode.kBrake);
@@ -318,7 +318,7 @@ public class ArmSubsystem extends SubsystemBase {
    * @return Shoulder Position in Degrees
    */
   private double getCalculatedShoulderAngle() {
-    return (m_shoulderThroughboreEncoder.getPosition() + 25) / Constants.SHOULDER_ENCODER_ROTATIONS_PER_DEGREE;
+    return (m_shoulderThroughboreEncoder.getPosition() + 108) / Constants.SHOULDER_ENCODER_ROTATIONS_PER_DEGREE;
   }
 
   /**
