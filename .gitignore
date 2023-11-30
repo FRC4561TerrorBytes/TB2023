@@ -5,6 +5,8 @@
 # Prerequisites
 *.d
 
+src/main/java/frc/robot/BuildConstants.java
+
 # Compiled Object files
 *.slo
 *.lo
@@ -160,3 +162,4 @@ bin/
 
 # Simulation GUI and other tools window save file
 *-window.json
+src/main/java/org/littletonrobotics/frc2023/BuildConstants.java
