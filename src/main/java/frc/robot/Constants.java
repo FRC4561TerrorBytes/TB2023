@@ -9,7 +9,6 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import frc.robot.utils.SecondOrderSwerveKinematics;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -57,20 +56,6 @@ public final class Constants {
       // Back right
       new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
           -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0));
-  
-  public static final SecondOrderSwerveKinematics SECOND_ORDER_SWERVE_KINEMATICS = new SecondOrderSwerveKinematics(
-    // Front left
-    new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-      Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-    // Front right
-    new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-      -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-    // Back left
-    new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-      Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-    // Back right
-    new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-      -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
   public static final int FRONT_LEFT_DRIVE_MOTOR = 5;
   public static final int FRONT_LEFT_STEER_MOTOR = 6;
