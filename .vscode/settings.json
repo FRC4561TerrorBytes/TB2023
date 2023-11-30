@@ -28,8 +28,5 @@
   "java.test.defaultConfig": "WPIlibUnitTests",
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "editor.detectIndentation": false,
-  "githubPullRequests.ignoredPullRequestBranches": [
-    "main"
-  ]
+  "editor.detectIndentation": false
 }
